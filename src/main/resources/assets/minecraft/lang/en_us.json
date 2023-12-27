@@ -1,0 +1,5 @@
+{
+  "controls.unbind": "U",
+  "controls.unbind.tooltip": "Unbind",
+  "narrator.controls.unbind": "Unbind %s button"
+}

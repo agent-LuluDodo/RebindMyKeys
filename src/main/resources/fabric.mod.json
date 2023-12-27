@@ -14,15 +14,13 @@
   "icon": "assets/unbind-my-keys/icon.png",
   "environment": "client",
   "entrypoints": {
-    "client": [
-      "de.luludodo.unbindmykeys.client.UnbindMyKeys"
-    ]
   },
   "mixins": [
     "unbind-my-keys.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=${loader_version}",
+    "fabricloader": "*",
+    "fabric": "*",
     "minecraft": "*"
   }
 }
