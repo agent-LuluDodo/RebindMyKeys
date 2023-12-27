@@ -2,24 +2,27 @@
   "schemaVersion": 1,
   "id": "unbind-my-keys",
   "version": "${version}",
-
   "name": "UnbindMyKeys",
   "description": "Allows you to unbind keybindings.",
-  "authors": [],
-  "contact": {},
-
+  "authors": [
+    "agent_LuluDodo"
+  ],
+  "contact": {
+    "repo": "https://github.com/lucad/UnbindMyKeys"
+  },
   "license": "MIT",
   "icon": "assets/unbind-my-keys/icon.png",
-
   "environment": "client",
-  "entrypoints": {},
-
-      "mixins": [
-        "unbind-my-keys.mixins.json"
-      ],
-
+  "entrypoints": {
+    "client": [
+      "de.luludodo.unbindmykeys.client.UnbindMyKeys"
+    ]
+  },
+  "mixins": [
+    "unbind-my-keys.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "minecraft": "${minecraft_version}"
+    "minecraft": "*"
   }
 }
