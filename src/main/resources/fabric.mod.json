@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "unbind-my-keys",
+  "version": "${version}",
+
+  "name": "UnbindMyKeys",
+  "description": "Allows you to unbind keybindings.",
+  "authors": [],
+  "contact": {},
+
+  "license": "MIT",
+  "icon": "assets/unbind-my-keys/icon.png",
+
+  "environment": "client",
+  "entrypoints": {},
+
+      "mixins": [
+        "unbind-my-keys.mixins.json"
+      ],
+
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "${minecraft_version}"
+  }
+}
