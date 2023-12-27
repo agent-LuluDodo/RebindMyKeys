@@ -30,8 +30,9 @@ public abstract class KeyBindingEntryMixin {
     @Shadow @Final ControlsListWidget field_2742;
     @Shadow @Final private Text bindingName;
 
+    @Shadow @Final private ButtonWidget resetButton;
     @Unique
-    private final ButtonWidget unbindButton = ButtonWidget.builder(
+    private final ButtonWidget unbindmykeys$unbindButton = ButtonWidget.builder(
             Text.translatable("controls.unbind"),
             button -> {
                 field_2742.client.options.setKeyCode(binding, InputUtil.UNKNOWN_KEY);
@@ -51,43 +52,39 @@ public abstract class KeyBindingEntryMixin {
     ).build();
 
     @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ButtonWidget$Builder;dimensions(IIII)Lnet/minecraft/client/gui/widget/ButtonWidget$Builder;", ordinal = 1), index = 2)
-    private int editButtonWidth(int x) {
+    private int unbindmykeys$editButtonWidth(int x) {
         return x - 5;
     }
 
     @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ButtonWidget$Builder;dimensions(IIII)Lnet/minecraft/client/gui/widget/ButtonWidget$Builder;", ordinal = 2), index = 2)
-    private int resetButtonWidth(int x) {
+    private int unbindmykeys$resetButtonWidth(int x) {
         return x - 10;
     }
 
-    @ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ButtonWidget;setX(I)V", ordinal = 0))
-    private int resetButtonX(int x) {
-        return x + 10;
-    }
-
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ButtonWidget;render(Lnet/minecraft/client/gui/DrawContext;IIF)V", ordinal = 0))
-    private void renderUnbindButton(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta, CallbackInfo ci) {
-        unbindButton.setX(x + 175);
-        unbindButton.setY(y);
-        unbindButton.render(context, mouseX, mouseY, tickDelta);
+    private void unbindmykeys$renderUnbindButton(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta, CallbackInfo ci) {
+        resetButton.setX(x + 200);
+        unbindmykeys$unbindButton.setX(x + 175);
+        unbindmykeys$unbindButton.setY(y);
+        unbindmykeys$unbindButton.render(context, mouseX, mouseY, tickDelta);
     }
 
     @Inject(method = "children", at = @At("RETURN"), cancellable = true)
-    private void children(CallbackInfoReturnable<List<? extends Element>> cir) {
+    private void unbindmykeys$children(CallbackInfoReturnable<List<? extends Element>> cir) {
         List<Element> children = new ArrayList<>(cir.getReturnValue());
-        children.add(unbindButton);
+        children.add(unbindmykeys$unbindButton);
         cir.setReturnValue(ImmutableList.copyOf(children));
     }
 
     @Inject(method = "selectableChildren", at = @At("RETURN"), cancellable = true)
-    private void selectableChildren(CallbackInfoReturnable<List<? extends Selectable>> cir) {
+    private void unbindmykeys$selectableChildren(CallbackInfoReturnable<List<? extends Selectable>> cir) {
         List<Selectable> children = new ArrayList<>(cir.getReturnValue());
-        children.add(unbindButton);
+        children.add(unbindmykeys$unbindButton);
         cir.setReturnValue(ImmutableList.copyOf(children));
     }
 
     @Inject(method = "update", at = @At("HEAD"))
-    private void update(CallbackInfo ci) {
-        unbindButton.active = !binding.isUnbound();
+    private void unbindmykeys$update(CallbackInfo ci) {
+        unbindmykeys$unbindButton.active = !binding.isUnbound();
     }
 }
