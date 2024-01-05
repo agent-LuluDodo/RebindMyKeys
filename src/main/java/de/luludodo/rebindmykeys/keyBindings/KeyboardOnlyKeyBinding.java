@@ -23,7 +23,7 @@ public class KeyboardOnlyKeyBinding extends KeyBinding {
 
     @Override
     public boolean isUnbound() {
-        return !unsupported && super.isUnbound();
+        return !isUnsupported() && super.isUnbound();
     }
 
     public boolean isUnsupported() {
@@ -33,7 +33,7 @@ public class KeyboardOnlyKeyBinding extends KeyBinding {
     private static final String UNSUPPORTED_TRANSLATION_KEY = "rebindmykeys.key.unsupported";
     @Override
     public Text getBoundKeyLocalizedText() {
-        if (unsupported) {
+        if (isUnsupported()) {
             return Text.translatable(UNSUPPORTED_TRANSLATION_KEY);
         } else {
             return super.getBoundKeyLocalizedText();
@@ -42,7 +42,7 @@ public class KeyboardOnlyKeyBinding extends KeyBinding {
 
     @Override
     public String getBoundKeyTranslationKey() {
-        if (unsupported) {
+        if (isUnsupported()) {
             return UNSUPPORTED_TRANSLATION_KEY;
         } else {
             return super.getBoundKeyTranslationKey();

@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -64,22 +65,17 @@ public abstract class KeyBindingEntryMixin {
         return x - 10;
     }
 
-    @Unique
-    private Tooltip rebindmykeys$originalTooltip;
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ButtonWidget;render(Lnet/minecraft/client/gui/DrawContext;IIF)V", ordinal = 0))
     private void rebindmykeys$renderUnbindButton(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta, CallbackInfo ci) {
         resetButton.setX(x + 200);
-        if (binding instanceof KeyboardOnlyKeyBinding keyboardOnlyKeyBinding) {
-            if (keyboardOnlyKeyBinding.isUnsupported()) {
-                rebindmykeys$originalTooltip = editButton.getTooltip();
-                editButton.setTooltip(Tooltip.of(Text.translatable("rebindmykeys.key.unsupported.tooltip")));
-            } else {
-                editButton.setTooltip(rebindmykeys$originalTooltip);
-            }
-        }
         rebindmykeys$unbindButton.setX(x + 175);
         rebindmykeys$unbindButton.setY(y);
         rebindmykeys$unbindButton.render(context, mouseX, mouseY, tickDelta);
+    }
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ButtonWidget;render(Lnet/minecraft/client/gui/DrawContext;IIF)V", ordinal = 1))
+    private void rebindmykeys$renderUnsupportedTooltip(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta, CallbackInfo ci) {
+
     }
 
     @Inject(method = "children", at = @At("RETURN"), cancellable = true)
@@ -99,5 +95,17 @@ public abstract class KeyBindingEntryMixin {
     @Inject(method = "update", at = @At("HEAD"))
     private void rebindmykeys$update(CallbackInfo ci) {
         rebindmykeys$unbindButton.active = !binding.isUnbound();
+    }
+
+    @Redirect(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;isUnbound()Z"))
+    private boolean rebindmykeys$duplicates(KeyBinding keyBinding) {
+        return keyBinding.isUnbound() || (keyBinding instanceof KeyboardOnlyKeyBinding keyboardOnlyKeyBinding && keyboardOnlyKeyBinding.isUnsupported());
+    }
+
+    @Inject(method = "update", at = @At("RETURN"))
+    private void rebindmykeys$tooltip(CallbackInfo ci) {
+        if (binding instanceof KeyboardOnlyKeyBinding keyboardOnlyKeyBinding && keyboardOnlyKeyBinding.isUnsupported()) {
+            editButton.setTooltip(Tooltip.of(Text.translatable("rebindmykeys.key.unsupported.tooltip")));
+        }
     }
 }
