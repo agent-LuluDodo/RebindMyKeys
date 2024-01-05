@@ -1,4 +1,4 @@
-## Download on [Modrinth](https://modrinth.com/mod/unbindmykeys)!
+## Download on [Modrinth](https://modrinth.com/mod/rebindmykeys)!
 ![Key Bind Menu](https://cdn-raw.modrinth.com/data/P7Qb57ov/images/162ee7ceb8e4d4a8c06f008e93756053b00d67d1.png)
 RebindMyKeys allows you to rebind normally hard-coded keybindings. It also allows escape to be used in keybindings and adds a button to allow unbinding of keys.
 
