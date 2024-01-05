@@ -1,23 +1,27 @@
 {
   "schemaVersion": 1,
-  "id": "unbind-my-keys",
+  "id": "rebindmykeys",
   "version": "${version}",
-  "name": "UnbindMyKeys",
-  "description": "Allows you to unbind keybindings.",
+  "name": "RebindMyKeys",
+  "description": "Allows you to rebind keybindings which normally are hardcoded.",
   "authors": [
     "agent_LuluDodo"
   ],
   "contact": {
-    "repo": "https://github.com/agent-LuluDodo/UnbindMyKeys"
+    "repo": "https://github.com/agent-LuluDodo/RebindMyKeys"
   },
   "license": "MIT",
-  "icon": "assets/unbind-my-keys/icon.png",
+  "icon": "assets/rebindmykeys/icon.png",
   "environment": "client",
   "entrypoints": {
+    "client": [
+      "de.luludodo.rebindmykeys.RebindMyKeys"
+    ]
   },
   "mixins": [
-    "unbind-my-keys.mixins.json"
+    "rebindmykeys.mixins.json"
   ],
+  "accessWidener": "rebindmykeys.accesswidener",
   "depends": {
     "fabricloader": "*",
     "fabric": "*",
