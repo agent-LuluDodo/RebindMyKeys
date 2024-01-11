@@ -4,8 +4,8 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 
-public class KeyboardOnlyKeyBinding extends KeyBinding {
-    public KeyboardOnlyKeyBinding(String translationKey, int code, String category) {
+public class BasicKeyBinding extends KeyBinding {
+    public BasicKeyBinding(String translationKey, int code, String category) {
         super(translationKey, InputUtil.Type.KEYSYM, code, category);
     }
 

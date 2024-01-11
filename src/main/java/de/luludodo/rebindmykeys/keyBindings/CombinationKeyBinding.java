@@ -5,19 +5,25 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Supplier;
 
-public class DebugKeyBinding extends KeyboardOnlyKeyBinding {
+public class CombinationKeyBinding extends BasicKeyBinding {
     private InputUtil.Key boundKey;
-    public DebugKeyBinding(String translationKey, int code, String category) {
+    public CombinationKeyBinding(String translationKey, int code, String category) {
         super(translationKey, -1, category);
         boundKey = InputUtil.Type.KEYSYM.createFromCode(code);
         defaultKey = boundKey;
     }
 
+    public HashSet<InputUtil.Key> combinationKeys() {
+        return new HashSet<>(0);
+    }
+
     @Override
     public boolean equals(KeyBinding other) {
-        return getClass().equals(other.getClass()) && ((DebugKeyBinding) other).boundKey == boundKey;
+        return other instanceof CombinationKeyBinding otherComb? (combinationKeys().equals(otherComb.combinationKeys()) && boundKey == otherComb.boundKey) : (combinationKeys().isEmpty() && boundKey == other.boundKey);
     }
 
     @Override

@@ -26,5 +26,6 @@
   "rebindmykeys.key.dump-dynamic-textures": "Dump Dynamic Textures",
   "rebindmykeys.key.reload-resourcepacks": "Reload Resourcepacks",
   "rebindmykeys.key.open-gamemode-selector": "Open Gamemode Selector",
+  "rebindmykeys.key.dismount": "Dismount",
   "rebindmykeys.key.categories.debug": "Debug"
 }

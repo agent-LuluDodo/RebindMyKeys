@@ -1,12 +1,16 @@
 package de.luludodo.rebindmykeys;
 
-import de.luludodo.rebindmykeys.keyBindings.DebugKeyBinding;
-import de.luludodo.rebindmykeys.keyBindings.KeyboardOnlyKeyBinding;
-import de.luludodo.rebindmykeys.keyBindings.NarratorKeyBinding;
+import de.luludodo.rebindmykeys.keyBindings.combinations.DebugKeyBinding;
+import de.luludodo.rebindmykeys.keyBindings.BasicKeyBinding;
+import de.luludodo.rebindmykeys.keyBindings.combinations.NarratorKeyBinding;
+import de.luludodo.rebindmykeys.keyBindings.SplitKeyBinding;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.advancement.criterion.StartedRidingCriterion;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.entity.Mount;
 
 public class RebindMyKeys implements ClientModInitializer {
     public static KeyBinding escapeKey;
@@ -31,27 +35,28 @@ public class RebindMyKeys implements ClientModInitializer {
     public static KeyBinding debugDumpDynamicTexturesKey;
     public static KeyBinding debugReloadResourcepacksKey;
     public static KeyBinding debugOpenGamemodeSelectorKey;
+    public static KeyBinding dismountKey; // Suggestion by @tadm12 (https://github.com/agent-LuluDodo/RebindMyKeys/issues/2)
     @Override
     public void onInitializeClient() {
-        escapeKey = KeyBindingHelper.registerKeyBinding(new KeyboardOnlyKeyBinding(
+        escapeKey = KeyBindingHelper.registerKeyBinding(new BasicKeyBinding(
                 "rebindmykeys.key.escape",
                 InputUtil.GLFW_KEY_ESCAPE,
-                "key.categories.misc"
+                KeyBinding.MISC_CATEGORY
         ));
         narratorKey = KeyBindingHelper.registerKeyBinding(new NarratorKeyBinding(
                 "rebindmykeys.key.narrator",
                 InputUtil.GLFW_KEY_B,
-                "key.categories.misc"
+                KeyBinding.MISC_CATEGORY
         ));
-        toggleHudKey = KeyBindingHelper.registerKeyBinding(new KeyboardOnlyKeyBinding(
+        toggleHudKey = KeyBindingHelper.registerKeyBinding(new BasicKeyBinding(
                 "rebindmykeys.key.toggle-hud",
                 InputUtil.GLFW_KEY_F1,
-                "key.categories.misc"
+                KeyBinding.MISC_CATEGORY
         ));
-        debugKey = KeyBindingHelper.registerKeyBinding(new KeyboardOnlyKeyBinding(
+        debugKey = KeyBindingHelper.registerKeyBinding(new BasicKeyBinding(
                 "rebindmykeys.key.debug",
                 InputUtil.GLFW_KEY_F3,
-                "key.categories.misc"
+                KeyBinding.MISC_CATEGORY
         ));
         debugCrashKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.crash",
@@ -142,6 +147,12 @@ public class RebindMyKeys implements ClientModInitializer {
                 "rebindmykeys.key.open-gamemode-selector",
                 InputUtil.GLFW_KEY_F4,
                 "rebindmykeys.key.categories.debug"
+        ));
+        dismountKey = KeyBindingHelper.registerKeyBinding(new SplitKeyBinding(
+                "rebindmykeys.key.dismount",
+                InputUtil.GLFW_KEY_LEFT_SHIFT,
+                KeyBinding.MOVEMENT_CATEGORY,
+                "key.sneak"
         ));
     }
 }
