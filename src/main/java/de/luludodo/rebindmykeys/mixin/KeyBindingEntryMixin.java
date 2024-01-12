@@ -36,7 +36,7 @@ public abstract class KeyBindingEntryMixin {
     @Shadow @Final private ButtonWidget editButton;
     @Unique
     private final ButtonWidget rebindmykeys$unbindButton = ButtonWidget.builder(
-            Text.translatable("rebindmykeys.controls.unbind"),
+            Text.translatable("rebindmykeys.controls.unbind"), // "mount.onboard"
             button -> {
                 field_2742.client.options.setKeyCode(binding, InputUtil.UNKNOWN_KEY);
                 field_2742.update();

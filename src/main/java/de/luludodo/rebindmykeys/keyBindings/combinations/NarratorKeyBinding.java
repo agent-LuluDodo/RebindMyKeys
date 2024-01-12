@@ -1,6 +1,5 @@
 package de.luludodo.rebindmykeys.keyBindings.combinations;
 
-import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.keyBindings.CombinationKeyBinding;
 import net.minecraft.client.util.InputUtil;
 

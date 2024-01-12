@@ -7,6 +7,7 @@
   ],
   "client": [
     "ClientPlayerEntityMixin",
+    "ClientPlayNetworkHandlerMixin",
     "DebugHudMixin",
     "KeyBindingEntryMixin",
     "KeyBindingMixin",

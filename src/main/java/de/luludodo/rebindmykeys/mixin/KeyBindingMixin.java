@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class KeyBindingMixin {
     @Inject(method = "equals", at = @At("HEAD"), cancellable = true)
     private void rebindmykeys$equals(KeyBinding other, CallbackInfoReturnable<Boolean> cir) {
-        if (other instanceof SplitKeyBinding otherSplit && otherSplit.isPartner((KeyBinding) (Object) this)) {
-            cir.setReturnValue(false); // Prevent conflicts with keybindings that originally were one
+        if (other instanceof SplitKeyBinding otherSplit) {
+            cir.setReturnValue(otherSplit.equals((KeyBinding) (Object) this));
         }
     }
 }

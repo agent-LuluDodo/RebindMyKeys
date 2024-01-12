@@ -151,7 +151,7 @@ public class RebindMyKeys implements ClientModInitializer {
         dismountKey = KeyBindingHelper.registerKeyBinding(new SplitKeyBinding(
                 "rebindmykeys.key.dismount",
                 InputUtil.GLFW_KEY_LEFT_SHIFT,
-                KeyBinding.MOVEMENT_CATEGORY,
+                KeyBinding.GAMEPLAY_CATEGORY,
                 "key.sneak"
         ));
     }
