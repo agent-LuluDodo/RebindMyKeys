@@ -6,13 +6,14 @@ RebindMyKeys allows you to rebind normally hard-coded keybindings. It also allow
 
 You don't like the Debug Menu being F3 or having to press F1 to hide your HUD? Then this mod is for you. With RebindMyKeys you can rebind the Debug Menu, HUD and more!
 
-## KeyBingins added for
+## KeyBindings added for
 
 - Pause / Close Menu
 - Narrator
 - Debug Menu
 - Toggle HUD
 - Debug Combinations (eg. Show Hitboxes)
+- Dismount ([suggested by @tadm12](https://github.com/agent-LuluDodo/RebindMyKeys/issues/2))
 
 **If you want me to add a KeyBinding please create an [Issue](https://github.com/agent-LuluDodo/RebindMyKeys/issues) on my GitHub!**
 
@@ -28,7 +29,7 @@ To unbind a KeyBinding simply press the "U" button. This mod removes the vanilla
 
 ## Notes
 
-**¹** Support for mouse is still WIP, so you can't bind additional KeyBindings to mouse buttons.
+**¹** Support for mouse is still WIP (on hold until I find a clean solution for detecting if a mouse button is pressed), so you can't bind additional KeyBindings to mouse buttons.
 
 **²** Thanks to syorito-hatsuki for pointing out that Vanilla allows you to unbind keys by pressing escape. ([Issue #1](https://github.com/agent-LuluDodo/RebindMyKeys/issues/1))
 
