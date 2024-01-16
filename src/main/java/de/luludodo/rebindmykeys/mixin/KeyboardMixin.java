@@ -3,6 +3,7 @@ package de.luludodo.rebindmykeys.mixin;
 import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.TextureUtil;
 import de.luludodo.rebindmykeys.RebindMyKeys;
+import de.luludodo.rebindmykeys.meta.Comparator;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
@@ -80,17 +81,19 @@ public abstract class KeyboardMixin {
             return true;
         } else {
             boolean isDebugCombination = false;
-            if (RebindMyKeys.debugToggleRenderChartKey.matchesKey(key, scancode)) {
-                client.getDebugHud().toggleRenderingChart();
-                isDebugCombination = true;
-            }
-            if (RebindMyKeys.debugToggleRenderAndTickChartsKey.matchesKey(key, scancode)) {
-                client.getDebugHud().toggleRenderingAndTickCharts();
-                isDebugCombination = true;
-            }
-            if (RebindMyKeys.debugTogglePacketSizeAndPingChartsKey.matchesKey(key, scancode)) {
-                client.getDebugHud().togglePacketSizeAndPingCharts();
-                isDebugCombination = true;
+            if (Comparator.compareMc(">=1.20.2")) {
+                if (RebindMyKeys.debugToggleRenderChartKey.matchesKey(key, scancode)) {
+                    client.getDebugHud().toggleRenderingChart();
+                    isDebugCombination = true;
+                }
+                if (RebindMyKeys.debugToggleRenderAndTickChartsKey.matchesKey(key, scancode)) {
+                    client.getDebugHud().toggleRenderingAndTickCharts();
+                    isDebugCombination = true;
+                }
+                if (RebindMyKeys.debugTogglePacketSizeAndPingChartsKey.matchesKey(key, scancode)) {
+                    client.getDebugHud().togglePacketSizeAndPingCharts();
+                    isDebugCombination = true;
+                }
             }
             if (RebindMyKeys.debugReloadChunksKey.matchesKey(key, scancode)) {
                 client.worldRenderer.reload();

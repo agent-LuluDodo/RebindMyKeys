@@ -4,15 +4,17 @@ import de.luludodo.rebindmykeys.keyBindings.combinations.DebugKeyBinding;
 import de.luludodo.rebindmykeys.keyBindings.BasicKeyBinding;
 import de.luludodo.rebindmykeys.keyBindings.combinations.NarratorKeyBinding;
 import de.luludodo.rebindmykeys.keyBindings.SplitKeyBinding;
+import de.luludodo.rebindmykeys.meta.Comparator;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.advancement.criterion.StartedRidingCriterion;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.entity.Mount;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RebindMyKeys implements ClientModInitializer {
+    public static final Logger LOG = LoggerFactory.getLogger("RebindMyKeys");
+
     public static KeyBinding escapeKey;
     public static KeyBinding narratorKey;
     public static KeyBinding toggleHudKey;
@@ -63,21 +65,23 @@ public class RebindMyKeys implements ClientModInitializer {
                 -1,
                 "rebindmykeys.key.categories.debug"
         ));
-        debugToggleRenderChartKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
-                "rebindmykeys.key.toggle-render-chart",
-                InputUtil.GLFW_KEY_1,
-                "rebindmykeys.key.categories.debug"
-        ));
-        debugToggleRenderAndTickChartsKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
-                "rebindmykeys.key.toggle-render-and-tick-charts",
-                InputUtil.GLFW_KEY_2,
-                "rebindmykeys.key.categories.debug"
-        ));
-        debugTogglePacketSizeAndPingChartsKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
-                "rebindmykeys.key.toggle-packet-size-and-ping-charts",
-                InputUtil.GLFW_KEY_3,
-                "rebindmykeys.key.categories.debug"
-        ));
+        if (Comparator.compareMc(">=1.20.2")) {
+            debugToggleRenderChartKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
+                    "rebindmykeys.key.toggle-render-chart",
+                    InputUtil.GLFW_KEY_1,
+                    "rebindmykeys.key.categories.debug"
+            ));
+            debugToggleRenderAndTickChartsKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
+                    "rebindmykeys.key.toggle-render-and-tick-charts",
+                    InputUtil.GLFW_KEY_2,
+                    "rebindmykeys.key.categories.debug"
+            ));
+            debugTogglePacketSizeAndPingChartsKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
+                    "rebindmykeys.key.toggle-packet-size-and-ping-charts",
+                    InputUtil.GLFW_KEY_3,
+                    "rebindmykeys.key.categories.debug"
+            ));
+        }
         debugReloadChunksKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.reload-chunks",
                 InputUtil.GLFW_KEY_A,
