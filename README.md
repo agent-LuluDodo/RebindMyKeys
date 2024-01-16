@@ -12,7 +12,7 @@ You don't like the Debug Menu being F3 or having to press F1 to hide your HUD? T
 - Narrator
 - Debug Menu
 - Toggle HUD
-- Debug Combinations (eg. Show Hitboxes)
+- Debug Combinations (eg. Show Hitboxes) *(1.20.1 or lower is unable to rebind the f3 menu charts)*
 - Dismount ([suggested by @tadm12](https://github.com/agent-LuluDodo/RebindMyKeys/issues/2))
 
 **If you want me to add a KeyBinding please create an [Issue](https://github.com/agent-LuluDodo/RebindMyKeys/issues) on my GitHub!**
