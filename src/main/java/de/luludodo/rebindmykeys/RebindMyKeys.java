@@ -1,5 +1,6 @@
 package de.luludodo.rebindmykeys;
 
+import de.luludodo.rebindmykeys.keyBindings.NoConflictKeyBinding;
 import de.luludodo.rebindmykeys.keyBindings.combinations.DebugKeyBinding;
 import de.luludodo.rebindmykeys.keyBindings.BasicKeyBinding;
 import de.luludodo.rebindmykeys.keyBindings.combinations.NarratorKeyBinding;
@@ -159,7 +160,7 @@ public class RebindMyKeys implements ClientModInitializer {
                 KeyBinding.GAMEPLAY_CATEGORY,
                 "key.sneak"
         ));
-        refreshServers = KeyBindingHelper.registerKeyBinding(new BasicKeyBinding(
+        refreshServers = KeyBindingHelper.registerKeyBinding(new NoConflictKeyBinding(
                 "rebindmykeys.key.refresh-servers",
                 InputUtil.GLFW_KEY_F5,
                 KeyBinding.MISC_CATEGORY
