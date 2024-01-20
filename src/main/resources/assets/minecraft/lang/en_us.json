@@ -27,5 +27,6 @@
   "rebindmykeys.key.reload-resourcepacks": "Reload Resourcepacks",
   "rebindmykeys.key.open-gamemode-selector": "Open Gamemode Selector",
   "rebindmykeys.key.dismount": "Dismount",
-  "rebindmykeys.key.categories.debug": "Debug"
+  "rebindmykeys.key.categories.debug": "Debug",
+  "rebindmykeys.key.refresh-servers": "Refresh Server List"
 }

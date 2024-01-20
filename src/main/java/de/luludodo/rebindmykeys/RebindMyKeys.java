@@ -38,6 +38,7 @@ public class RebindMyKeys implements ClientModInitializer {
     public static KeyBinding debugReloadResourcepacksKey;
     public static KeyBinding debugOpenGamemodeSelectorKey;
     public static KeyBinding dismountKey; // Suggestion by @tadm12 (https://github.com/agent-LuluDodo/RebindMyKeys/issues/2)
+    public static KeyBinding refreshServers; // Suggestion by @tadm12 (https://github.com/agent-LuluDodo/RebindMyKeys/issues/2)
     @Override
     public void onInitializeClient() {
         escapeKey = KeyBindingHelper.registerKeyBinding(new BasicKeyBinding(
@@ -157,6 +158,11 @@ public class RebindMyKeys implements ClientModInitializer {
                 InputUtil.GLFW_KEY_LEFT_SHIFT,
                 KeyBinding.GAMEPLAY_CATEGORY,
                 "key.sneak"
+        ));
+        refreshServers = KeyBindingHelper.registerKeyBinding(new BasicKeyBinding(
+                "rebindmykeys.key.refresh-servers",
+                InputUtil.GLFW_KEY_F5,
+                KeyBinding.MISC_CATEGORY
         ));
     }
 }
