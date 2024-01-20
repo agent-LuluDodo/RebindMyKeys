@@ -1,27 +1,24 @@
 package de.luludodo.rebindmykeys.keyBindings;
 
-import net.minecraft.client.MinecraftClient;
+import de.luludodo.rebindmykeys.util.CollectionUtil;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 
-import java.util.HashSet;
+import java.util.Set;
 
-public class CombinationKeyBinding extends WrappedKeyBinding {
-    public CombinationKeyBinding(String translationKey, int code, String category) {
-        super(translationKey, code, category);
+public abstract class CombinationKeyBinding extends CustomKeyBinding {
+    public CombinationKeyBinding(String translationKey, InputUtil.Key key, String category, Type type) {
+        super(translationKey, key, category, type);
     }
 
-    public HashSet<InputUtil.Key> combinationKeys() {
-        return new HashSet<>(0);
+    public CombinationKeyBinding(String translationKey, int code, String category, Type type) {
+        super(translationKey, code, category, type);
     }
+
+    public abstract Set<InputUtil.Key> possibleInitialKeys();
 
     @Override
-    public boolean equals(KeyBinding other) {
-        return other instanceof CombinationKeyBinding otherComb? (combinationKeys().equals(otherComb.combinationKeys()) && boundKey == otherComb.boundKey) : (combinationKeys().isEmpty() && warpMethod(() -> super.equals(other)));
-    }
-
-    @Override
-    public boolean isPressed() {
-        return boundKey.getCode() != -1 && InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), boundKey.getCode());
+    public boolean canConflictWith(KeyBinding other) {
+        return super.canConflictWith(other) && (other instanceof CombinationKeyBinding combination && CollectionUtil.shareOneOrMoreElements(possibleInitialKeys(), combination.possibleInitialKeys()));
     }
 }

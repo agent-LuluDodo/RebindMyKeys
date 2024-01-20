@@ -10,7 +10,6 @@
     "ClientPlayNetworkHandlerMixin",
     "DebugHudMixin",
     "KeyBindingEntryMixin",
-    "KeyBindingMixin",
     "KeybindsScreenMixin",
     "KeyboardMixin",
     "MultiplayerScreenMixin",

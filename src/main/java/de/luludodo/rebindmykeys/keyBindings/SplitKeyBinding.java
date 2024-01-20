@@ -1,27 +1,14 @@
 package de.luludodo.rebindmykeys.keyBindings;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 
-public class SplitKeyBinding extends WrappedKeyBinding {
-    private final String partnerKey;
-    public SplitKeyBinding(String translationKey, int code, String category, String partnerKey) {
-        super(translationKey, code, category);
-        this.partnerKey = partnerKey;
+public class SplitKeyBinding extends CustomKeyBinding {
+    public SplitKeyBinding(String translationKey, InputUtil.Key key, String category, Type type, String partnerKey, Type partnerType) {
+        super(translationKey, key, category, type);
+        CustomKeyBinding.registerSpecialKeyBinding(partnerKey, partnerType);
     }
-
-    public boolean isPartner(KeyBinding k) {
-        return k.getTranslationKey().equals(partnerKey);
-    }
-
-    @Override
-    public boolean equals(KeyBinding other) {
-        return !isPartner(other) && super.equals(other);
-    }
-
-    @Override
-    public boolean isPressed() {
-        return boundKey.getCode() != -1 && InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), boundKey.getCode());
+    public SplitKeyBinding(String translationKey, int code, String category, Type type, String partnerKey, Type partnerType) {
+        super(translationKey, code, category, type);
+        CustomKeyBinding.registerSpecialKeyBinding(partnerKey, partnerType);
     }
 }

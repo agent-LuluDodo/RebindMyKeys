@@ -1,10 +1,10 @@
 package de.luludodo.rebindmykeys;
 
-import de.luludodo.rebindmykeys.keyBindings.NoConflictKeyBinding;
-import de.luludodo.rebindmykeys.keyBindings.combinations.DebugKeyBinding;
-import de.luludodo.rebindmykeys.keyBindings.BasicKeyBinding;
-import de.luludodo.rebindmykeys.keyBindings.combinations.NarratorKeyBinding;
+import de.luludodo.rebindmykeys.keyBindings.CustomKeyBinding;
 import de.luludodo.rebindmykeys.keyBindings.SplitKeyBinding;
+import de.luludodo.rebindmykeys.keyBindings.Type;
+import de.luludodo.rebindmykeys.keyBindings.combinations.CtrlKeyBinding;
+import de.luludodo.rebindmykeys.keyBindings.combinations.DebugKeyBinding;
 import de.luludodo.rebindmykeys.meta.Comparator;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -39,131 +39,156 @@ public class RebindMyKeys implements ClientModInitializer {
     public static KeyBinding debugReloadResourcepacksKey;
     public static KeyBinding debugOpenGamemodeSelectorKey;
     public static KeyBinding dismountKey; // Suggestion by @tadm12 (https://github.com/agent-LuluDodo/RebindMyKeys/issues/2)
-    public static KeyBinding refreshServers; // Suggestion by @tadm12 (https://github.com/agent-LuluDodo/RebindMyKeys/issues/2)
+    public static KeyBinding refreshServers; // Suggestion by @BioTechproject27 (https://github.com/agent-LuluDodo/RebindMyKeys/issues/4)
     @Override
     public void onInitializeClient() {
-        escapeKey = KeyBindingHelper.registerKeyBinding(new BasicKeyBinding(
+        escapeKey = KeyBindingHelper.registerKeyBinding(new CustomKeyBinding(
                 "rebindmykeys.key.escape",
                 InputUtil.GLFW_KEY_ESCAPE,
-                KeyBinding.MISC_CATEGORY
+                KeyBinding.MISC_CATEGORY,
+                Type.EVERYWHERE
         ));
-        narratorKey = KeyBindingHelper.registerKeyBinding(new NarratorKeyBinding(
+        narratorKey = KeyBindingHelper.registerKeyBinding(new CtrlKeyBinding(
                 "rebindmykeys.key.narrator",
                 InputUtil.GLFW_KEY_B,
-                KeyBinding.MISC_CATEGORY
+                KeyBinding.MISC_CATEGORY,
+                Type.EVERYWHERE
         ));
-        toggleHudKey = KeyBindingHelper.registerKeyBinding(new BasicKeyBinding(
+        toggleHudKey = KeyBindingHelper.registerKeyBinding(new CustomKeyBinding(
                 "rebindmykeys.key.toggle-hud",
                 InputUtil.GLFW_KEY_F1,
-                KeyBinding.MISC_CATEGORY
+                KeyBinding.MISC_CATEGORY,
+                Type.GAME
         ));
-        debugKey = KeyBindingHelper.registerKeyBinding(new BasicKeyBinding(
+        debugKey = KeyBindingHelper.registerKeyBinding(new CustomKeyBinding(
                 "rebindmykeys.key.debug",
                 InputUtil.GLFW_KEY_F3,
-                KeyBinding.MISC_CATEGORY
+                KeyBinding.MISC_CATEGORY,
+                Type.GAME
         ));
         debugCrashKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.crash",
                 -1,
-                "rebindmykeys.key.categories.debug"
+                "rebindmykeys.key.categories.debug",
+                Type.GAME
         ));
         if (Comparator.compareMc(">=1.20.2")) {
             debugToggleRenderChartKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                     "rebindmykeys.key.toggle-render-chart",
                     InputUtil.GLFW_KEY_1,
-                    "rebindmykeys.key.categories.debug"
+                    "rebindmykeys.key.categories.debug",
+                    Type.GAME
             ));
             debugToggleRenderAndTickChartsKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                     "rebindmykeys.key.toggle-render-and-tick-charts",
                     InputUtil.GLFW_KEY_2,
-                    "rebindmykeys.key.categories.debug"
+                    "rebindmykeys.key.categories.debug",
+                    Type.GAME
             ));
             debugTogglePacketSizeAndPingChartsKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                     "rebindmykeys.key.toggle-packet-size-and-ping-charts",
                     InputUtil.GLFW_KEY_3,
-                    "rebindmykeys.key.categories.debug"
+                    "rebindmykeys.key.categories.debug",
+                    Type.GAME
             ));
         }
         debugReloadChunksKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.reload-chunks",
                 InputUtil.GLFW_KEY_A,
-                "rebindmykeys.key.categories.debug"
+                "rebindmykeys.key.categories.debug",
+                Type.GAME
         ));
         debugShowHitboxKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.show-hitbox",
                 InputUtil.GLFW_KEY_B,
-                "rebindmykeys.key.categories.debug"
+                "rebindmykeys.key.categories.debug",
+                Type.GAME
         ));
         debugCopyLocationKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.copy-location",
                 InputUtil.GLFW_KEY_C,
-                "rebindmykeys.key.categories.debug"
+                "rebindmykeys.key.categories.debug",
+                Type.GAME
         ));
         debugClearChatKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.clear-chat",
                 InputUtil.GLFW_KEY_D,
-                "rebindmykeys.key.categories.debug"
+                "rebindmykeys.key.categories.debug",
+                Type.GAME
         ));
         debugToggleChunkBordersKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.toggle-chunk-borders",
                 InputUtil.GLFW_KEY_G,
-                "rebindmykeys.key.categories.debug"
+                "rebindmykeys.key.categories.debug",
+                Type.GAME
         ));
         debugToggleAdvancedTooltipsKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.toggle-advanced-tooltips",
                 InputUtil.GLFW_KEY_H,
-                "rebindmykeys.key.categories.debug"
+                "rebindmykeys.key.categories.debug",
+                Type.GAME
         ));
         debugCopyLookAtKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.copy-look-at",
                 InputUtil.GLFW_KEY_I,
-                "rebindmykeys.key.categories.debug"
+                "rebindmykeys.key.categories.debug",
+                Type.GAME
         ));
         debugToggleDebugProfilerKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.toggle-debug-profiler",
                 InputUtil.GLFW_KEY_L,
-                "rebindmykeys.key.categories.debug"
+                "rebindmykeys.key.categories.debug",
+                Type.GAME
         ));
         debugSwitchSpectatorKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.switch-spectator",
                 InputUtil.GLFW_KEY_N,
-                "rebindmykeys.key.categories.debug"
+                "rebindmykeys.key.categories.debug",
+                Type.GAME
         ));
         debugPauseOnLostFocusKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.pause-on-lost-focus",
                 InputUtil.GLFW_KEY_P,
-                "rebindmykeys.key.categories.debug"
+                "rebindmykeys.key.categories.debug",
+                Type.GAME
         ));
         debugPrintHelpKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.print-help",
                 InputUtil.GLFW_KEY_Q,
-                "rebindmykeys.key.categories.debug"
+                "rebindmykeys.key.categories.debug",
+                Type.GAME
         ));
         debugDumpDynamicTexturesKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.dump-dynamic-textures",
                 InputUtil.GLFW_KEY_S,
-                "rebindmykeys.key.categories.debug"
+                "rebindmykeys.key.categories.debug",
+                Type.GAME
         ));
         debugReloadResourcepacksKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.reload-resourcepacks",
                 InputUtil.GLFW_KEY_T,
-                "rebindmykeys.key.categories.debug"
+                "rebindmykeys.key.categories.debug",
+                Type.GAME
         ));
         debugOpenGamemodeSelectorKey = KeyBindingHelper.registerKeyBinding(new DebugKeyBinding(
                 "rebindmykeys.key.open-gamemode-selector",
                 InputUtil.GLFW_KEY_F4,
-                "rebindmykeys.key.categories.debug"
+                "rebindmykeys.key.categories.debug",
+                Type.GAME
         ));
         dismountKey = KeyBindingHelper.registerKeyBinding(new SplitKeyBinding(
                 "rebindmykeys.key.dismount",
                 InputUtil.GLFW_KEY_LEFT_SHIFT,
                 KeyBinding.GAMEPLAY_CATEGORY,
-                "key.sneak"
+                Type.MOUNTED,
+                "key.sneak",
+                Type.UNMOUNTED
         ));
-        refreshServers = KeyBindingHelper.registerKeyBinding(new NoConflictKeyBinding(
+        refreshServers = KeyBindingHelper.registerKeyBinding(new CustomKeyBinding(
                 "rebindmykeys.key.refresh-servers",
                 InputUtil.GLFW_KEY_F5,
-                KeyBinding.MISC_CATEGORY
+                KeyBinding.MISC_CATEGORY,
+                Type.MULTIPLAYER_MENU
         ));
     }
 }

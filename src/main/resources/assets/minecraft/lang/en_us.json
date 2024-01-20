@@ -28,5 +28,6 @@
   "rebindmykeys.key.open-gamemode-selector": "Open Gamemode Selector",
   "rebindmykeys.key.dismount": "Dismount",
   "rebindmykeys.key.categories.debug": "Debug",
-  "rebindmykeys.key.refresh-servers": "Refresh Server List"
+  "rebindmykeys.key.refresh-servers": "Refresh Server List",
+  "rebindmykeys.key.toggle-post-processor": "Post Processor"
 }
