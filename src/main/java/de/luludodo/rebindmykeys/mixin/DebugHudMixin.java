@@ -9,7 +9,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-
+import org.spongepowered.asm.mixin.Debug;
+@Debug(export = true)
 @Mixin(DebugHud.class)
 public abstract class DebugHudMixin {
     @ModifyArg(method = "drawLeftText", at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 1), index = 0)

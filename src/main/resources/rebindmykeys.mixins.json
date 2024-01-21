@@ -12,6 +12,7 @@
     "KeyBindingEntryMixin",
     "KeybindsScreenMixin",
     "KeyboardMixin",
+    "MouseMixin",
     "MultiplayerScreenMixin",
     "ScreenMixin"
   ],

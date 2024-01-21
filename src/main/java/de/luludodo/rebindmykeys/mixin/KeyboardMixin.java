@@ -4,6 +4,8 @@ import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.TextureUtil;
 import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.meta.Comparator;
+import de.luludodo.rebindmykeys.util.KeyUtil;
+import de.luludodo.rebindmykeys.util.MouseUtil;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
@@ -17,6 +19,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.world.GameMode;
+import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,7 +29,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.nio.file.Path;
 import java.util.Locale;
-
+import org.spongepowered.asm.mixin.Debug;
+@Debug(export = true)
 @Mixin(Keyboard.class)
 public abstract class KeyboardMixin {
     @Shadow private long debugCrashStartTime;
@@ -40,6 +44,16 @@ public abstract class KeyboardMixin {
     @Shadow protected abstract void copyLookAt(boolean hasQueryPermission, boolean queryServer);
 
     @Shadow protected abstract void debugLog(Text text);
+
+    @Inject(method = "onKey", at = @At("HEAD"))
+    private void rebindmykeys$setScancodePressed(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
+        KeyUtil.setScancodePressed(window, scancode, action);
+    }
+
+    @Inject(method = "onKey", at = @At("RETURN"))
+    private void rebindmykeys$finishKeyboardCall(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
+        MouseUtil.finishKeyboardCall();
+    }
 
     @Redirect(method = "onKey", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/InputUtil;isKeyPressed(JI)Z", ordinal = 0))
     private boolean rebindmykeys$modifyDebug(long handle, int code) {

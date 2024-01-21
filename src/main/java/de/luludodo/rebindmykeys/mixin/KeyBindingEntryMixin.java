@@ -2,7 +2,6 @@ package de.luludodo.rebindmykeys.mixin;
 
 import com.google.common.collect.ImmutableList;
 import de.luludodo.rebindmykeys.keyBindings.CustomKeyBinding;
-import de.luludodo.rebindmykeys.keyBindings.KeyboardOnlyKeyBinding;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
@@ -25,7 +24,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import org.spongepowered.asm.mixin.Debug;
+@Debug(export = true)
 @Mixin(ControlsListWidget.KeyBindingEntry.class)
 public abstract class KeyBindingEntryMixin {
     @Shadow @Final private KeyBinding binding;
@@ -102,15 +102,16 @@ public abstract class KeyBindingEntryMixin {
         return CustomKeyBinding.conflicts(instance, other);
     }
 
+    /*
     @Redirect(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;isUnbound()Z"))
     private boolean rebindmykeys$duplicates(KeyBinding keyBinding) {
-        return keyBinding.isUnbound() || (keyBinding instanceof KeyboardOnlyKeyBinding keyboardOnlyKeyBinding && keyboardOnlyKeyBinding.isUnsupported());
+        return keyBinding.isUnbound() || (keyBinding instanceof UniversalKeyBinding keyboardOnlyKeyBinding && keyboardOnlyKeyBinding.isUnsupported());
     }
 
     @Inject(method = "update", at = @At("RETURN"))
     private void rebindmykeys$tooltip(CallbackInfo ci) {
-        if (binding instanceof KeyboardOnlyKeyBinding keyboardOnlyKeyBinding && keyboardOnlyKeyBinding.isUnsupported()) {
+        if (binding instanceof UniversalKeyBinding keyboardOnlyKeyBinding && keyboardOnlyKeyBinding.isUnsupported()) {
             editButton.setTooltip(Tooltip.of(Text.translatable("rebindmykeys.key.unsupported.tooltip")));
         }
-    }
+    }*/
 }

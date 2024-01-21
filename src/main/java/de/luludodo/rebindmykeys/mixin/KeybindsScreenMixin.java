@@ -10,7 +10,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
+import org.spongepowered.asm.mixin.Debug;
+@Debug(export = true)
 @Mixin(KeybindsScreen.class)
 public abstract class KeybindsScreenMixin extends GameOptionsScreen {
     @Shadow @Nullable public KeyBinding selectedKeyBinding;

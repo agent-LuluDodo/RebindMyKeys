@@ -1,12 +1,15 @@
 package de.luludodo.rebindmykeys.keyBindings;
 
+import de.luludodo.rebindmykeys.util.KeyUtil;
+import de.luludodo.rebindmykeys.util.MouseUtil;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-public class CustomKeyBinding extends KeyboardOnlyKeyBinding {
+public class CustomKeyBinding extends KeyBinding {
     private final Type type;
 
     public CustomKeyBinding(String translationKey, InputUtil.Key key, String category, Type type) {
@@ -53,5 +56,26 @@ public class CustomKeyBinding extends KeyboardOnlyKeyBinding {
         } else {
             return keyBinding1.equals(keyBinding2);
         }
+    }
+
+    @Override
+    public boolean matchesMouse(int button) {
+        return super.matchesMouse(button);
+    }
+
+    @Override
+    public boolean matchesKey(int keycode, int scancode) {
+        return MouseUtil.wasMouseInput()? Objects.equals(getTranslationKey(), MouseUtil.getTranslationKey()) : super.matchesKey(keycode, scancode);
+    }
+
+    @Override
+    public boolean isPressed() {
+        if (boundKey == InputUtil.UNKNOWN_KEY)
+            return false;
+        return switch (boundKey.getCategory()) {
+            case KEYSYM -> KeyUtil.keysmPressed(boundKey.getCode());
+            case SCANCODE -> KeyUtil.scancodePressed(boundKey.getCode());
+            case MOUSE -> KeyUtil.mousePressed(boundKey.getCode());
+        };
     }
 }
