@@ -2,8 +2,6 @@
   "rebindmykeys.controls.unbind": "U",
   "rebindmykeys.controls.unbind.tooltip": "Unbind",
   "rebindmykeys.narrator.controls.unbind": "Unbind %s button",
-  "rebindmykeys.key.unsupported": "§cNot Supported",
-  "rebindmykeys.key.unsupported.tooltip": "Support for Mouse is WIP",
   "rebindmykeys.key.escape": "Pause/Close Menu",
   "rebindmykeys.key.narrator": "Narrator (Ctrl + [ ])",
   "rebindmykeys.key.debug": "Debug Menu",
