@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import org.spongepowered.asm.mixin.Debug;
-@Debug(export = true)
+//@Debug(export = true)
 @Mixin(Mouse.class)
 public abstract class MouseMixin {
     @Inject(method = "onMouseButton", at = @At(value = "JUMP", ordinal = 26, shift = At.Shift.BY, by = -2)) // shifts before this.client.currentScreen

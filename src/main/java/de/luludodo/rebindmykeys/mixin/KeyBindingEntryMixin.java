@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.ArrayList;
 import java.util.List;
 import org.spongepowered.asm.mixin.Debug;
-@Debug(export = true)
+//@Debug(export = true)
 @Mixin(ControlsListWidget.KeyBindingEntry.class)
 public abstract class KeyBindingEntryMixin {
     @Shadow @Final private KeyBinding binding;

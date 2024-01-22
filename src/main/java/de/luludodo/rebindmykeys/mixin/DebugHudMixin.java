@@ -2,15 +2,12 @@ package de.luludodo.rebindmykeys.mixin;
 
 import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.meta.Comparator;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.DebugHud;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.Debug;
-@Debug(export = true)
+//@Debug(export = true)
 @Mixin(DebugHud.class)
 public abstract class DebugHudMixin {
     @ModifyArg(method = "drawLeftText", at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 1), index = 0)

@@ -32,7 +32,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import org.spongepowered.asm.mixin.Debug;
-@Debug(export = true)
+//@Debug(export = true)
 @Mixin(Keyboard.class)
 public abstract class KeyboardMixin {
     @Shadow private long debugCrashStartTime;
