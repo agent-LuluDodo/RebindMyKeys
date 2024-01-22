@@ -10,12 +10,19 @@ import java.util.List;
 public class MouseUtil {
     private static final List<KeyBinding> mouseBindings = new ArrayList<>();
     public static KeyBinding registerKeyBinding(KeyBinding keyBinding) {
-        mouseBindings.add(keyBinding);
+        addKeyBinding(keyBinding);
         KeyBindingHelper.registerKeyBinding(keyBinding);
         return keyBinding;
     }
 
+    public static void addKeyBinding(KeyBinding keyBinding) {
+        mouseBindings.add(keyBinding);
+    }
+
     public static List<KeyBinding> getAll() {
+        List<KeyBinding> mouseBindings = new ArrayList<>(MouseUtil.mouseBindings);
+        mouseBindings.add(MinecraftClient.getInstance().options.fullscreenKey);
+        mouseBindings.add(MinecraftClient.getInstance().options.screenshotKey);
         return mouseBindings;
     }
 

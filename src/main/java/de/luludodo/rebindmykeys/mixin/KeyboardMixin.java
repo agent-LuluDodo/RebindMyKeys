@@ -29,6 +29,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.nio.file.Path;
 import java.util.Locale;
+import java.util.Objects;
+
 import org.spongepowered.asm.mixin.Debug;
 @Debug(export = true)
 @Mixin(Keyboard.class)
@@ -67,6 +69,11 @@ public abstract class KeyboardMixin {
     @Redirect(method = "onKey", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/InputUtil;isKeyPressed(JI)Z", ordinal = 2))
     private boolean rebindmykeys$modifyDebugCrash2(long handle, int code) {
         return RebindMyKeys.debugCrashKey.isPressed();
+    }
+
+    @Redirect(method = "onKey", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;matchesKey(II)Z"))
+    private boolean rebindmykeys$modifyFullscreenAndScreenshot(KeyBinding instance, int keyCode, int scanCode) {
+        return MouseUtil.wasMouseInput()? Objects.equals(MouseUtil.getTranslationKey(), instance.getTranslationKey()) : instance.matchesKey(keyCode, scanCode);
     }
 
     @ModifyConstant(method = "onKey", constant = @Constant(intValue = 66))

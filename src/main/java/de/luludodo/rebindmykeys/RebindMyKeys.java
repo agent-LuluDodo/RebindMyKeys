@@ -8,10 +8,11 @@ import de.luludodo.rebindmykeys.keyBindings.combinations.DebugKeyBinding;
 import de.luludodo.rebindmykeys.meta.Comparator;
 import de.luludodo.rebindmykeys.util.MouseUtil;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.session.telemetry.GameLoadTimeEvent;
 import net.minecraft.client.util.InputUtil;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
