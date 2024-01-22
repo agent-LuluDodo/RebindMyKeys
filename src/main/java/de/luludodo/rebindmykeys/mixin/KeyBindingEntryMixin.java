@@ -34,7 +34,6 @@ public abstract class KeyBindingEntryMixin {
     @Shadow @Final private Text bindingName;
 
     @Shadow @Final private ButtonWidget resetButton;
-    @Shadow @Final private ButtonWidget editButton;
     @Unique
     private final ButtonWidget rebindmykeys$unbindButton = ButtonWidget.builder(
             Text.translatable("rebindmykeys.controls.unbind"), // "mount.onboard"
@@ -73,11 +72,6 @@ public abstract class KeyBindingEntryMixin {
         rebindmykeys$unbindButton.render(context, mouseX, mouseY, tickDelta);
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ButtonWidget;render(Lnet/minecraft/client/gui/DrawContext;IIF)V", ordinal = 1))
-    private void rebindmykeys$renderUnsupportedTooltip(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta, CallbackInfo ci) {
-
-    }
-
     @Inject(method = "children", at = @At("RETURN"), cancellable = true)
     private void rebindmykeys$children(CallbackInfoReturnable<List<? extends Element>> cir) {
         List<Element> children = new ArrayList<>(cir.getReturnValue());
@@ -101,17 +95,4 @@ public abstract class KeyBindingEntryMixin {
     private boolean rebindmykeys$conflicts(KeyBinding instance, KeyBinding other) {
         return CustomKeyBinding.conflicts(instance, other);
     }
-
-    /*
-    @Redirect(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;isUnbound()Z"))
-    private boolean rebindmykeys$duplicates(KeyBinding keyBinding) {
-        return keyBinding.isUnbound() || (keyBinding instanceof UniversalKeyBinding keyboardOnlyKeyBinding && keyboardOnlyKeyBinding.isUnsupported());
-    }
-
-    @Inject(method = "update", at = @At("RETURN"))
-    private void rebindmykeys$tooltip(CallbackInfo ci) {
-        if (binding instanceof UniversalKeyBinding keyboardOnlyKeyBinding && keyboardOnlyKeyBinding.isUnsupported()) {
-            editButton.setTooltip(Tooltip.of(Text.translatable("rebindmykeys.key.unsupported.tooltip")));
-        }
-    }*/
 }
