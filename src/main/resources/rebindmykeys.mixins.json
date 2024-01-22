@@ -5,10 +5,12 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
   ],
+  "plugin": "de.luludodo.rebindmykeys.meta.MixinPlugin",
   "client": [
     "ClientPlayerEntityMixin",
     "ClientPlayNetworkHandlerMixin",
     "DebugHudMixin",
+    "EntryListWidgetMixin",
     "KeyBindingEntryMixin",
     "KeyBindingMixin",
     "KeybindsScreenMixin",

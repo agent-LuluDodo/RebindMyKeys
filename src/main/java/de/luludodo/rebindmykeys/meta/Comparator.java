@@ -10,8 +10,9 @@ import net.minecraft.client.MinecraftClient;
 import java.util.Optional;
 
 public abstract class Comparator {
+    private static final FabricLoader FABRIC = FabricLoader.getInstance();
     public static boolean compareMc(String condition) {
-        return compare(MinecraftClient.getInstance().getGameVersion(), condition);
+        return compareMod("minecraft", condition);
     }
 
     public static boolean compare(String version, String condition) {
@@ -19,11 +20,11 @@ public abstract class Comparator {
     }
 
     public static boolean isModLoaded(String modId) {
-        return FabricLoader.getInstance().isModLoaded(modId);
+        return FABRIC.isModLoaded(modId);
     }
 
     public static boolean compareMod(String modId, String condition) {
-        Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(modId);
+        Optional<ModContainer> mod = FABRIC.getModContainer(modId);
         if (mod.isEmpty()) {
             RebindMyKeys.LOG.error("Couldn't find mod with id " + modId);
             return false;
