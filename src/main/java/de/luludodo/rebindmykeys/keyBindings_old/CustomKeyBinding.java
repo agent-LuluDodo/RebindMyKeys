@@ -1,4 +1,4 @@
-package de.luludodo.rebindmykeys.keyBindings;
+package de.luludodo.rebindmykeys.keyBindings_old;
 
 import de.luludodo.rebindmykeys.util.KeyUtil;
 import de.luludodo.rebindmykeys.util.MouseUtil;

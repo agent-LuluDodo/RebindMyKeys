@@ -1,7 +1,7 @@
-package de.luludodo.rebindmykeys.keyBindings.combinations;
+package de.luludodo.rebindmykeys.keyBindings_old.combinations;
 
-import de.luludodo.rebindmykeys.keyBindings.CombinationKeyBinding;
-import de.luludodo.rebindmykeys.keyBindings.Type;
+import de.luludodo.rebindmykeys.keyBindings_old.CombinationKeyBinding;
+import de.luludodo.rebindmykeys.keyBindings_old.Type;
 import net.minecraft.client.util.InputUtil;
 
 import java.util.Set;

@@ -1,0 +1,38 @@
+{
+  "iris.keybind.reload": {
+    "keyCombo": [
+      ["key.keyboard.r"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "iris.keybind.toggleShaders": {
+    "keyCombo": [
+      ["key.keyboard.k"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "TOGGLE"
+  },
+  "iris.keybind.shaderPackSelection": {
+    "keyCombo": [
+      ["key.keyboard.o"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "iris.keybind.wireframe": {
+    "keyCombo": [
+      ["key.keyboard.unknown"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "HOLD"
+  }
+}

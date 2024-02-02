@@ -1,7 +1,7 @@
 package de.luludodo.rebindmykeys.mixin;
 
 import com.google.common.collect.ImmutableList;
-import de.luludodo.rebindmykeys.keyBindings.CustomKeyBinding;
+import de.luludodo.rebindmykeys.keyBindings_old.CustomKeyBinding;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.spongepowered.asm.mixin.Debug;
+
 //@Debug(export = true)
 @Mixin(ControlsListWidget.KeyBindingEntry.class)
 public abstract class KeyBindingEntryMixin {

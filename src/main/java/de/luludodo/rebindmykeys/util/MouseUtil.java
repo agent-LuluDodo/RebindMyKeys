@@ -1,6 +1,5 @@
 package de.luludodo.rebindmykeys.util;
 
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 
@@ -9,13 +8,7 @@ import java.util.List;
 
 public class MouseUtil {
     private static final List<KeyBinding> mouseBindings = new ArrayList<>();
-    public static KeyBinding registerKeyBinding(KeyBinding keyBinding) {
-        addKeyBinding(keyBinding);
-        KeyBindingHelper.registerKeyBinding(keyBinding);
-        return keyBinding;
-    }
-
-    public static void addKeyBinding(KeyBinding keyBinding) {
+    public static void registerKeyBinding(KeyBinding keyBinding) {
         mouseBindings.add(keyBinding);
     }
 

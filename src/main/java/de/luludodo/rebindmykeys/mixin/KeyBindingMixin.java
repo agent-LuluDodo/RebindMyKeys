@@ -1,12 +1,12 @@
 package de.luludodo.rebindmykeys.mixin;
 
-import de.luludodo.rebindmykeys.keyBindings.CustomKeyBinding;
+import de.luludodo.rebindmykeys.keyBindings_old.CustomKeyBinding;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.Debug;
+
 //@Debug(export = true)
 @Mixin(KeyBinding.class)
 public abstract class KeyBindingMixin {

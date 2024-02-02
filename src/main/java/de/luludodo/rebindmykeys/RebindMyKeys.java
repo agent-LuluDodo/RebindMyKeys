@@ -1,15 +1,19 @@
 package de.luludodo.rebindmykeys;
 
-import de.luludodo.rebindmykeys.keyBindings.CustomKeyBinding;
-import de.luludodo.rebindmykeys.keyBindings.SplitKeyBinding;
-import de.luludodo.rebindmykeys.keyBindings.Type;
-import de.luludodo.rebindmykeys.keyBindings.combinations.CtrlKeyBinding;
-import de.luludodo.rebindmykeys.keyBindings.combinations.DebugKeyBinding;
+import de.luludodo.rebindmykeys.alpha.KeyBindingManager;
+import de.luludodo.rebindmykeys.alpha.keyBindings.AdvancedKeyBinding;
+import de.luludodo.rebindmykeys.keyBindings_old.CustomKeyBinding;
+import de.luludodo.rebindmykeys.keyBindings_old.SplitKeyBinding;
+import de.luludodo.rebindmykeys.keyBindings_old.Type;
+import de.luludodo.rebindmykeys.keyBindings_old.combinations.CtrlKeyBinding;
+import de.luludodo.rebindmykeys.keyBindings_old.combinations.DebugKeyBinding;
 import de.luludodo.rebindmykeys.meta.Comparator;
 import de.luludodo.rebindmykeys.util.MouseUtil;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +48,7 @@ public class RebindMyKeys implements ClientModInitializer {
     public static KeyBinding refreshServers; // Suggestion by @BioTechproject27 (https://github.com/agent-LuluDodo/RebindMyKeys/issues/4)
     @Override
     public void onInitializeClient() {
+        KeyBindingManager.init();
         /* ONLY FOR DEBUGGING (getting the stack trace of a gl error)
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             GLFW.glfwSetErrorCallback((errorCode, description) -> {
@@ -51,141 +56,142 @@ public class RebindMyKeys implements ClientModInitializer {
             });
         });
          */
-        escapeKey = MouseUtil.registerKeyBinding(new CustomKeyBinding(
+        Text.translatable("key.keyboard.shi")
+        escapeKey = registerToAll(new CustomKeyBinding(
                 "rebindmykeys.key.escape",
                 keysm(InputUtil.GLFW_KEY_ESCAPE),
                 KeyBinding.MISC_CATEGORY,
                 Type.EVERYWHERE
         ));
-        narratorKey = MouseUtil.registerKeyBinding(new CtrlKeyBinding(
+        narratorKey = registerToAll(new CtrlKeyBinding(
                 "rebindmykeys.key.narrator",
                 InputUtil.GLFW_KEY_B,
                 KeyBinding.MISC_CATEGORY,
                 Type.EVERYWHERE
         ));
-        toggleHudKey = MouseUtil.registerKeyBinding(new CustomKeyBinding(
+        toggleHudKey = registerToAll(new CustomKeyBinding(
                 "rebindmykeys.key.toggle-hud",
                 InputUtil.GLFW_KEY_F1,
                 KeyBinding.MISC_CATEGORY,
                 Type.GAME
         ));
-        debugKey = MouseUtil.registerKeyBinding(new CustomKeyBinding(
+        debugKey = registerToAll(new CustomKeyBinding(
                 "rebindmykeys.key.debug",
                 InputUtil.GLFW_KEY_F3,
                 KeyBinding.MISC_CATEGORY,
                 Type.GAME
         ));
-        debugCrashKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+        debugCrashKey = registerToAll(new DebugKeyBinding(
                 "rebindmykeys.key.crash",
                 -1,
                 "rebindmykeys.key.categories.debug",
                 Type.GAME
         ));
         if (Comparator.compareMc(">=1.20.2")) {
-            debugToggleRenderChartKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+            debugToggleRenderChartKey = registerToAll(new DebugKeyBinding(
                     "rebindmykeys.key.toggle-render-chart",
                     InputUtil.GLFW_KEY_1,
                     "rebindmykeys.key.categories.debug",
                     Type.GAME
             ));
-            debugToggleRenderAndTickChartsKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+            debugToggleRenderAndTickChartsKey = registerToAll(new DebugKeyBinding(
                     "rebindmykeys.key.toggle-render-and-tick-charts",
                     InputUtil.GLFW_KEY_2,
                     "rebindmykeys.key.categories.debug",
                     Type.GAME
             ));
-            debugTogglePacketSizeAndPingChartsKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+            debugTogglePacketSizeAndPingChartsKey = registerToAll(new DebugKeyBinding(
                     "rebindmykeys.key.toggle-packet-size-and-ping-charts",
                     InputUtil.GLFW_KEY_3,
                     "rebindmykeys.key.categories.debug",
                     Type.GAME
             ));
         }
-        debugReloadChunksKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+        debugReloadChunksKey = registerToAll(new DebugKeyBinding(
                 "rebindmykeys.key.reload-chunks",
                 InputUtil.GLFW_KEY_A,
                 "rebindmykeys.key.categories.debug",
                 Type.GAME
         ));
-        debugShowHitboxKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+        debugShowHitboxKey = registerToAll(new DebugKeyBinding(
                 "rebindmykeys.key.show-hitbox",
                 InputUtil.GLFW_KEY_B,
                 "rebindmykeys.key.categories.debug",
                 Type.GAME
         ));
-        debugCopyLocationKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+        debugCopyLocationKey = registerToAll(new DebugKeyBinding(
                 "rebindmykeys.key.copy-location",
                 InputUtil.GLFW_KEY_C,
                 "rebindmykeys.key.categories.debug",
                 Type.GAME
         ));
-        debugClearChatKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+        debugClearChatKey = registerToAll(new DebugKeyBinding(
                 "rebindmykeys.key.clear-chat",
                 InputUtil.GLFW_KEY_D,
                 "rebindmykeys.key.categories.debug",
                 Type.GAME
         ));
-        debugToggleChunkBordersKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+        debugToggleChunkBordersKey = registerToAll(new DebugKeyBinding(
                 "rebindmykeys.key.toggle-chunk-borders",
                 InputUtil.GLFW_KEY_G,
                 "rebindmykeys.key.categories.debug",
                 Type.GAME
         ));
-        debugToggleAdvancedTooltipsKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+        debugToggleAdvancedTooltipsKey = registerToAll(new DebugKeyBinding(
                 "rebindmykeys.key.toggle-advanced-tooltips",
                 InputUtil.GLFW_KEY_H,
                 "rebindmykeys.key.categories.debug",
                 Type.GAME
         ));
-        debugCopyLookAtKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+        debugCopyLookAtKey = registerToAll(new DebugKeyBinding(
                 "rebindmykeys.key.copy-look-at",
                 InputUtil.GLFW_KEY_I,
                 "rebindmykeys.key.categories.debug",
                 Type.GAME
         ));
-        debugToggleDebugProfilerKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+        debugToggleDebugProfilerKey = registerToAll(new DebugKeyBinding(
                 "rebindmykeys.key.toggle-debug-profiler",
                 InputUtil.GLFW_KEY_L,
                 "rebindmykeys.key.categories.debug",
                 Type.GAME
         ));
-        debugSwitchSpectatorKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+        debugSwitchSpectatorKey = registerToAll(new DebugKeyBinding(
                 "rebindmykeys.key.switch-spectator",
                 InputUtil.GLFW_KEY_N,
                 "rebindmykeys.key.categories.debug",
                 Type.GAME
         ));
-        debugPauseOnLostFocusKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+        debugPauseOnLostFocusKey = registerToAll(new DebugKeyBinding(
                 "rebindmykeys.key.pause-on-lost-focus",
                 InputUtil.GLFW_KEY_P,
                 "rebindmykeys.key.categories.debug",
                 Type.GAME
         ));
-        debugPrintHelpKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+        debugPrintHelpKey = registerToAll(new DebugKeyBinding(
                 "rebindmykeys.key.print-help",
                 InputUtil.GLFW_KEY_Q,
                 "rebindmykeys.key.categories.debug",
                 Type.GAME
         ));
-        debugDumpDynamicTexturesKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+        debugDumpDynamicTexturesKey = registerToAll(new DebugKeyBinding(
                 "rebindmykeys.key.dump-dynamic-textures",
                 InputUtil.GLFW_KEY_S,
                 "rebindmykeys.key.categories.debug",
                 Type.GAME
         ));
-        debugReloadResourcepacksKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+        debugReloadResourcepacksKey = registerToAll(new DebugKeyBinding(
                 "rebindmykeys.key.reload-resourcepacks",
                 InputUtil.GLFW_KEY_T,
                 "rebindmykeys.key.categories.debug",
                 Type.GAME
         ));
-        debugOpenGamemodeSelectorKey = MouseUtil.registerKeyBinding(new DebugKeyBinding(
+        debugOpenGamemodeSelectorKey = registerToAll(new DebugKeyBinding(
                 "rebindmykeys.key.open-gamemode-selector",
                 InputUtil.GLFW_KEY_F4,
                 "rebindmykeys.key.categories.debug",
                 Type.GAME
         ));
-        dismountKey = MouseUtil.registerKeyBinding(new SplitKeyBinding(
+        dismountKey = registerToAll(new SplitKeyBinding(
                 "rebindmykeys.key.dismount",
                 InputUtil.GLFW_KEY_LEFT_SHIFT,
                 KeyBinding.GAMEPLAY_CATEGORY,
@@ -193,11 +199,21 @@ public class RebindMyKeys implements ClientModInitializer {
                 "key.sneak",
                 Type.UNMOUNTED
         ));
-        refreshServers = MouseUtil.registerKeyBinding(new CustomKeyBinding(
+        refreshServers = registerToAll(new CustomKeyBinding(
                 "rebindmykeys.key.refresh-servers",
                 InputUtil.GLFW_KEY_F5,
                 KeyBinding.MISC_CATEGORY,
                 Type.MULTIPLAYER_MENU
         ));
+        Text.translatable("key.")
+        KeyBindingManager.load();
+    }
+
+    public static <K extends KeyBinding> K registerToAll(K keyBinding) {
+        MouseUtil.registerKeyBinding(keyBinding);
+        KeyBindingHelper.registerKeyBinding(keyBinding);
+        if (keyBinding instanceof AdvancedKeyBinding advancedKeyBinding)
+            KeyBindingManager.register(advancedKeyBinding);
+        return keyBinding;
     }
 }

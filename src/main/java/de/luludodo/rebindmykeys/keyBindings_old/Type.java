@@ -1,4 +1,4 @@
-package de.luludodo.rebindmykeys.keyBindings;
+package de.luludodo.rebindmykeys.keyBindings_old;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;

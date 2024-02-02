@@ -27,5 +27,6 @@
   "rebindmykeys.key.dismount": "Dismount",
   "rebindmykeys.key.categories.debug": "Debug",
   "rebindmykeys.key.refresh-servers": "Refresh Server List",
-  "rebindmykeys.key.toggle-post-processor": "Post Processor"
+  "rebindmykeys.key.toggle-post-processor": "Post Processor",
+  "rebindmykeys.key.n/a": "N/A"
 }

@@ -1,0 +1,308 @@
+{
+  "key.advancements": {
+    "keyCombos": [
+      ["key.keyboard.l"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.attack": {
+    "keyCombos": [
+      ["key.mouse.left"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "HOLD"
+  },
+  "key.back": {
+    "keyCombos": [
+      ["key.keyboard.s"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "HOLD"
+  },
+  "key.chat": {
+    "keyCombos": [
+      ["key.keyboard.t"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.command": {
+    "keyCombos": [
+      ["key.keyboard.minus"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.drop": {
+    "keyCombos": [
+      ["key.keyboard.q"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "HOLD"
+  },
+  "key.forward": {
+    "keyCombos": [
+      ["key.keyboard.w"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "HOLD"
+  },
+  "key.fullscreen": {
+    "keyCombos": [
+      ["key.keyboard.f11"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.hotbar.1": {
+    "keyCombos": [
+      ["key.keyboard.1"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.hotbar.2": {
+    "keyCombos": [
+      ["key.keyboard.2"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.hotbar.3": {
+    "keyCombos": [
+      ["key.keyboard.3"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.hotbar.4": {
+    "keyCombos": [
+      ["key.keyboard.4"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.hotbar.5": {
+    "keyCombos": [
+      ["key.keyboard.5"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.hotbar.6": {
+    "keyCombos": [
+      ["key.keyboard.6"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.hotbar.7": {
+    "keyCombos": [
+      ["key.keyboard.7"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.hotbar.8": {
+    "keyCombos": [
+      ["key.keyboard.8"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.hotbar.9": {
+    "keyCombos": [
+      ["key.keyboard.9"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.inventory": {
+    "keyCombos": [
+      ["key.keyboard.e"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "TOGGLE"
+  },
+  "key.jump": {
+    "keyCombos": [
+      ["key.keyboard.space"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "HOLD"
+  },
+  "key.left": {
+    "keyCombos": [
+      ["key.keyboard.a"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "HOLD"
+  },
+  "key.loadToolbarActivator": {
+    "keyCombos": [
+      ["key.keyboard.x"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "HOLD"
+  },
+  "key.pickItem": {
+    "keyCombos": [
+      ["key.mouse.middle"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.playerlist": {
+    "keyCombos": [
+      ["key.keyboard.tab"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "HOLD"
+  },
+  "key.right": {
+    "keyCombos": [
+      ["key.keyboard.d"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "HOLD"
+  },
+  "key.saveToolbarActivator": {
+    "keyCombos": [
+      ["key.keyboard.c"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "HOLD"
+  },
+  "key.screenshot": {
+    "keyCombos": [
+      ["key.keyboard.f2"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.smoothCamera": {
+    "keyCombos": [
+      ["key.keyboard.unknown"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "TOGGLE"
+  },
+  "key.sneak": {
+    "keyCombos": [
+      ["key.keyboard.left.shift"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "HOLD"
+  },
+  "key.socialInteractions": {
+    "keyCombos": [
+      ["key.keyboard.p"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.spectatorOutlines": {
+    "keyCombos": [
+      ["key.keyboard.unknown"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "TOGGLE"
+  },
+  "key.sprint": {
+    "keyCombos": [
+      ["key.keyboard.left.control"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "HOLD"
+  },
+  "key.swapOffhand": {
+    "keyCombos": [
+      ["key.keyboard.f"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.togglePerspective": {
+    "keyCombos": [
+      ["key.keyboard.f5"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "ACTION"
+  },
+  "key.use": {
+    "keyCombos": [
+      ["key.mouse.right"]
+    ],
+    "simpleKeys": [
+      [0,0]
+    ],
+    "mode": "HOLD"
+  }
+}

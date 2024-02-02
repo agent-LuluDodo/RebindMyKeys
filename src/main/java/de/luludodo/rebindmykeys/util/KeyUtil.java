@@ -24,6 +24,14 @@ public class KeyUtil {
         return InputUtil.Type.SCANCODE.createFromCode(code);
     }
 
+    public static InputUtil.Key keysmOrScancode(int keysm, int scancode) {
+        if (keysm == -1) {
+            return scancode(scancode);
+        } else {
+            return keysm(keysm);
+        }
+    }
+
     public static boolean keysmPressed(int code) {
         return GLFW.glfwGetKey(MinecraftClient.getInstance().getWindow().getHandle(), code) == GLFW.GLFW_PRESS;
     }
@@ -34,6 +42,14 @@ public class KeyUtil {
 
     public static boolean scancodePressed(int button) {
         return scancodePressedMap.getOrDefault(button, false);
+    }
+
+    public static boolean pressed(InputUtil.Key key) {
+        return switch (key.getCategory()) {
+            case MOUSE -> mousePressed(key.getCode());
+            case KEYSYM -> keysmPressed(key.getCode());
+            case SCANCODE -> scancodePressed(key.getCode());
+        };
     }
 
     private static final Map<Integer, Boolean> scancodePressedMap = new HashMap<>();
