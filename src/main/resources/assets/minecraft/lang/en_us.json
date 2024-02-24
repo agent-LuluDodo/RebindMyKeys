@@ -1,4 +1,10 @@
 {
+  "rebindmykeys.modifier.shift": "Shift",
+  "rebindmykeys.modifier.control": "Control",
+  "rebindmykeys.modifier.alt": "Alt",
+  "rebindmykeys.modifier.super": "Super",
+  "rebindmykeys.modifier.caps-lock": "Caps Lock",
+  "rebindmykeys.modifier.num-lock": "Num Lock",
   "rebindmykeys.controls.unbind": "U",
   "rebindmykeys.controls.unbind.tooltip": "Unbind",
   "rebindmykeys.narrator.controls.unbind": "Unbind %s button",

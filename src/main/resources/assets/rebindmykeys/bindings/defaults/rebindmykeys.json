@@ -1,0 +1,32 @@
+{
+  "rebindmykeys.key.escape": {
+    "requirements": [
+      {
+        "type": "key",
+        "options": {
+          "type": "keysm",
+          "code": 256
+        }
+      }
+    ],
+    "orderSensitive": true
+  },
+  "rebindmykeys.key.narrator": {
+    "requirements": [
+      {
+        "type": "key",
+        "options": {
+          "type": "keysm",
+          "code": 256
+        }
+      },
+      {
+        "type": "modifier",
+        "options": {
+          "value": "SHIFT"
+        }
+      }
+    ],
+    "orderSensitive": true
+  }
+}

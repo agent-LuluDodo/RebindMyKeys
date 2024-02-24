@@ -2,6 +2,10 @@ package de.luludodo.rebindmykeys;
 
 import de.luludodo.rebindmykeys.alpha.KeyBindingManager;
 import de.luludodo.rebindmykeys.alpha.keyBindings.AdvancedKeyBinding;
+import de.luludodo.rebindmykeys.potential.binding.button.ButtonManager;
+import de.luludodo.rebindmykeys.potential.binding.button.Key;
+import de.luludodo.rebindmykeys.potential.binding.button.ModifierButton;
+import de.luludodo.rebindmykeys.potential.binding.button.ReferenceButton;
 import de.luludodo.rebindmykeys.keyBindings_old.CustomKeyBinding;
 import de.luludodo.rebindmykeys.keyBindings_old.SplitKeyBinding;
 import de.luludodo.rebindmykeys.keyBindings_old.Type;
@@ -17,7 +21,7 @@ import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static de.luludodo.rebindmykeys.util.KeyUtil.*;
+import static de.luludodo.rebindmykeys.util.InputUtil2.*;
 
 public class RebindMyKeys implements ClientModInitializer {
     public static final Logger LOG = LoggerFactory.getLogger("RebindMyKeys");
@@ -48,6 +52,9 @@ public class RebindMyKeys implements ClientModInitializer {
     public static KeyBinding refreshServers; // Suggestion by @BioTechproject27 (https://github.com/agent-LuluDodo/RebindMyKeys/issues/4)
     @Override
     public void onInitializeClient() {
+        ButtonManager.register("key", Key::fromJson);
+        ButtonManager.register("modifier", ModifierButton::fromJson);
+        ButtonManager.register("reference", ReferenceButton::fromJson);
         KeyBindingManager.init();
         /* ONLY FOR DEBUGGING (getting the stack trace of a gl error)
         ClientTickEvents.START_CLIENT_TICK.register(client -> {

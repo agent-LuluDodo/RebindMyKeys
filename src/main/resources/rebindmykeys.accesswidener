@@ -1,9 +1,1 @@
 accessWidener v2 named
-accessible field net/minecraft/client/gui/widget/EntryListWidget client Lnet/minecraft/client/MinecraftClient;
-accessible field net/minecraft/client/option/KeyBinding boundKey Lnet/minecraft/client/util/InputUtil$Key;
-accessible field net/minecraft/client/option/KeyBinding timesPressed I
-accessible field net/minecraft/client/option/KeyBinding defaultKey Lnet/minecraft/client/util/InputUtil$Key;
-mutable field net/minecraft/client/option/KeyBinding defaultKey Lnet/minecraft/client/util/InputUtil$Key;
-accessible field net/minecraft/client/Keyboard debugCrashStartTime J
-accessible field net/minecraft/client/Keyboard debugCrashLastLogTime J
-accessible field net/minecraft/client/Keyboard debugCrashElapsedTime J

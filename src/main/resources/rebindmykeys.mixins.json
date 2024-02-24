@@ -6,17 +6,9 @@
   "mixins": [
   ],
   "client": [
-    "ClientPlayerEntityMixin",
-    "ClientPlayNetworkHandlerMixin",
-    "DebugHudMixin",
-    "EntryListWidgetMixin",
-    "KeyBindingEntryMixin",
     "KeyBindingMixin",
-    "KeybindsScreenMixin",
     "KeyboardMixin",
-    "MouseMixin",
-    "MultiplayerScreenMixin",
-    "ScreenMixin"
+    "MouseMixin"
   ],
   "injectors": {
     "defaultRequire": 1
