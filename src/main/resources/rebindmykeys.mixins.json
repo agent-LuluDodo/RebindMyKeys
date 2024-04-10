@@ -6,17 +6,11 @@
   "mixins": [
   ],
   "client": [
-    "ClientPlayerEntityMixin",
-    "ClientPlayNetworkHandlerMixin",
-    "DebugHudMixin",
-    "EntryListWidgetMixin",
-    "KeyBindingEntryMixin",
     "KeyBindingMixin",
-    "KeybindsScreenMixin",
     "KeyboardMixin",
+    "MinecraftClientMixin",
     "MouseMixin",
-    "MultiplayerScreenMixin",
-    "ScreenMixin"
+    "MultiplayerScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
