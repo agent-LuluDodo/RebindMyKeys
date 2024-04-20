@@ -63,6 +63,21 @@ public class ArrayUtil {
     }
 
     /**
+     * Checks if the {@code array} and {@code find} contain at least one element.
+     * @param array The array which should be searched.
+     * @param find The element to search for.
+     * @return {@code true} if the {@code array} contains {@code find} otherwise {@code false}.
+     * @param <T> The {@link Class} of the elements of the {@code array}.
+     */
+    @SafeVarargs
+    public static <T> boolean shareOneOrMoreElements(T[] array, T... find) {
+        for (T t : array) {
+            if (contains(find, t)) return true;
+        }
+        return false;
+    }
+
+    /**
      * Converts an array into a {@link String}. The resulting {@link String} will look like this: {@code [toString.apply(element1), toString.apply(element2)]}
      * @param array The array to be converted.
      * @param toString The function used to convert the elements of the {@code array} into {@link String}.

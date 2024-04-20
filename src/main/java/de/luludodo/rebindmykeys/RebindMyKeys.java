@@ -3,16 +3,21 @@ package de.luludodo.rebindmykeys;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.modifier.Modifier;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.HoldMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActionMode;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActivateOn;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.toggle.ToggleMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.Context;
 import de.luludodo.rebindmykeys.util.KeyBindingActions;
+import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import de.luludodo.rebindmykeys.util.KeyUtil;
+import de.luludodo.rebindmykeys.util.TimerUtil;
 import de.luludodo.rebindmykeys.util.enums.Key;
 import de.luludodo.rebindmykeys.util.enums.KeyBindings;
 import de.luludodo.rebindmykeys.util.enums.Mouse;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,15 +38,25 @@ public class RebindMyKeys implements ClientModInitializer {
 
         KeyUtil.setMod("Minecraft");
 
+        KeyUtil.setCategory("timer");
+
+        KeyUtil.create("timer")
+                .context(Context.EVERYWHERE)
+                .keysm(Key.Z)
+                .onAction(TimerUtil::stop)
+                .register();
+
         KeyUtil.setCategory("essentials");
         // Essentials
         KeyUtil.create(KeyBindings.LEFT_CLICK)
                 .context(Context.IN_SCREEN)
+                .operationMode(new ActionMode(ActivateOn.BOTH)) // we need press and release
                 .mouse(Mouse.LEFT)
                 .onAction(KeyBindingActions::leftClick)
                 .register();
         KeyUtil.create(KeyBindings.RIGHT_CLICK)
                 .context(Context.IN_SCREEN)
+                .operationMode(new ActionMode(ActivateOn.BOTH)) // we need press and release
                 .mouse(Mouse.RIGHT)
                 .onAction(KeyBindingActions::rightClick)
                 .register();
@@ -184,47 +199,47 @@ public class RebindMyKeys implements ClientModInitializer {
         KeyUtil.create(KeyBindings.HOTBAR_1) // TODO: separate swap item
                 .context(Context.IN_GAME)
                 .keysm(Key.KEY_1)
-                .onAction(client -> KeyBindingActions.hotbar(client, 0))
+                .onAction(() -> KeyBindingActions.hotbar(0))
                 .register();
         KeyUtil.create(KeyBindings.HOTBAR_2)
                 .context(Context.IN_GAME)
                 .keysm(Key.KEY_2)
-                .onAction(client -> KeyBindingActions.hotbar(client, 1))
+                .onAction(() -> KeyBindingActions.hotbar(1))
                 .register();
         KeyUtil.create(KeyBindings.HOTBAR_3)
                 .context(Context.IN_GAME)
                 .keysm(Key.KEY_3)
-                .onAction(client -> KeyBindingActions.hotbar(client, 2))
+                .onAction(() -> KeyBindingActions.hotbar(2))
                 .register();
         KeyUtil.create(KeyBindings.HOTBAR_4)
                 .context(Context.IN_GAME)
                 .keysm(Key.KEY_4)
-                .onAction(client -> KeyBindingActions.hotbar(client, 3))
+                .onAction(() -> KeyBindingActions.hotbar(3))
                 .register();
         KeyUtil.create(KeyBindings.HOTBAR_5)
                 .context(Context.IN_GAME)
                 .keysm(Key.KEY_5)
-                .onAction(client -> KeyBindingActions.hotbar(client, 4))
+                .onAction(() -> KeyBindingActions.hotbar(4))
                 .register();
         KeyUtil.create(KeyBindings.HOTBAR_6)
                 .context(Context.IN_GAME)
                 .keysm(Key.KEY_6)
-                .onAction(client -> KeyBindingActions.hotbar(client, 5))
+                .onAction(() -> KeyBindingActions.hotbar(5))
                 .register();
         KeyUtil.create(KeyBindings.HOTBAR_7)
                 .context(Context.IN_GAME)
                 .keysm(Key.KEY_7)
-                .onAction(client -> KeyBindingActions.hotbar(client, 6))
+                .onAction(() -> KeyBindingActions.hotbar(6))
                 .register();
         KeyUtil.create(KeyBindings.HOTBAR_8)
                 .context(Context.IN_GAME)
                 .keysm(Key.KEY_8)
-                .onAction(client -> KeyBindingActions.hotbar(client, 7))
+                .onAction(() -> KeyBindingActions.hotbar(7))
                 .register();
         KeyUtil.create(KeyBindings.HOTBAR_9)
                 .context(Context.IN_GAME)
                 .keysm(Key.KEY_9)
-                .onAction(client -> KeyBindingActions.hotbar(client, 8))
+                .onAction(() -> KeyBindingActions.hotbar(8))
                 .register();
         KeyUtil.create(KeyBindings.INVENTORY) // no toggle cause escape also closes it and I want to avoid spaghetti-code but could maybe be done later
                 .context(Context.PLAYING, Context.IN_INVENTORY)
@@ -310,76 +325,76 @@ public class RebindMyKeys implements ClientModInitializer {
         KeyUtil.create("action-test")
                 .operationMode(new ActionMode())
                 .keysm(Key.A)
-                .onAction(client -> DEBUG.info("action-test pressed"))
+                .onAction(() -> DEBUG.info("action-test pressed"))
                 .register();
         KeyUtil.create("toggle-test")
                 .operationMode(new ToggleMode())
                 .keysm(Key.T)
-                .onToggle((client, newState) -> DEBUG.info("toggle-test toggled to " + newState))
+                .onToggle(newState -> DEBUG.info("toggle-test toggled to " + newState))
                 .register();
         KeyUtil.create("hold-test")
                 .operationMode(new HoldMode())
                 .keysm(Key.H)
-                .onToggle((client, newState) -> DEBUG.info("hold-test toggled to " + newState))
+                .onToggle(newState -> DEBUG.info("hold-test toggled to " + newState))
                 .register();
 
         // Keysm and Mouse Tests (mouse not implemented)
         KeyUtil.create("keysm-test") // debug
                 .context(Context.EVERYWHERE)
                 .keysm(Key.K)
-                .onAction(client -> {
-                    RebindMyKeys.DEBUG.info("Jump key " + (client.options.jumpKey.isPressed()? "pressed" : "released"));
+                .onAction(() -> {
+                    DEBUG.info("Jump key " + (MinecraftClient.getInstance().options.jumpKey.isPressed()? "pressed" : "released"));
                 })
                 .register();
         KeyUtil.create("mouse-test")
                 .mouse(Mouse.MIDDLE)
-                .onAction(client -> DEBUG.info("mouse-test success"))
+                .onAction(() -> DEBUG.info("mouse-test success"))
                 .register();
 
         // Modifier Tests (bugged after pressing both sides)
         KeyUtil.create("shift-test")
                 .modifier(Modifier.SHIFT)
-                .onAction(client -> DEBUG.info("shift-test success"))
+                .onAction(() -> DEBUG.info("shift-test success"))
                 .register();
         KeyUtil.create("alt-test")
                 .modifier(Modifier.ALT)
-                .onAction(client -> DEBUG.info("alt-test success"))
+                .onAction(() -> DEBUG.info("alt-test success"))
                 .register();
         KeyUtil.create("control-test")
                 .modifier(Modifier.CONTROL)
-                .onAction(client -> DEBUG.info("control-test success"))
+                .onAction(() -> DEBUG.info("control-test success"))
                 .register();
 
         // Reference Test (only triggers on second press)
         KeyUtil.create("reference-test-target")
                 .keysm(Key.R)
-                .onAction(client -> DEBUG.info("reference-test-target active"))
+                .onAction(() -> DEBUG.info("reference-test-target active"))
                 .register();
         KeyUtil.create("reference-test")
                 .reference("reference-test-target")
-                .onAction(client -> DEBUG.info("reference-test active"))
+                .onAction(() -> DEBUG.info("reference-test active"))
                 .register();
         KeyUtil.create("reference-future-test")
                 .reference("reference-future-test-target")
-                .onAction(client -> DEBUG.info("reference-future-test active"))
+                .onAction(() -> DEBUG.info("reference-future-test active"))
                 .register();
         KeyUtil.create("reference-future-test-target")
                 .keysm(Key.F)
-                .onAction(client -> DEBUG.info("reference-future-test-target active"))
+                .onAction(() -> DEBUG.info("reference-future-test-target active"))
                 .register();
 
         // Order Sensitivity Test (works)
         KeyUtil.create("order-insensitive-test")
                 .orderSensitive(false)
                 .keysm(Key.O)
-                .onAction(client -> DEBUG.info("order-insensitive-test success"))
+                .onAction(() -> DEBUG.info("order-insensitive-test success"))
                 .register();
 
         // Context Test (context not implemented)
         KeyUtil.create("in-menu-test")
                 .context(Context.IN_MENU)
                 .keysm(Key.I)
-                .onAction(client -> DEBUG.info("in-menu-test success"))
+                .onAction(() -> DEBUG.info("in-menu-test success"))
                 .register();
 
         // Multi Combo Tests
@@ -389,7 +404,7 @@ public class RebindMyKeys implements ClientModInitializer {
                 .nextCombo()
                 .keysm(Key.M)
                 .keysm(Key.NUM_2)
-                .onAction(client -> DEBUG.info("multi-combo-test success"))
+                .onAction(() -> DEBUG.info("multi-combo-test success"))
                 .register();
         KeyUtil.create("toggle-hold-test")
                 .operationMode(new ToggleMode())
@@ -400,7 +415,7 @@ public class RebindMyKeys implements ClientModInitializer {
                 .operationMode(new HoldMode())
                 .keysm(Key.M)
                 .keysm(Key.NUM_4)
-                .onToggle((client, newState) -> DEBUG.info("toggle-hold-test toggled to " + newState))
+                .onToggle(newState -> DEBUG.info("toggle-hold-test toggled to " + newState))
                 .register();
 
         // Multi Combo Tests Order Insensitive
@@ -411,7 +426,7 @@ public class RebindMyKeys implements ClientModInitializer {
                 .nextCombo()
                 .keysm(Key.O)
                 .keysm(Key.NUM_2)
-                .onAction(client -> DEBUG.info("order-insensitive-multi-combo-test success"))
+                .onAction(() -> DEBUG.info("order-insensitive-multi-combo-test success"))
                 .register();
         KeyUtil.create("order-insensitive-toggle-hold-test")
                 .orderSensitive(false)
@@ -423,7 +438,7 @@ public class RebindMyKeys implements ClientModInitializer {
                 .operationMode(new HoldMode())
                 .keysm(Key.O)
                 .keysm(Key.NUM_4)
-                .onToggle((client, newState) -> DEBUG.info("order-insensitive-toggle-hold-test toggled to " + newState))
+                .onToggle(newState -> DEBUG.info("order-insensitive-toggle-hold-test toggled to " + newState))
                 .register();
     }
 }

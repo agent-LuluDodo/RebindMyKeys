@@ -6,6 +6,7 @@ import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.basic.BasicKey;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.modifier.ModifierKey;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.reference.KeyReference;
 import de.luludodo.rebindmykeys.util.JsonUtil;
+import de.luludodo.rebindmykeys.util.interfaces.Action;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
 import net.minecraft.client.util.InputUtil;
 

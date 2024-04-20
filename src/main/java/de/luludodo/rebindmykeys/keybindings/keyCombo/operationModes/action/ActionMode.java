@@ -1,15 +1,12 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMode;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActivateOn;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 
 public class ActionMode implements OperationMode {
     private ActivateOn activateOn;
-    private int timesPressed = 0;
+    private boolean active = false;
     public ActionMode() {
         this(ActivateOn.PRESS);
     }
@@ -23,28 +20,29 @@ public class ActionMode implements OperationMode {
     @Override
     public void onKeyDown() {
         switch (activateOn) {
-            case PRESS, BOTH, UNKNOWN -> timesPressed++;
+            case PRESS, BOTH, UNKNOWN -> active = true;
+            default -> active = false;
         }
     }
 
     @Override
     public void onKeyUp() {
         switch (activateOn) {
-            case RELEASE, BOTH -> timesPressed++;
+            case RELEASE, BOTH -> active = true;
+            default -> active = false;
         }
     }
 
     @Override
     public boolean isActive() {
-        if (timesPressed == 0)
-            return false;
-        timesPressed--;
+        if (!active) return false;
+        active = false;
         return true;
     }
 
     public void setActivateOn(ActivateOn activateOn) {
         this.activateOn = activateOn;
-        timesPressed = 0;
+        active = false;
     }
 
     public ActivateOn getActivateOn() {
@@ -55,7 +53,7 @@ public class ActionMode implements OperationMode {
     public void load(JsonElement json) {
         JsonUtil.ObjectLoader loader = JsonUtil.object(json);
         activateOn = loader.get("activateOn", ActivateOn.class);
-        timesPressed = 0;
+        active = false;
     }
 
     @Override

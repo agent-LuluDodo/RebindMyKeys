@@ -1,13 +1,18 @@
 package de.luludodo.rebindmykeys.mixin;
 
+import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.util.KeyUtil;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.spongepowered.asm.mixin.Debug;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Objects;
 
 /**
  * Implementations of methods from KeyBinding which my mod breaks.
@@ -15,11 +20,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Debug(export = true)
 @Mixin(KeyBinding.class)
 public class KeyBindingMixin {
+
     @Inject(method = "onKeyPressed", at = @At("HEAD"), cancellable = true)
     private static void rebindmykeys$onKeyPressed(InputUtil.Key key, CallbackInfo ci) {
         // simulate a short keypress (method adds one to timesPressed in vanilla and leaves pressed alone)
+        /*
         KeyUtil.getAll().forEach(binding -> binding.onKeyDown(key));
         KeyUtil.getAll().forEach(binding -> binding.onKeyUp(key));
+        */
         ci.cancel();
     }
 
@@ -37,7 +45,8 @@ public class KeyBindingMixin {
 
     @Inject(method = "unpressAll", at = @At("HEAD"), cancellable = true)
     private static void rebindmykeys$unpressAll(CallbackInfo ci) { // why did they call this "unpress" instead of release?
-        KeyUtil.getAll().forEach(de.luludodo.rebindmykeys.keybindings.KeyBinding::release);
+        //KeyUtil.getAll().forEach(de.luludodo.rebindmykeys.keybindings.KeyBinding::release); Minecraft calls this when pausing and unpausing and sometimes after my mod does stuff so this breaks things
+        ci.cancel();
     }
 
     @Inject(method = "untoggleStickyKeys", at = @At("HEAD"), cancellable = true)
@@ -51,4 +60,13 @@ public class KeyBindingMixin {
         // Idk what purpose this had in Vanilla, but it's breaking movement keys with my mod
         ci.cancel();
     }
+
+    /* DEBUG
+    @Shadow @Final private String translationKey;
+    @Inject(method = "setPressed", at = @At("HEAD"))
+    private void rebindmykeys$setPressed(boolean pressed, CallbackInfo ci) {
+        if (Objects.equals(translationKey, "key.jump"))
+            RebindMyKeys.DEBUG.info(translationKey + " " + (pressed? "pressed" : "released"), new Throwable());
+    }
+     */
 }

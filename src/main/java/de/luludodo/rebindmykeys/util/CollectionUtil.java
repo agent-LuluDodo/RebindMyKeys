@@ -110,10 +110,11 @@ public class CollectionUtil {
      */
     @Contract(pure = true)
     public static <T> boolean allConditions(Collection<T> collection, Function<T, Boolean> condition) {
+        boolean valid = true;
         for (T element : collection) {
-            if (!condition.apply(element)) return false;
+            if (!condition.apply(element)) valid = false;
         }
-        return true;
+        return valid;
     }
 
     /**

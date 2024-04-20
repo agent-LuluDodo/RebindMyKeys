@@ -1,18 +1,23 @@
 package de.luludodo.rebindmykeys.keybindings;
 
 import com.google.gson.JsonElement;
+import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.KeyCombo;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActionMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.ComboSettings;
 import de.luludodo.rebindmykeys.util.CollectionUtil;
 import de.luludodo.rebindmykeys.util.JsonUtil;
+import de.luludodo.rebindmykeys.util.enums.KeyBindings;
+import de.luludodo.rebindmykeys.util.interfaces.Action;
 import de.luludodo.rebindmykeys.util.interfaces.JsonLoadable;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
 import net.minecraft.client.util.InputUtil;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class KeyBinding implements JsonSavable, JsonLoadable {
     private final String id;
@@ -28,6 +33,7 @@ public class KeyBinding implements JsonSavable, JsonLoadable {
         isAction = defaultSettings.operationMode() instanceof ActionMode;
     }
 
+    // KINDA JANK START
     public boolean isAction() {
         return isAction;
     }
@@ -51,6 +57,7 @@ public class KeyBinding implements JsonSavable, JsonLoadable {
         oldActive = active;
         return true;
     }
+    // KINDA JANK END
 
     public String getId() {
         return id;
@@ -74,10 +81,6 @@ public class KeyBinding implements JsonSavable, JsonLoadable {
 
     public List<KeyCombo> getKeyCombos() {
         return Collections.unmodifiableList(keyCombos);
-    }
-
-    public void tick() {
-        keyCombos.forEach(KeyCombo::tick);
     }
 
     public boolean isPressed() {
@@ -110,5 +113,17 @@ public class KeyBinding implements JsonSavable, JsonLoadable {
 
     public void release() {
         keyCombos.forEach(KeyCombo::release);
+    }
+
+    public void updatePressed() {
+        keyCombos.forEach(KeyCombo::updatePressed);
+    }
+
+    public void updateActive() {
+        keyCombos.forEach(KeyCombo::updateActive);
+    }
+
+    public boolean checkContext() {
+        return CollectionUtil.oneCondition(keyCombos, KeyCombo::checkContext);
     }
 }

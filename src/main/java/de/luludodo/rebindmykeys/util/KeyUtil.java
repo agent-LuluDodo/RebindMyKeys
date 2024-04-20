@@ -1,6 +1,5 @@
 package de.luludodo.rebindmykeys.util;
 
-import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.keybindings.KeyBinding;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.KeyCombo;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
@@ -12,10 +11,10 @@ import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMod
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActionMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.ComboSettings;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.Context;
+import de.luludodo.rebindmykeys.util.interfaces.Action;
 import de.luludodo.rebindmykeys.util.interfaces.IKeyBinding;
 import de.luludodo.rebindmykeys.util.enums.KeyBindings;
 import de.luludodo.rebindmykeys.util.enums.Mouse;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
@@ -106,14 +105,14 @@ public class KeyUtil {
             return this;
         }
 
-        private Consumer<MinecraftClient> onAction;
-        public Builder onAction(Consumer<MinecraftClient> action) {
+        private Action onAction;
+        public Builder onAction(Action action) {
             onAction = action;
             return this;
         }
 
-        private BiConsumer<MinecraftClient, Boolean> onToggle;
-        public Builder onToggle(BiConsumer<MinecraftClient, Boolean> action) {
+        private Consumer<Boolean> onToggle;
+        public Builder onToggle(Consumer<Boolean> action) {
             onToggle = action;
             return this;
         }
@@ -134,38 +133,21 @@ public class KeyUtil {
                 setDefaults();
             if (!keys.isEmpty())
                 combos.add(new KeyCombo(keys, new ComboSettings(operationMode, context, orderSensitive)));
-            KeyUtil.register(new KeyBinding(id, combos, new ComboSettings(defaultOperationMode, defaultContext, defaultOrderSensitive)));
+            KeyBinding binding = KeyUtil.register(new KeyBinding(id, combos, new ComboSettings(defaultOperationMode, defaultContext, defaultOrderSensitive)));
             boolean isAction = operationMode instanceof ActionMode;
             if (onAction != null) {
                 if (!isAction) // I already know I'm gonna put the wrong one on some KeyBindings so this is going to save me a lot of debugging
                     throw new IllegalArgumentException("onAction set even though KeyBinding isn't an action");
-                registerBindingActionListener(id, onAction);
+                KeyBindingUtil.onAction(id, onAction);
+                //KeyUtil.registerBindingActionListener(id, client -> onAction.run()); // FIXME: client should be passed as an arg if this works out
             }
             if (onToggle != null) {
                 if (isAction)
                     throw new IllegalArgumentException("onToggle set even though KeyBinding is an action");
-                registerBindingToggleListener(id, onToggle);
+                KeyBindingUtil.onToggle(id, onToggle);
+                //KeyUtil.registerBindingToggleListener(id, (client, newState) -> onToggle.accept(newState)); // FIXME: client should be passed as an arg if this works out
             }
         }
-    }
-
-    static {
-        ClientTickEvents.START_CLIENT_TICK.register(KeyUtil::onStartClientTick);
-    }
-
-    private static void onStartClientTick(MinecraftClient client) {
-        idToBinding.values().forEach(KeyBinding::tick);
-        idToBinding.forEach((id, binding) -> {
-            if (binding.isAction()) {
-                if (bindingActionListener.containsKey(id) && binding.wasPressed()) {
-                    bindingActionListener.get(id).forEach(listener -> listener.accept(client));
-                }
-            } else {
-                if (bindingToggleListener.containsKey(id) && binding.stateChanged()) {
-                    bindingToggleListener.get(id).forEach(listener -> listener.accept(client, binding.isToggled()));
-                }
-            }
-        });
     }
 
     public static void setMod(String mod) {
@@ -185,10 +167,11 @@ public class KeyUtil {
     }
 
     private static final Map<String, KeyBinding> idToBinding = new HashMap<>();
-    public static void register(KeyBinding binding) {
+    public static KeyBinding register(KeyBinding binding) {
         if (idToBinding.containsKey(binding.getId()))
             throw new IllegalArgumentException("A KeyBinding with the id '" + binding.getId() + "' already exists.");
         idToBinding.put(binding.getId(), binding);
+        return binding;
     }
 
     public static KeyBinding get(String id) {

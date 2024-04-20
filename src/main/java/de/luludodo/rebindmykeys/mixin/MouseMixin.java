@@ -1,6 +1,6 @@
 package de.luludodo.rebindmykeys.mixin;
 
-import de.luludodo.rebindmykeys.util.KeyUtil;
+import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
 import net.minecraft.client.util.InputUtil;
@@ -20,17 +20,14 @@ public class MouseMixin {
 
     @Inject(method = "onMouseButton", at = @At("HEAD"), cancellable = true)
     public void rebindmykeys$onMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
-        if (window != client.getWindow().getHandle())
-            return;
+        if (window != client.getWindow().getHandle()) return; // if the minecraft window isn't focused return
+        if (action != GLFW.GLFW_PRESS && action != GLFW.GLFW_RELEASE) return; // if the action is not press and not release
+
         InputUtil.Key key = InputUtil.Type.MOUSE.createFromCode(button);
-        //RebindMyKeys.DEBUG.info("A key was " + (action == 1? "pressed" : action == 0? "released" : ("idk [" + action + "]")) + "! keycode: " + keycode + ", scancode: " + scancode + "; key: " + key.getTranslationKey());
-        KeyUtil.getAll().forEach(keyBinding -> {
-            if (action == GLFW.GLFW_PRESS) {
-                keyBinding.onKeyDown(key);
-            } else if (action == GLFW.GLFW_RELEASE) {
-                keyBinding.onKeyUp(key);
-            }
-        });
+        KeyBindingUtil.onKeyAll(key, action == GLFW.GLFW_PRESS);
+
+        KeyBindingUtil.updateAll();
+
         ci.cancel();
     }
 }

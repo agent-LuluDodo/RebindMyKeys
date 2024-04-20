@@ -1,9 +1,10 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo;
 
 import com.google.gson.JsonElement;
+import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.ComboSettings;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.IContext;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.Context;
 import de.luludodo.rebindmykeys.util.ArrayUtil;
 import de.luludodo.rebindmykeys.util.CollectionUtil;
 import de.luludodo.rebindmykeys.util.JsonUtil;
@@ -16,10 +17,17 @@ import java.util.List;
 public class KeyCombo implements JsonSavable {
     private ComboSettings settings;
     private final List<Key> keys;
-    private boolean pressed = false;
+    private boolean oldPressed = false;
+    private boolean active;
     public KeyCombo(List<Key> keys, ComboSettings settings) {
         this.keys = keys;
         this.settings = settings;
+        init();
+    }
+
+    private void init() {
+        contextValid = settings.contextValid();
+        active = settings.operationMode().isActive() && contextValid;
     }
 
     public boolean move(Key key, int targetIndex) {
@@ -38,14 +46,6 @@ public class KeyCombo implements JsonSavable {
         return Collections.unmodifiableList(keys);
     }
 
-    public void tick() {
-        updateContextValid();
-        /*
-        if (!contextValid)
-            keys.forEach(Key::release);
-         */
-    }
-
     public void onKeyDown(InputUtil.Key key) {
         if (settings.orderSensitive()) {
             int left = keys.size();
@@ -61,37 +61,40 @@ public class KeyCombo implements JsonSavable {
         } else {
             keys.forEach(k -> k.onKeyDown(key));
         }
-        if (updatePressed()) return;
-        settings.operationMode().onKeyDown();
     }
 
     public void onKeyUp(InputUtil.Key key) {
         keys.forEach(k -> k.onKeyUp(key));
-        if (updatePressed()) return;
-        settings.operationMode().onKeyUp();
     }
 
-    /**
-     * Updates {@link KeyCombo#pressed}.
-     * @return {@code true} if pressed stayed the same otherwise {@code false}.
-     */
-    private boolean updatePressed() {
-        final boolean oldPressed = pressed;
-        pressed = CollectionUtil.allConditions(keys, Key::isPressed);
-        return pressed == oldPressed;
+    public void updatePressed() {
+        boolean pressed = isPressed();
+        if (oldPressed == pressed) return;
+        if (pressed) {
+            settings.operationMode().onKeyDown();
+        } else {
+            settings.operationMode().onKeyUp();
+        }
+        oldPressed = pressed;
     }
 
-    public boolean isPressed() {
-        return pressed;
+    public void updateActive() {
+        active = settings.operationMode().isActive() && contextValid;
     }
 
     private boolean contextValid = false;
-    private void updateContextValid() { // Fixes for example pausing the game only to immediately unpause it since oh escape is pressed and the game is paused xD
-        contextValid = ArrayUtil.oneCondition(settings.context(), IContext::isCurrent);
+    public boolean checkContext() {
+        boolean oldContextValid = contextValid;
+        contextValid = settings.contextValid();
+        return contextValid != oldContextValid;
+    }
+
+    public boolean isPressed() { // Can't cache here cause of ReferenceKey's :)
+        return CollectionUtil.allConditions(keys, Key::isPressed);
     }
 
     public boolean isActive() {
-        return settings.operationMode().isActive() && contextValid;
+        return active;
     }
 
     public ComboSettings getSettings() {
@@ -100,6 +103,7 @@ public class KeyCombo implements JsonSavable {
 
     public void setSettings(ComboSettings settings) {
         this.settings = settings;
+        init();
     }
 
     @Override
