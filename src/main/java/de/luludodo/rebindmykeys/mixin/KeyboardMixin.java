@@ -1,6 +1,8 @@
 package de.luludodo.rebindmykeys.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
+import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.util.KeyBindingUtil;
@@ -13,7 +15,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.KeybindsScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Window;
 import org.lwjgl.glfw.GLFW;
 import org.objectweb.asm.Opcodes;
@@ -28,15 +29,26 @@ public class KeyboardMixin {
 
     @Unique private OnKeyAction rebindmykeys$action;
     @Unique private static boolean rebindmykeys$debugCrashActive = false;
+    @Unique private boolean rebindmykeys$isDebugCombo;
 
     @Inject(method = "onKey", at = @At("HEAD"), cancellable = true)
     public void rebindmykeys$onKey(long window, int keycode, int scancode, int action, int modifiers, CallbackInfo ci) {
         if (OnKeyAction.hasCurrentAction()) {
             rebindmykeys$action = OnKeyAction.consumeCurrentAction();
+            if (rebindmykeys$action == null)
+                throw new IllegalStateException("Couldn't consume current action!");
             switch (rebindmykeys$action) {
                 case START_DEBUG_CRASH -> rebindmykeys$debugCrashActive = true;
                 case STOP_DEBUG_CRASH -> rebindmykeys$debugCrashActive = false;
             }
+            rebindmykeys$isDebugCombo = switch (rebindmykeys$action) {
+                case ACTION_PAUSE_WITHOUT_MENU, ACTION_RELOAD_CHUNKS, TOGGLE_HITBOXES, ACTION_COPY_LOCATION,
+                     ACTION_CLEAR_CHAT, TOGGLE_CHUNK_BORDERS, TOGGLE_ADVANCED_TOOLTIPS, ACTION_COPY_SERVER_DATA,
+                     ACTION_COPY_CLIENT_DATA, TOGGLE_DEBUG_PROFILER, TOGGLE_SPECTATOR,
+                     TOGGLE_PAUSE_ON_LOST_FOCUS, ACTION_PRINT_HELP, ACTION_DUMP_TEXTURES, ACTION_RELOAD_RESOURCES,
+                     ACTION_OPEN_GAMEMODE_SWITCHER -> true; // F3 combos
+                default -> false;
+            };
             return;
         }
 
@@ -45,15 +57,22 @@ public class KeyboardMixin {
         if (action == GLFW.GLFW_PRESS && keycode == Key.Z.getCode()) // benchmark
             TimerUtil.start();
 
-        if (action != GLFW.GLFW_PRESS && action != GLFW.GLFW_RELEASE) return; // if the action is not press and not release
+        if (action != GLFW.GLFW_PRESS && action != GLFW.GLFW_RELEASE) {
+            ci.cancel();
+            return; // if the action is not press and not release
+        }
 
         InputUtil.Key key = InputUtil.fromKeyCode(keycode, scancode);
-        KeyBindingUtil.onKeyAll(key, action == GLFW.GLFW_PRESS);
+        KeyBindingUtil.onKey(key, action == GLFW.GLFW_PRESS);
 
-        KeyBindingUtil.updateAll();
+        KeyBindingUtil.update();
 
         ci.cancel();
     }
+
+    /* ************************************************************************************************************** */
+    /*           Allows me to use the Vanilla implementations from Keyboard#onKey instead of writing my own           */
+    /* ************************************************************************************************************** */
 
     @Redirect(
             method = "onKey",
@@ -74,15 +93,8 @@ public class KeyboardMixin {
                     ordinal = 0
             )
     ) // 339: boolean bl = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3);
-    private boolean rebindmykeys$f3Combos(long handle, int code) {
-        return rebindmykeys$debugCrashActive || switch (rebindmykeys$action) {
-            case ACTION_PAUSE_WITHOUT_MENU, ACTION_RELOAD_CHUNKS, TOGGLE_HITBOXES, ACTION_COPY_LOCATION,
-                 ACTION_CLEAR_CHAT, TOGGLE_CHUNK_BORDERS, TOGGLE_ADVANCED_TOOLTIPS, ACTION_COPY_SERVER_DATA,
-                 ACTION_COPY_CLIENT_DATA, ACTION_GENERATE_PERFORMANCE_METRICS, TOGGLE_SPECTATOR,
-                 TOGGLE_PAUSE_ON_LOST_FOCUS, ACTION_PRINT_HELP, ACTION_DUMP_TEXTURES, ACTION_RELOAD_RESOURCES,
-                 ACTION_OPEN_GAMEMODE_SWITCHER -> true; // F3 combos
-            default -> false;
-        };
+    private boolean rebindmykeys$debugCrash_debugCombo(long handle, int code) {
+        return rebindmykeys$debugCrashActive || rebindmykeys$isDebugCombo;
     }
 
     @Redirect(
@@ -125,14 +137,24 @@ public class KeyboardMixin {
             )
     ) // 350: if ((screen2 = this.client.currentScreen) != null) {
     // 383: && bl2) {
-    private void rebindmykeys$all$2(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci, @Local(ordinal = 1) LocalRef<Screen> screen2) {
+    // 395: if (screen2 != null) {
+    private void rebindmykeys$all$2(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci, @Local(ordinal = 0) LocalRef<Screen> screen2) {
         screen2.set(null);
     }
 
     @ModifyConstant(
             method = "onKey",
-            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/InputUtil;isKeyPressed(JI)Z", ordinal = 0)),
-            constant = @Constant(intValue = 1, ordinal = 0)
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;isKeyPressed(JI)Z",
+                            ordinal = 0
+                    )
+            ),
+            constant = @Constant(
+                    intValue = 1,
+                    ordinal = 1
+            )
     ) // 364: if (!(action != 1 ||
     private int rebindmykeys$fullscreen_screenshot$1(int constant, long window, int keycode, int scancode, int action, int modifiers) {
         return switch (rebindmykeys$action) {
@@ -143,17 +165,32 @@ public class KeyboardMixin {
 
     @ModifyConstant(
             method = "onKey",
-            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/InputUtil;isKeyPressed(JI)Z", ordinal = 0)),
-            constant = @Constant(classValue = KeybindsScreen.class, ordinal = 0)
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;isKeyPressed(JI)Z",
+                            ordinal = 0
+                    )
+            ),
+            constant = @Constant(
+                    classValue = KeybindsScreen.class,
+                    ordinal = 0
+            )
     ) // 364: || this.client.currentScreen instanceof KeybindsScreen && ((KeybindsScreen)screen2).lastKeyCodeUpdateTime > Util.getMeasuringTimeMs() - 20L)) {
-    private Class<?> rebindmykeys$fullscreen_screenshot$2(Class<?> clazz) {
+    private Class<?> rebindmykeys$fullscreen_screenshot$2(Object instance, Class<?> clazz) {
         // won't be reached if check for fullscreen_screenshot$1 fails so no switch needed
         return RebindMyKeys.class; // this.client.currentScreen will never be an instance of RebindMyKeys.class :)
     }
 
     @Redirect(
             method = "onKey",
-            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/InputUtil;isKeyPressed(JI)Z", ordinal = 0)),
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;isKeyPressed(JI)Z",
+                            ordinal = 0
+                    )
+            ),
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/option/KeyBinding;matchesKey(II)Z",
@@ -166,7 +203,13 @@ public class KeyboardMixin {
 
     @Redirect(
             method = "onKey",
-            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/InputUtil;isKeyPressed(JI)Z", ordinal = 0)),
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;isKeyPressed(JI)Z",
+                            ordinal = 0
+                    )
+            ),
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/option/KeyBinding;matchesKey(II)Z",
@@ -179,7 +222,13 @@ public class KeyboardMixin {
 
     @Redirect(
             method = "onKey",
-            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/NarratorManager;isActive()Z", ordinal = 0)),
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/NarratorManager;isActive()Z",
+                            ordinal = 0
+                    )
+            ),
             at = @At(
                     value = "INVOKE",
                     target = "Ljava/lang/Boolean;booleanValue()Z",
@@ -192,8 +241,17 @@ public class KeyboardMixin {
 
     @ModifyConstant(
             method = "onKey",
-            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/NarratorManager;isActive()Z", ordinal = 0)),
-            constant = @Constant(intValue = 0)
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/NarratorManager;isActive()Z",
+                            ordinal = 0
+                    )
+            ),
+            constant = @Constant(
+                    intValue = 0,
+                    ordinal = 0
+            )
     ) // 383: if (action != 0 &&
     private int rebindmykeys$narrator$2(int constant, long window, int keycode, int scanCode, int action, int modifiers) {
         return action;
@@ -201,8 +259,17 @@ public class KeyboardMixin {
 
     @ModifyConstant(
             method = "onKey",
-            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/NarratorManager;isActive()Z", ordinal = 0)),
-            constant = @Constant(intValue = GLFW.GLFW_KEY_B)
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/NarratorManager;isActive()Z",
+                            ordinal = 0
+                    )
+            ),
+            constant = @Constant(
+                    intValue = GLFW.GLFW_KEY_B,
+                    ordinal = 0
+            )
     ) // 383: && key == GLFW.GLFW_KEY_B &&
     private int rebindmykeys$narrator$3(int constant, long window, int keycode, int scanCode, int action, int modifiers) {
         return keycode;
@@ -210,14 +277,302 @@ public class KeyboardMixin {
 
     @Redirect(
             method = "onKey",
-            slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/NarratorManager;isActive()Z", ordinal = 0)),
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;hasControlDown()Z", ordinal = 0)
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/NarratorManager;isActive()Z",
+                            ordinal = 0
+                    )
+            ),
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/screen/Screen;hasControlDown()Z",
+                    ordinal = 0
+            )
     ) // 383: && Screen.hasControlDown() &&
     private boolean rebindmykeys$narrator$4() {
         return true;
     }
 
+    @Inject(
+            method = "onKey",
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;fromKeyCode(II)Lnet/minecraft/client/util/InputUtil$Key;",
+                            ordinal = 0
+                    )
+            ),
+            at = @At(
+                    value = "JUMP",
+                    opcode = Opcodes.IFNE,
+                    ordinal = 0
+            )
+    ) // 412: if (action == 0) {
+    private void rebindmykeys$debugHud$1(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci, @Local(argsOnly = true, ordinal = 2) LocalIntRef actionRef) {
+        actionRef.set(rebindmykeys$action == OnKeyAction.TOGGLE_DEBUG_HUD? 0 : 1);
+    }
+    /*
     @ModifyConstant(
-            method = "onKey"
-    )
+            method = "onKey",
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;fromKeyCode(II)Lnet/minecraft/client/util/InputUtil$Key;",
+                            ordinal = 0
+                    )
+            ),
+            constant = @Constant(
+                    intValue = 0,
+                    ordinal = 0
+            )
+    ) // 412: if (action == 0) { FIXME: JUMP statement likely (eg IFNE)
+    private int rebindmykeys$debugHud$1(int constant, long window, int keycode, int scanCode, int action, int modifiers) {
+        return rebindmykeys$action == OnKeyAction.TOGGLE_DEBUG_HUD? action : action + 1;
+    }
+     */
+
+    @Redirect(
+            method = "onKey",
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;fromKeyCode(II)Lnet/minecraft/client/util/InputUtil$Key;",
+                            ordinal = 0
+                    )
+            ),
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/option/KeyBinding;setKeyPressed(Lnet/minecraft/client/util/InputUtil$Key;Z)V",
+                    ordinal = 0
+            )
+    ) // 413: KeyBinding.setKeyPressed(key2, false);
+    // 414: if (bl4 &&
+    private void rebindmykeys$debugHud$2(InputUtil.Key key, boolean pressed, @Local(ordinal = 2) LocalBooleanRef bl4) {
+        bl4.set(true);
+    }
+
+    @ModifyConstant(
+            method = "onKey",
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;fromKeyCode(II)Lnet/minecraft/client/util/InputUtil$Key;",
+                            ordinal = 0
+                    )
+            ),
+            constant = @Constant(
+                    intValue = GLFW.GLFW_KEY_F3,
+                    ordinal = 0
+            )
+    ) // 414: && key == GLFW.GLFW_KEY_F3) {
+    private int rebindmykeys$debugHud$3(int constant, long window, int keycode, int scancode, int action, int modifiers) {
+        return keycode;
+    }
+
+    @Inject(
+            method = "onKey",
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;fromKeyCode(II)Lnet/minecraft/client/util/InputUtil$Key;",
+                            ordinal = 0
+                    )
+            ),
+            at = @At(
+                    value = "CONSTANT",
+                    args = "intValue=293",
+                    ordinal = 0,
+                    shift = At.Shift.BY,
+                    by = -5
+            )
+    ) // 424: if (bl4) {
+    // 440: if (bl3) {
+    private void rebindmykeys$postProcessor_pause_pauseWithoutMenu_debugCombo_hideHud_charts(long window, int keycode, int scancode, int action, int modifiers, CallbackInfo ci, @Local(ordinal = 2) LocalBooleanRef bl4, @Local(ordinal = 1) LocalBooleanRef bl3) {
+        bl3.set(false);
+        bl4.set(switch (rebindmykeys$action) {
+            case TOGGLE_POST_PROCESSOR, ACTION_PAUSE, TOGGLE_HUD, TOGGLE_PROFILER_CHART,
+                 TOGGLE_FRAME_TIME_CHARTS, TOGGLE_NETWORK_CHARTS -> true;
+            default -> rebindmykeys$isDebugCombo;
+        });
+    }
+
+    @ModifyConstant(
+            method = "onKey",
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;fromKeyCode(II)Lnet/minecraft/client/util/InputUtil$Key;",
+                            ordinal = 0
+                    )
+            ),
+            constant = @Constant(
+                    intValue = GLFW.GLFW_KEY_F4,
+                    ordinal = 0
+            )
+    ) // 425: if (key == GLFW.GLFW_KEY_F4 && this.client.gameRenderer != null) {
+    private int rebindmykeys$postProcessor(int constant, long window, int keycode, int scancode, int action, int modifiers) {
+        return rebindmykeys$action == OnKeyAction.TOGGLE_POST_PROCESSOR? keycode : keycode + 1;
+    }
+
+    @ModifyConstant(
+            method = "onKey",
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;fromKeyCode(II)Lnet/minecraft/client/util/InputUtil$Key;",
+                            ordinal = 0
+                    )
+            ),
+            constant = @Constant(
+                    intValue = GLFW.GLFW_KEY_ESCAPE,
+                    ordinal = 0
+            )
+    ) // 428: if (key == GLFW.GLFW_KEY_ESCAPE) {
+    private int rebindmykeys$pause_pauseWithoutMenu(int constant, long window, int keycode, int scancode, int action, int modifiers) {
+        return switch (rebindmykeys$action) {
+            case ACTION_PAUSE, ACTION_PAUSE_WITHOUT_MENU -> keycode;
+            default -> keycode + 1;
+        };
+    }
+
+    @ModifyArg(
+            method = "onKey",
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;fromKeyCode(II)Lnet/minecraft/client/util/InputUtil$Key;",
+                            ordinal = 0
+                    )
+            ),
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/Keyboard;processF3(I)Z",
+                    ordinal = 0
+            ),
+            index = 0
+    ) // 432: this.client.handleProfilerKeyPress(key - GLFW.GLFW_KEY_0);
+    private int rebindmykeys$debugCombo(int key) {
+        return switch (rebindmykeys$action) {
+            case ACTION_RELOAD_CHUNKS -> GLFW.GLFW_KEY_A;
+            case TOGGLE_HITBOXES -> GLFW.GLFW_KEY_B;
+            case ACTION_CLEAR_CHAT -> GLFW.GLFW_KEY_D;
+            case TOGGLE_CHUNK_BORDERS -> GLFW.GLFW_KEY_G;
+            case TOGGLE_ADVANCED_TOOLTIPS -> GLFW.GLFW_KEY_H;
+            case ACTION_COPY_CLIENT_DATA, ACTION_COPY_SERVER_DATA -> GLFW.GLFW_KEY_I;
+            case TOGGLE_SPECTATOR -> GLFW.GLFW_KEY_N;
+            case ACTION_OPEN_GAMEMODE_SWITCHER -> GLFW.GLFW_KEY_F4;
+            case TOGGLE_PAUSE_ON_LOST_FOCUS -> GLFW.GLFW_KEY_P;
+            case ACTION_PRINT_HELP -> GLFW.GLFW_KEY_Q;
+            case ACTION_DUMP_TEXTURES -> GLFW.GLFW_KEY_S;
+            case ACTION_RELOAD_RESOURCES -> GLFW.GLFW_KEY_T;
+            case TOGGLE_DEBUG_PROFILER -> GLFW.GLFW_KEY_L;
+            case ACTION_COPY_LOCATION -> GLFW.GLFW_KEY_C;
+            case TOGGLE_PROFILER_CHART -> GLFW.GLFW_KEY_1;
+            case TOGGLE_FRAME_TIME_CHARTS -> GLFW.GLFW_KEY_2;
+            case TOGGLE_NETWORK_CHARTS -> GLFW.GLFW_KEY_3;
+            default -> -1;
+        };
+    }
+
+    @Redirect(
+            method = "processF3",
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/network/ClientPlayerEntity;hasReducedDebugInfo()Z",
+                            ordinal = 0
+                    )
+            ),
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/screen/Screen;hasShiftDown()Z"
+                    , ordinal = 0
+            )
+    ) // 163: this.copyLookAt(this.client.player.hasPermissionLevel(2), !Screen.hasShiftDown());
+    private boolean rebindmykeys$copyData() {
+        return rebindmykeys$action == OnKeyAction.ACTION_COPY_CLIENT_DATA;
+    }
+
+    @ModifyConstant(
+            method = "onKey",
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;fromKeyCode(II)Lnet/minecraft/client/util/InputUtil$Key;",
+                            ordinal = 0
+                    )
+            ),
+            constant = @Constant(
+                    intValue = GLFW.GLFW_KEY_F1,
+                    ordinal = 0
+            )
+    ) // 433: if (key == GLFW.GLFW_KEY_F1) {
+    private int rebindmykeys$hideHud(int constant, long window, int keycode, int scancode, int action, int modifiers) {
+        return rebindmykeys$action == OnKeyAction.TOGGLE_HUD? keycode : keycode + 1;
+    }
+
+    @ModifyConstant(
+            method = "onKey",
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;fromKeyCode(II)Lnet/minecraft/client/util/InputUtil$Key;",
+                            ordinal = 0
+                    )
+            ),
+            constant = @Constant(
+                    intValue = GLFW.GLFW_KEY_0,
+                    ordinal = 0
+            )
+    ) // 436: if (this.client.getDebugHud().shouldShowRenderingChart() && !bl && key >= GLFW.GLFW_KEY_0 &&
+    private int rebindmykeys$charts$1(int constant, long window, int keycode, int scancode, int action, int modifiers) {
+        return switch (rebindmykeys$action) {
+            case TOGGLE_PROFILER_CHART, TOGGLE_FRAME_TIME_CHARTS, TOGGLE_NETWORK_CHARTS -> keycode;
+            default -> keycode + 1;
+        };
+    }
+
+    @ModifyConstant(
+            method = "onKey",
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;fromKeyCode(II)Lnet/minecraft/client/util/InputUtil$Key;",
+                            ordinal = 0
+                    )
+            ),
+            constant = @Constant(
+                    intValue = GLFW.GLFW_KEY_9,
+                    ordinal = 0
+            )
+    ) // 436: && key <= GLFW.GLFW_KEY_9) {
+    private int rebindmykeys$charts$2(int constant, long window, int keycode, int scancode, int action, int modifiers) {
+        return keycode;
+    }
+
+    @ModifyArg(
+            method = "onKey",
+            slice = @Slice(
+                    from = @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/client/util/InputUtil;fromKeyCode(II)Lnet/minecraft/client/util/InputUtil$Key;",
+                            ordinal = 0
+                    )
+            ),
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/MinecraftClient;handleProfilerKeyPress(I)V",
+                    ordinal = 0
+            ),
+            index = 0
+    ) // 437: this.client.handleProfilerKeyPress(key - GLFW.GLFW_KEY_0);
+    private int rebindmykeys$chats$3(int digit) {
+        return switch(rebindmykeys$action) {
+            case TOGGLE_PROFILER_CHART -> 1;
+            case TOGGLE_FRAME_TIME_CHARTS -> 2;
+            case TOGGLE_NETWORK_CHARTS -> 3;
+            default -> throw new Error("Problem with KeyboardMixin#rebindmykeys$charts$3 or KeyboardMixin#rebindmykeys$charts$1"); // should never be reached
+        };
+    }
 }

@@ -63,10 +63,11 @@ public class ArrayUtil {
     }
 
     /**
-     * Checks if the {@code array} and {@code find} contain at least one element.
-     * @param array The array which should be searched.
-     * @param find The element to search for.
-     * @return {@code true} if the {@code array} contains {@code find} otherwise {@code false}.
+     * TODO: better docs
+     * Checks if {@code array} and {@code find} have at least one element in common.
+     * @param array The first array
+     * @param find The second array
+     * @return {@code true} if {@code array} contains any element of {@code find} otherwise {@code false}.
      * @param <T> The {@link Class} of the elements of the {@code array}.
      */
     @SafeVarargs

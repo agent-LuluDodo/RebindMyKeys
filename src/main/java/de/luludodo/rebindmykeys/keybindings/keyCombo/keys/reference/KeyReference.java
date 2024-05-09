@@ -24,6 +24,7 @@ public class KeyReference implements Key {
 
     private KeyBinding binding() {
         if (binding == null) binding = KeyUtil.get(reference);
+        if (binding == null) throw new IllegalArgumentException("Couldn't find KeyBinding with id " + reference);
         return binding;
     }
 
@@ -47,5 +48,22 @@ public class KeyReference implements Key {
         return JsonUtil.object()
                 .add("target", reference)
                 .build();
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    @Override
+    public String toString() {
+        return reference;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof KeyReference kr) {
+            return kr.reference.equals(reference);
+        }
+        return false;
     }
 }

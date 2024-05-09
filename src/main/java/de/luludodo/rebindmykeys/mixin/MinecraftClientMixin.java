@@ -25,13 +25,13 @@ public class MinecraftClientMixin {
             firstTime = true;
             return false;
         }
-        return KeyBindings.DROP.get().isActive() || KeyBindings.DROP_STACK.get().isActive();
+        return KeyBindings.DROP.get("key").isActive() || KeyBindings.DROP_STACK.get("lulu.key").isActive();
     }
 
     @Redirect(method = "handleInputEvents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;hasControlDown()Z", ordinal = 0))
     public boolean rebindmykeys$shouldDropStack() {
         firstTime = false;
-        return KeyBindings.DROP_STACK.get().isActive();
+        return KeyBindings.DROP_STACK.get("lulu.key").isActive();
     }
 
     @Inject(method = "setScreen", at = @At("RETURN"))
@@ -40,7 +40,7 @@ public class MinecraftClientMixin {
         TickUtil.schedule(() -> {
             if (Objects.hashCode(MinecraftClient.getInstance().currentScreen) != hash) return; // If screen changes multiple times in one tick only do for the most recent one
             //RebindMyKeys.DEBUG.info("Screen changed to " + MinecraftClient.getInstance().currentScreen);
-            KeyBindingUtil.checkContextAll();
+            KeyBindingUtil.checkContext();
         });
     }
 }

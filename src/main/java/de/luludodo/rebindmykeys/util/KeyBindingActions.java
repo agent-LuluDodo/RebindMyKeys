@@ -3,6 +3,7 @@ package de.luludodo.rebindmykeys.util;
 import de.luludodo.rebindmykeys.mixin.MinecraftClientMixin;
 import de.luludodo.rebindmykeys.util.enums.KeyBindings;
 import de.luludodo.rebindmykeys.util.enums.Mouse;
+import de.luludodo.rebindmykeys.util.enums.OnKeyAction;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.option.KeyBinding;
@@ -11,7 +12,7 @@ public class KeyBindingActions {
     private static final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
     public static void leftClick() {
-        if (KeyBindings.LEFT_CLICK.get().isPressed()) {
+        if (KeyBindings.LEFT_CLICK.get("lulu.key").isPressed()) {
             CLIENT.currentScreen.mouseClicked(Mouse.getX(), Mouse.getY(), Mouse.LEFT.getButton());
         } else {
             CLIENT.currentScreen.mouseReleased(Mouse.getX(), Mouse.getY(), Mouse.LEFT.getButton());
@@ -19,7 +20,7 @@ public class KeyBindingActions {
     }
 
     public static void rightClick() {
-        if (KeyBindings.LEFT_CLICK.get().isPressed()) {
+        if (KeyBindings.LEFT_CLICK.get("lulu.key").isPressed()) {
             CLIENT.currentScreen.mouseClicked(Mouse.getX(), Mouse.getY(), Mouse.RIGHT.getButton());
         } else {
             CLIENT.currentScreen.mouseReleased(Mouse.getX(), Mouse.getY(), Mouse.RIGHT.getButton());
@@ -47,7 +48,7 @@ public class KeyBindingActions {
 
     public static void pauseGame() {
         //RebindMyKeys.DEBUG.info("Pausing Game");
-        CLIENT.openGameMenu(KeyBindings.DEBUG_MENU.get().isPressed());
+        CLIENT.openGameMenu(KeyBindings.DEBUG_MENU.get("lulu.key").isPressed());
     }
 
     public static void narrator() { // TODO: Implement
@@ -58,8 +59,20 @@ public class KeyBindingActions {
         CLIENT.options.hudHidden = newState;
     }
 
+    private static boolean debugMenuState = false;
     public static void debugMenu(boolean newState) { // TODO: Implement debug key combos
-        CLIENT.inGameHud.getDebugHud().toggleDebugHud();
+        if (debugMenuState != newState) {
+            debugMenuState = newState;
+            CLIENT.inGameHud.getDebugHud().toggleDebugHud();
+        }
+    }
+
+    public static void debugCrash(boolean newState) {
+        if (newState) {
+            OnKeyAction.START_DEBUG_CRASH.trigger();
+        } else {
+            OnKeyAction.STOP_DEBUG_CRASH.trigger();
+        }
     }
 
     public static void postProcessing(boolean newState) {

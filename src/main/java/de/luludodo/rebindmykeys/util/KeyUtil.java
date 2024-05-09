@@ -1,5 +1,6 @@
 package de.luludodo.rebindmykeys.util;
 
+import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.keybindings.KeyBinding;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.KeyCombo;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
@@ -13,10 +14,12 @@ import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.ComboSettings;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.Context;
 import de.luludodo.rebindmykeys.util.interfaces.Action;
 import de.luludodo.rebindmykeys.util.interfaces.IKeyBinding;
-import de.luludodo.rebindmykeys.util.enums.KeyBindings;
 import de.luludodo.rebindmykeys.util.enums.Mouse;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
@@ -25,7 +28,9 @@ import java.util.function.Consumer;
 
 public class KeyUtil {
     private static final MinecraftClient CLIENT = MinecraftClient.getInstance();
-    private static String currentMod = "N/A";
+    private static Class<? extends ClientModInitializer> currentMod = null;
+    private static String currentKeyPrefix = "";
+    private static String currentCategoryPrefix = "";
     private static String currentCategory = "N/A";
     public static class Builder {
         // Binding
@@ -41,7 +46,7 @@ public class KeyUtil {
         private Context[] context = new Context[]{Context.PLAYING};
         private boolean orderSensitive = true;
         private Builder(String id) {
-            this.id = id;
+            this.id = getKey(id);
         }
 
         public Builder setDefaults() {
@@ -95,13 +100,13 @@ public class KeyUtil {
             return this;
         }
 
-        public Builder reference(KeyBindings target) {
-            keys.add(new KeyReference(target.getId()));
+        public Builder reference(IKeyBinding target) {
+            keys.add(new KeyReference(getKey(target.getId())));
             return this;
         }
 
         public Builder reference(String targetId) {
-            keys.add(new KeyReference(targetId));
+            keys.add(new KeyReference(getKey(targetId)));
             return this;
         }
 
@@ -118,7 +123,7 @@ public class KeyUtil {
         }
 
         public Builder nextCombo() {
-            combos.add(new KeyCombo(keys, new ComboSettings(operationMode, context, orderSensitive)));
+            combos.add(new KeyCombo(id, keys, new ComboSettings(operationMode, context, orderSensitive)));
             keys = new ArrayList<>();
             if (defaultsSet) {
                 operationMode = defaultOperationMode;
@@ -132,8 +137,8 @@ public class KeyUtil {
             if (!defaultsSet)
                 setDefaults();
             if (!keys.isEmpty())
-                combos.add(new KeyCombo(keys, new ComboSettings(operationMode, context, orderSensitive)));
-            KeyBinding binding = KeyUtil.register(new KeyBinding(id, combos, new ComboSettings(defaultOperationMode, defaultContext, defaultOrderSensitive)));
+                combos.add(new KeyCombo(id, keys, new ComboSettings(operationMode, context, orderSensitive)));
+            KeyUtil.register(new KeyBinding(id, currentMod, combos, new ComboSettings(defaultOperationMode, defaultContext, defaultOrderSensitive)));
             boolean isAction = operationMode instanceof ActionMode;
             if (onAction != null) {
                 if (!isAction) // I already know I'm gonna put the wrong one on some KeyBindings so this is going to save me a lot of debugging
@@ -149,13 +154,75 @@ public class KeyUtil {
             }
         }
     }
+    static {
+        ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
+            validate();
+            recalcLengthToCombos();
+            KeyBindingUtil.calcIncompatibleUUIDs();
+        });
+    }
 
-    public static void setMod(String mod) {
+    private static void validate() {
+        if (CollectionUtil.oneCondition(getAll(), binding -> {
+            try {
+                binding.updatePressed();
+                return false;
+            } catch (RuntimeException e) {
+                RebindMyKeys.LOG.error("KeyBinding '" + binding.getId() + "' from mod '" + binding.getModName() + "' is invalid", e);
+                return true;
+            }
+        })) {
+            throw new IllegalStateException("One or more KeyBindings are invalid");
+        }
+        if (CollectionUtil.oneCondition(getAll(), binding -> {
+            try {
+                binding.updateActive();
+                return false;
+            } catch (RuntimeException e) {
+                RebindMyKeys.LOG.error("KeyBinding '" + binding.getId() + "' from mod '" + binding.getModName() + "' is invalid", e);
+                return true;
+            }
+        })) {
+            throw new IllegalStateException("One or more KeyBindings are invalid");
+        }
+    }
+
+    public static void setMod(@Nullable Class<? extends ClientModInitializer> mod, @Nullable String keyPrefix, @Nullable String categoryPrefix) {
         currentMod = mod;
+        currentKeyPrefix = processPrefix(keyPrefix);
+        currentCategoryPrefix = processPrefix(categoryPrefix);
+    }
+
+    public static String processPrefix(String prefix) {
+        return (prefix == null || prefix.isBlank())? "" : prefix.strip() + ".";
     }
 
     public static void setCategory(String category) {
-        currentCategory = category;
+        category = category.strip();
+        if (category.isEmpty())
+            throw new IllegalArgumentException("category is empty");
+        if (category.charAt(0) == '#') {
+            category = category.substring(1).strip();
+            if (category.isEmpty())
+                throw new IllegalArgumentException("category is empty");
+            currentCategory = category;
+        } else {
+            currentCategory = currentCategoryPrefix + category;
+        }
+    }
+
+    private static String getKey(String key) {
+        key = key.strip();
+        if (key.isEmpty())
+            throw new IllegalArgumentException("key is empty");
+        if (key.charAt(0) == '#') {
+            key = key.substring(1).strip();
+            if (key.isEmpty())
+                throw new IllegalArgumentException("key is empty");
+            return key;
+        } else {
+            return currentKeyPrefix + key;
+        }
     }
 
     public static Builder create(IKeyBinding bindingEnum) {
@@ -167,6 +234,7 @@ public class KeyUtil {
     }
 
     private static final Map<String, KeyBinding> idToBinding = new HashMap<>();
+    private static final Map<Integer, List<KeyCombo>> lengthToCombos = new TreeMap<>(Collections.reverseOrder());
     public static KeyBinding register(KeyBinding binding) {
         if (idToBinding.containsKey(binding.getId()))
             throw new IllegalArgumentException("A KeyBinding with the id '" + binding.getId() + "' already exists.");
@@ -179,7 +247,24 @@ public class KeyUtil {
     }
 
     public static Collection<KeyBinding> getAll() {
-        return idToBinding.values();
+        return Collections.unmodifiableCollection(idToBinding.values());
+    }
+
+    public static Map<Integer, List<KeyCombo>> getCombosByLength() {
+        return Collections.unmodifiableMap(lengthToCombos);
+    }
+
+    public static void recalcLengthToCombos() {
+        lengthToCombos.clear();
+        for (KeyBinding binding : idToBinding.values()) {
+            for (KeyCombo combo : binding.getKeyCombos()) {
+                int length = combo.getLength();
+                if (!lengthToCombos.containsKey(length)) {
+                    lengthToCombos.put(length, new ArrayList<>());
+                }
+                lengthToCombos.get(length).add(combo);
+            }
+        }
     }
 
     private static final Map<String, List<Consumer<MinecraftClient>>> bindingActionListener = new HashMap<>();

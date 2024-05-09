@@ -24,9 +24,9 @@ public class MouseMixin {
         if (action != GLFW.GLFW_PRESS && action != GLFW.GLFW_RELEASE) return; // if the action is not press and not release
 
         InputUtil.Key key = InputUtil.Type.MOUSE.createFromCode(button);
-        KeyBindingUtil.onKeyAll(key, action == GLFW.GLFW_PRESS);
+        KeyBindingUtil.onKey(key, action == GLFW.GLFW_PRESS);
 
-        KeyBindingUtil.updateAll();
+        KeyBindingUtil.update();
 
         ci.cancel();
     }

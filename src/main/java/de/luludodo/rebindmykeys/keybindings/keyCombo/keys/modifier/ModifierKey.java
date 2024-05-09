@@ -2,6 +2,7 @@ package de.luludodo.rebindmykeys.keybindings.keyCombo.keys.modifier;
 
 import com.google.gson.JsonElement;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.reference.KeyReference;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.interfaces.Action;
 import net.minecraft.client.util.InputUtil;
@@ -54,5 +55,22 @@ public class ModifierKey implements Key {
         return JsonUtil.object()
                 .add("modifier", modifier)
                 .build();
+    }
+
+    public Modifier getModifier() {
+        return modifier;
+    }
+
+    @Override
+    public String toString() {
+        return modifier.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof ModifierKey mk) {
+            return mk.modifier.equals(modifier);
+        }
+        return false;
     }
 }

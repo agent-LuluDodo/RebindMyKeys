@@ -1,10 +1,9 @@
 package de.luludodo.rebindmykeys.util;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -42,5 +41,34 @@ public class MapUtil {
                 map.remove(key);
             }
         }
+    }
+
+    @Contract(pure = true)
+    public static <K, V> Map<K, V> sort(@NotNull Map<K, V> map, Comparator<Map.Entry<K, V>> compare) {
+        LinkedHashMap<K, V> sortedMap = new LinkedHashMap<>();
+        map.entrySet().stream().sorted(compare).forEachOrdered(entry -> {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        });
+        return sortedMap;
+    }
+
+    @Contract(pure = true)
+    public static <K extends Comparable<K>, V> Map<K, V> sortByKey(@NotNull Map<K, V> map) {
+        return sort(map, Map.Entry.comparingByKey());
+    }
+
+    @Contract(pure = true)
+    public static <K, V> Map<K, V> sortByKey(@NotNull Map<K, V> map, Comparator<K> compare) {
+        return sort(map, (entry1, entry2) -> compare.compare(entry1.getKey(), entry2.getKey()));
+    }
+
+    @Contract(pure = true)
+    public static <K, V extends Comparable<V>> Map<K, V> sortByValue(@NotNull Map<K, V> map) {
+        return sort(map, Map.Entry.comparingByValue());
+    }
+
+    @Contract(pure = true)
+    public static <K, V> Map<K, V> sortByValue(@NotNull Map<K, V> map, Comparator<V> compare) {
+        return sort(map, (entry1, entry2) -> compare.compare(entry1.getValue(), entry2.getValue()));
     }
 }

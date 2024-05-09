@@ -2,10 +2,9 @@ package de.luludodo.rebindmykeys.util;
 
 import org.jetbrains.annotations.Contract;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Various utilities for {@link Collection Collections}.
@@ -44,7 +43,7 @@ public class CollectionUtil {
          * @param list The {@link List} to modify.
          * @param startPos The original position of the element.
          * @param endPos The target position of the element.
-         * @return The modified {@link List}.
+         * @return The moved element.
          * @param <T> The {@link Class} of the elements of the {@link List}.
          * @throws IllegalArgumentException If {@code startPos} < 0 or {@code startPos} > ({@link List#size() list.size()} - 1)<br>
          * If {@code endPos} < 0 or {@code endPos} > ({@link List#size() list.size()} - 1)<br>
@@ -141,11 +140,92 @@ public class CollectionUtil {
         return allConditions(collection, element -> !condition.apply(element)); // Checks if all conditions are invalid -> means none were valid
     }
 
+    /**
+     *
+     * @param collection
+     * @param value
+     * @return
+     * @param <T>
+     * @param <V>
+     */
+    @Contract(pure = true)
+    public static <T, V extends Comparable<V>> V max(Collection<T> collection, Function<T, V> value) {
+        return max(collection, value, Comparable::compareTo);
+    }
+
+    /**
+     *
+     * @param collection
+     * @param value
+     * @param compare
+     * @return
+     * @param <T>
+     * @param <V>
+     */
+    @Contract(pure = true)
+    public static <T, V> V max(Collection<T> collection, Function<T, V> value, Comparator<V> compare) {
+        V max = null;
+        for (T element : collection) {
+            V current = value.apply(element);
+            if (max == null || compare.compare(max, current) < 0) {
+                max = current;
+            }
+        }
+        return max;
+    }
+
     @Contract(pure = true)
     public static <T> boolean shareOneOrMoreElements(Collection<T> collection1, Collection<T> collection2) {
         for (T element : collection1) {
             if (collection2.contains(element)) return true;
         }
         return false;
+    }
+
+    @SafeVarargs
+    @Contract(pure = true)
+    public static <E> Set<E> join(Set<E>... sets) {
+        return join(HashSet::new, sets);
+    }
+
+    @SafeVarargs
+    @Contract(pure = true)
+    public static <E> List<E> join(List<E>... lists) {
+        return join(ArrayList::new, lists);
+    }
+
+    @SafeVarargs
+    @Contract(pure = true)
+    public static <C extends Collection<E>, E> C join(Supplier<C> createNew, Collection<E>... collections) {
+        C joined = createNew.get();
+        for (Collection<E> collection : collections) {
+            joined.addAll(collection);
+        }
+        return joined;
+    }
+
+    @Contract(pure = true)
+    public static <C extends Collection<E>, E> C joinCollection(Supplier<C> createNew, Collection<Collection<E>> collections) {
+        C joined = createNew.get();
+        for (Collection<E> collection : collections) {
+            joined.addAll(collection);
+        }
+        return joined;
+    }
+
+    public static <R> List<R> run(Collection<Supplier<R>> suppliers) {
+        List<R> result = new ArrayList<>();
+        for (Supplier<R> supplier : suppliers) {
+            result.add(supplier.get());
+        }
+        return result;
+    }
+
+    public static <E, R> List<R> run(Collection<E> elements, Function<E, R> function) {
+        List<R> result = new ArrayList<>();
+        for (E element : elements) {
+            result.add(function.apply(element));
+        }
+        return result;
     }
 }

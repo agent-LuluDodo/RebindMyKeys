@@ -1,11 +1,13 @@
-package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes;
+package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.hold;
 
 import com.google.gson.JsonElement;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMode;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 
 public class HoldMode implements OperationMode {
     private boolean inverted = false;
     private boolean pressed = false;
+    private boolean wasTriggered = false;
     public HoldMode() {
         this(false);
     }
@@ -19,16 +21,27 @@ public class HoldMode implements OperationMode {
     @Override
     public void onKeyDown() {
         pressed = true;
+        wasTriggered = true;
     }
 
     @Override
     public void onKeyUp() {
         pressed = false;
+        wasTriggered = true;
+    }
+
+    public void done() {
+        wasTriggered = false;
     }
 
     @Override
     public boolean isActive() {
         return inverted != pressed; // if inverted !pressed else pressed
+    }
+
+    @Override
+    public boolean wasTriggered() {
+        return wasTriggered;
     }
 
     @Override

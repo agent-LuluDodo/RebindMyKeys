@@ -1,6 +1,10 @@
 package de.luludodo.rebindmykeys.util.enums;
 
+import de.luludodo.rebindmykeys.util.interfaces.Action;
 import net.minecraft.client.MinecraftClient;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public enum OnKeyAction {
     START_DEBUG_CRASH,
@@ -10,6 +14,7 @@ public enum OnKeyAction {
     ACTION_CYCLE_NARRATOR,
     TOGGLE_DEBUG_HUD,
     TOGGLE_POST_PROCESSOR,
+    TOGGLE_HUD,
     ACTION_PAUSE,
     ACTION_PAUSE_WITHOUT_MENU, // FIXME: Maybe works differently
     TOGGLE_PROFILER_CHART,
@@ -23,7 +28,7 @@ public enum OnKeyAction {
     TOGGLE_ADVANCED_TOOLTIPS,
     ACTION_COPY_SERVER_DATA,
     ACTION_COPY_CLIENT_DATA,
-    ACTION_GENERATE_PERFORMANCE_METRICS,
+    TOGGLE_DEBUG_PROFILER,
     TOGGLE_SPECTATOR,
     TOGGLE_PAUSE_ON_LOST_FOCUS,
     ACTION_PRINT_HELP,
@@ -36,6 +41,28 @@ public enum OnKeyAction {
     public void trigger() {
         currentAction = this;
         MinecraftClient.getInstance().keyboard.onKey(-1, -1, -1, -1, -1);
+    }
+
+    public Action action() {
+        return this::trigger;
+    }
+
+    private boolean currentState = false;
+    public Consumer<Boolean> toggle() {
+        return newValue -> {
+            if (newValue != currentState) {
+                currentState = newValue;
+                trigger();
+            }
+        };
+    }
+
+    public Consumer<Boolean> toggle(Supplier<Boolean> getCurrentState) {
+        return newValue -> {
+            if (newValue != getCurrentState.get()) {
+                trigger();
+            }
+        };
     }
 
     private static OnKeyAction currentAction;

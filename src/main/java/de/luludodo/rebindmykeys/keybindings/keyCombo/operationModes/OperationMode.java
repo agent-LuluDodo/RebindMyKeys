@@ -2,6 +2,7 @@ package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes;
 
 import com.google.gson.JsonElement;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActionMode;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.hold.HoldMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.toggle.ToggleMode;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.interfaces.JsonLoadable;
@@ -11,6 +12,16 @@ public interface OperationMode extends JsonSavable, JsonLoadable {
     void onKeyDown();
     void onKeyUp();
     boolean isActive();
+
+    /**
+     * Promises to always return the same value on consecutive calls without other state changes.
+     */
+    boolean wasTriggered();
+
+    /**
+     * Resets {@link OperationMode#wasTriggered()}.
+     */
+    void done();
 
     static JsonElement save(OperationMode mode) {
         return JsonUtil.object()

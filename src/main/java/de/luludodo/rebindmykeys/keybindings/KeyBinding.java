@@ -1,46 +1,40 @@
 package de.luludodo.rebindmykeys.keybindings;
 
 import com.google.gson.JsonElement;
-import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.KeyCombo;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActionMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.ComboSettings;
 import de.luludodo.rebindmykeys.util.CollectionUtil;
 import de.luludodo.rebindmykeys.util.JsonUtil;
-import de.luludodo.rebindmykeys.util.enums.KeyBindings;
-import de.luludodo.rebindmykeys.util.interfaces.Action;
 import de.luludodo.rebindmykeys.util.interfaces.JsonLoadable;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
+import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.util.InputUtil;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Consumer;
+import java.util.*;
 
 public class KeyBinding implements JsonSavable, JsonLoadable {
     private final String id;
+    private final Class<? extends ClientModInitializer> mod;
     private final List<KeyCombo> defaultKeyCombos;
     private List<KeyCombo> keyCombos;
     private final ComboSettings defaultSettings;
     private final boolean isAction;
-    public KeyBinding(String id, List<KeyCombo> keyCombos, ComboSettings defaultSettings) {
+    public KeyBinding(String id, Class<? extends ClientModInitializer> mod, List<KeyCombo> keyCombos, ComboSettings defaultSettings) {
         this.id = id;
+        this.mod = mod;
         defaultKeyCombos = keyCombos;
         this.keyCombos = keyCombos;
         this.defaultSettings = defaultSettings;
         isAction = defaultSettings.operationMode() instanceof ActionMode;
     }
 
-    // KINDA JANK START
     public boolean isAction() {
         return isAction;
     }
 
-    public boolean wasPressed() {
-        if (!isAction) throw new IllegalArgumentException("KeyBinding isn't an Action");
-        return isActive();
+    public boolean wasTriggered() {
+        return CollectionUtil.oneCondition(keyCombos, KeyCombo::wasTriggered);
     }
 
     public boolean isToggled() {
@@ -48,19 +42,20 @@ public class KeyBinding implements JsonSavable, JsonLoadable {
         return isActive();
     }
 
-    private boolean oldActive = false;
-    public boolean stateChanged() {
-        if (isAction) throw new IllegalArgumentException("KeyBinding is an Action");
-        boolean active = isActive();
-        if (oldActive == active)
-            return false;
-        oldActive = active;
-        return true;
+    public void done() {
+        keyCombos.forEach(KeyCombo::done);
     }
-    // KINDA JANK END
 
     public String getId() {
         return id;
+    }
+
+    public Class<? extends ClientModInitializer> getMod() {
+        return mod;
+    }
+
+    public String getModName() {
+        return mod == null ? "Minecraft" : mod.getSimpleName();
     }
 
     public void reset() {
@@ -81,6 +76,18 @@ public class KeyBinding implements JsonSavable, JsonLoadable {
 
     public List<KeyCombo> getKeyCombos() {
         return Collections.unmodifiableList(keyCombos);
+    }
+
+    public void calcIncompatibleUUIDs(Set<KeyCombo> keyCombos) {
+        keyCombos.forEach(combo -> combo.calcIncompatibleUUIDs(keyCombos));
+    }
+
+    public Set<UUID> getIncompatibleUUIDs() {
+        return CollectionUtil.joinCollection(HashSet::new, CollectionUtil.run(keyCombos, KeyCombo::getIncompatibleUUIDs));
+    }
+
+    public void filter(final Set<UUID> invalidUUIDs) {
+        keyCombos.forEach(combo -> combo.filter(invalidUUIDs));
     }
 
     public boolean isPressed() {

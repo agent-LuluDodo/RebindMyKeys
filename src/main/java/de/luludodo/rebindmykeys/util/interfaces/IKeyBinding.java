@@ -5,7 +5,7 @@ import de.luludodo.rebindmykeys.util.KeyUtil;
 
 public interface IKeyBinding {
     String getId();
-    default KeyBinding get() {
-        return KeyUtil.get(getId());
+    default KeyBinding get(String prefix) {
+        return KeyUtil.get(KeyUtil.processPrefix(prefix) + getId());
     }
 }

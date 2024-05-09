@@ -7,6 +7,7 @@ import de.luludodo.rebindmykeys.util.JsonUtil;
 public class ActionMode implements OperationMode {
     private ActivateOn activateOn;
     private boolean active = false;
+    private boolean wasTriggered = false;
     public ActionMode() {
         this(ActivateOn.PRESS);
     }
@@ -20,16 +21,26 @@ public class ActionMode implements OperationMode {
     @Override
     public void onKeyDown() {
         switch (activateOn) {
-            case PRESS, BOTH, UNKNOWN -> active = true;
-            default -> active = false;
+            case PRESS, BOTH, UNKNOWN -> {
+                active = true;
+                wasTriggered = true;
+            }
+            default -> {
+                active = false;
+            }
         }
     }
 
     @Override
     public void onKeyUp() {
         switch (activateOn) {
-            case RELEASE, BOTH -> active = true;
-            default -> active = false;
+            case RELEASE, BOTH -> {
+                active = true;
+                wasTriggered = true;
+            }
+            default -> {
+                active = false;
+            }
         }
     }
 
@@ -38,6 +49,15 @@ public class ActionMode implements OperationMode {
         if (!active) return false;
         active = false;
         return true;
+    }
+
+    @Override
+    public boolean wasTriggered() {
+        return wasTriggered;
+    }
+
+    public void done() {
+        wasTriggered = false;
     }
 
     public void setActivateOn(ActivateOn activateOn) {

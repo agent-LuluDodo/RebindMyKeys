@@ -1,6 +1,7 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes;
 
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActionMode;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.hold.HoldMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.toggle.ToggleMode;
 
 public enum OperationModeTypes {

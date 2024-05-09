@@ -9,6 +9,7 @@ public class ToggleMode implements OperationMode {
     private boolean initialState;
     private boolean toggleOnPress;
     private boolean toggled;
+    private boolean wasTriggered = false;
     public ToggleMode() {
         this(false, true);
     }
@@ -24,17 +25,32 @@ public class ToggleMode implements OperationMode {
 
     @Override
     public void onKeyDown() {
-        if (toggleOnPress) toggled = !toggled;
+        if (toggleOnPress) {
+            toggled = !toggled;
+            wasTriggered = true;
+        }
     }
 
     @Override
     public void onKeyUp() {
-        if (!toggleOnPress) toggled = !toggled;
+        if (!toggleOnPress) {
+            toggled = !toggled;
+            wasTriggered = true;
+        }
     }
 
     @Override
     public boolean isActive() {
         return toggled;
+    }
+
+    @Override
+    public boolean wasTriggered() {
+        return wasTriggered;
+    }
+
+    public void done() {
+        wasTriggered = false;
     }
 
     @Override

@@ -3,6 +3,7 @@ package de.luludodo.rebindmykeys.keybindings.keyCombo.keys.basic;
 import com.google.gson.JsonElement;
 import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.reference.KeyReference;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.KeyUtil;
 import de.luludodo.rebindmykeys.util.interfaces.Action;
@@ -47,5 +48,22 @@ public class BasicKey implements Key {
                 .add("type", key.getCategory())
                 .add("code", key.getCode())
                 .build();
+    }
+
+    public InputUtil.Key getKey() {
+        return key;
+    }
+
+    @Override
+    public String toString() {
+        return key.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof BasicKey bk) {
+            return bk.key.equals(key);
+        }
+        return false;
     }
 }
