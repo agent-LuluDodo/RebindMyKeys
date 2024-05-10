@@ -9,6 +9,7 @@ import de.luludodo.rebindmykeys.util.CollectionUtil;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.util.Identifier;
 
 import java.util.*;
 

@@ -238,7 +238,7 @@ public class RebindMyKeys implements ClientModInitializer {
                 .register();
 
 
-        KeyUtil.setMod(RebindMyKeys.class, "lulu.key", "lulu.key.categories");
+        KeyUtil.setMod(RebindMyKeys.class, "rebindmykeys.key", "rebindmykeys.key.categories");
 
         KeyUtil.setCategory("timer");
 
@@ -249,6 +249,7 @@ public class RebindMyKeys implements ClientModInitializer {
                 .register();
 
         KeyUtil.setCategory("essentials");
+        KeyUtil.moveCategoryToTop();
 
         KeyUtil.create(KeyBindings.LEFT_CLICK)
                 .context(Context.IN_SCREEN)
@@ -275,6 +276,7 @@ public class RebindMyKeys implements ClientModInitializer {
                 .register();
 
         KeyUtil.setCategory("camera");
+        KeyUtil.moveCategoryAfter("#key.categories.gameplay");
 
         // TODO: Camera controls (eg move camera left)
 
@@ -343,7 +345,7 @@ public class RebindMyKeys implements ClientModInitializer {
                 .onAction(KeyBindingActions::refreshServerList)
                 .register();
 
-        KeyUtil.setCategory("debug_charts");
+        KeyUtil.setCategory("debugCharts");
 
         KeyUtil.create(KeyBindings.PROFILER_CHART)
                 .operationMode(new ToggleMode())
@@ -367,7 +369,7 @@ public class RebindMyKeys implements ClientModInitializer {
                 .onToggle(OnKeyAction.TOGGLE_NETWORK_CHARTS.toggle())
                 .register();
 
-        KeyUtil.setCategory("debug_combos");
+        KeyUtil.setCategory("debugCombos");
 
         KeyUtil.create(KeyBindings.DEBUG_CRASH)
                 .operationMode(new HoldMode())
@@ -472,6 +474,9 @@ public class RebindMyKeys implements ClientModInitializer {
                 .keysm(Key.F4)
                 .onAction(OnKeyAction.ACTION_OPEN_GAMEMODE_SWITCHER.action())
                 .register();
+
+        KeyUtil.setCategory("timer");
+        KeyUtil.moveCategoryToBottom();
 
 
         // FIXME: check if reference + modifier with orderSensitive works correctly

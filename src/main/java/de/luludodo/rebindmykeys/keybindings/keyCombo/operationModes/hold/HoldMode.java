@@ -3,6 +3,7 @@ package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.hold;
 import com.google.gson.JsonElement;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMode;
 import de.luludodo.rebindmykeys.util.JsonUtil;
+import net.minecraft.util.Identifier;
 
 public class HoldMode implements OperationMode {
     private boolean inverted = false;
@@ -55,5 +56,15 @@ public class HoldMode implements OperationMode {
         return JsonUtil.object()
                 .add("inverted", inverted)
                 .build();
+    }
+
+    @Override
+    public Identifier getIcon() {
+        return new Identifier("rebindmykeys", "textures/gui/hold.png");
+    }
+
+    @Override
+    public String getName() {
+        return "rebindmykeys.operationMode.hold";
     }
 }

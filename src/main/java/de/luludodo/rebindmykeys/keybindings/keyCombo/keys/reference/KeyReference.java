@@ -8,6 +8,7 @@ import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.KeyUtil;
 import de.luludodo.rebindmykeys.util.interfaces.Action;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 public class KeyReference implements Key {
@@ -55,8 +56,8 @@ public class KeyReference implements Key {
     }
 
     @Override
-    public String toString() {
-        return reference;
+    public Text getText() {
+        return Text.translatable(reference);
     }
 
     @Override

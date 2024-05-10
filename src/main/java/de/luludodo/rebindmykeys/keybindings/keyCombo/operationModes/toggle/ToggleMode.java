@@ -2,8 +2,8 @@ package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.toggle;
 
 import com.google.gson.JsonElement;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMode;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActivateOn;
 import de.luludodo.rebindmykeys.util.JsonUtil;
+import net.minecraft.util.Identifier;
 
 public class ToggleMode implements OperationMode {
     private boolean initialState;
@@ -67,5 +67,15 @@ public class ToggleMode implements OperationMode {
                 .add("initialState", initialState)
                 .add("toggleOnPress", toggleOnPress)
                 .build();
+    }
+
+    @Override
+    public Identifier getIcon() {
+        return new Identifier("rebindmykeys", "textures/gui/toggle.png");
+    }
+
+    @Override
+    public String getName() {
+        return "rebindmykeys.operationMode.toggle";
     }
 }

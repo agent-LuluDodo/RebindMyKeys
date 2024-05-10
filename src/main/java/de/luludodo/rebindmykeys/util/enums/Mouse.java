@@ -29,4 +29,8 @@ public enum Mouse {
     public static double getY() {
         return CLIENT.mouse.getY() * CLIENT.getWindow().getScaledHeight() / CLIENT.getWindow().getHeight();
     }
+
+    public static boolean isHovered(int x, int y, int width, int height, double mouseX, double mouseY) {
+        return mouseX >= x && mouseX < (x + width) && mouseY >= y && mouseY < (y + height);
+    }
 }

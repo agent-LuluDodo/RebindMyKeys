@@ -4,9 +4,9 @@ import de.luludodo.rebindmykeys.util.enums.Key;
 import net.minecraft.client.util.InputUtil;
 
 public enum Modifier {
-    SHIFT,
-    CONTROL,
-    ALT;
+    SHIFT("rebindmykeys.modifier.shift"),
+    CONTROL("rebindmykeys.modifier.control"),
+    ALT("rebindmykeys.modifier.alt"),;
 
     // TODO: replace with saving based system
     static {
@@ -16,7 +16,10 @@ public enum Modifier {
     }
 
     private InputUtil.Key[] keys;
-    Modifier() {}
+    private final String translationKey;
+    Modifier(String translationKey) {
+        this.translationKey = translationKey;
+    }
 
     public void setKeys(InputUtil.Key[] keys) {
         this.keys = keys;
@@ -24,5 +27,9 @@ public enum Modifier {
 
     public InputUtil.Key[] getKeys() {
         return keys;
+    }
+
+    public String getTranslationKey() {
+        return translationKey;
     }
 }

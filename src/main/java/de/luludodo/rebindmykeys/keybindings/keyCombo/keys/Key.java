@@ -9,12 +9,14 @@ import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.interfaces.Action;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 
 public interface Key extends JsonSavable {
     void onKeyDown(InputUtil.Key key);
     void onKeyUp(InputUtil.Key key);
     void release();
     boolean isPressed();
+    Text getText();
 
     static JsonObject save(Key key) {
         return JsonUtil.object()

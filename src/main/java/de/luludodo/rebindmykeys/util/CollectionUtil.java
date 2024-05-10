@@ -1,5 +1,7 @@
 package de.luludodo.rebindmykeys.util;
 
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Contract;
 
 import java.util.*;
@@ -213,6 +215,21 @@ public class CollectionUtil {
         return joined;
     }
 
+    /**
+     * TODO: better explanation
+     * Use this if the merged collection has a wildcard (?) <p>
+     * Example: <br>
+     * {@code List<? extends String> joined = joinCollectionWildcard(...)}
+     */
+    @Contract(pure = true)
+    public static <C extends Collection<E>, E> C joinCollectionWildcard(Supplier<C> createNew, Collection<Collection<? extends E>> collections) {
+        C joined = createNew.get();
+        for (Collection<? extends E> collection : collections) {
+            joined.addAll(collection);
+        }
+        return joined;
+    }
+
     public static <R> List<R> run(Collection<Supplier<R>> suppliers) {
         List<R> result = new ArrayList<>();
         for (Supplier<R> supplier : suppliers) {
@@ -227,5 +244,45 @@ public class CollectionUtil {
             result.add(function.apply(element));
         }
         return result;
+    }
+
+    public static <E> String toString(Collection<E> collection, Function<E, String> toString, String start, String delimiter, String end) {
+        StringBuilder builder = new StringBuilder(start);
+        boolean first = true;
+        for (E element : collection) {
+            if (first) {
+                first = false;
+                builder.append(start);
+            } else {
+                builder.append(delimiter);
+            }
+            builder.append(toString.apply(element));
+        }
+        builder.append(end);
+        return builder.toString();
+    }
+
+    public static String toString(Collection<?> collection, String start, String delimiter, String end) {
+        return toString(collection, Object::toString, start, delimiter, end);
+    }
+
+    public static <E> MutableText toText(Collection<E> collection, Function<E, Text> toText, Text start, Text delimiter, Text end) {
+        MutableText text = Text.empty();
+        boolean first = true;
+        for (E element : collection) {
+            if (first) {
+                first = false;
+                text.append(start);
+            } else {
+                text.append(delimiter);
+            }
+            text.append(toText.apply(element));
+        }
+        text.append(end);
+        return text;
+    }
+
+    public static <E> MutableText toText(Collection<E> collection, Function<E, Text> toText, String start, String delimiter, String end) {
+        return toText(collection, toText, Text.literal(start), Text.literal(delimiter), Text.literal(end));
     }
 }

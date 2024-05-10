@@ -3,6 +3,7 @@ package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action;
 import com.google.gson.JsonElement;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMode;
 import de.luludodo.rebindmykeys.util.JsonUtil;
+import net.minecraft.util.Identifier;
 
 public class ActionMode implements OperationMode {
     private ActivateOn activateOn;
@@ -81,6 +82,16 @@ public class ActionMode implements OperationMode {
         return JsonUtil.object()
                 .add("activateOn", activateOn)
                 .build();
+    }
+
+    @Override
+    public Identifier getIcon() {
+        return new Identifier("rebindmykeys", "textures/gui/action.png");
+    }
+
+    @Override
+    public String getName() {
+        return "rebindmykeys.operationMode.action";
     }
 }
 

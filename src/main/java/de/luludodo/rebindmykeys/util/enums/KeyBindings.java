@@ -14,7 +14,7 @@ public enum KeyBindings implements IKeyBinding {
     DEBUG_MENU("debug.menu"),
     DEBUG_CRASH("debug.crash"),
     PROFILER_CHART("debug.charts.profiler"),
-    FRAME_TIME_CHARTS("debug.charts.frame_time"),
+    FRAME_TIME_CHARTS("debug.charts.frameTime"),
     NETWORK_CHARTS("debug.charts.network"),
     RELOAD_CHUNKS("debug.reloadChunks"),
     HITBOXES("debug.hitboxes"),
@@ -85,6 +85,6 @@ public enum KeyBindings implements IKeyBinding {
     }
 
     public String getCustomId() {
-        return "#lulu.key." + getId();
+        return "#rebindmykeys.key." + getId();
     }
 }

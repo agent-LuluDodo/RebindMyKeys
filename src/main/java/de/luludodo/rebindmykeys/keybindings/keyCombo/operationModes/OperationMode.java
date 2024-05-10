@@ -7,6 +7,7 @@ import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.toggle.Toggl
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.interfaces.JsonLoadable;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
+import net.minecraft.util.Identifier;
 
 public interface OperationMode extends JsonSavable, JsonLoadable {
     void onKeyDown();
@@ -17,6 +18,9 @@ public interface OperationMode extends JsonSavable, JsonLoadable {
      * Promises to always return the same value on consecutive calls without other state changes.
      */
     boolean wasTriggered();
+
+    Identifier getIcon();
+    String getName();
 
     /**
      * Resets {@link OperationMode#wasTriggered()}.

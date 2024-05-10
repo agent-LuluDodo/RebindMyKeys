@@ -1,16 +1,17 @@
 package de.luludodo.rebindmykeys.mixin;
 
+import de.luludodo.rebindmykeys.gui.KeyBindingScreen;
 import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import de.luludodo.rebindmykeys.util.TickUtil;
 import de.luludodo.rebindmykeys.util.enums.KeyBindings;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.option.KeybindsScreen;
 import net.minecraft.client.option.KeyBinding;
 import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Objects;
@@ -18,20 +19,21 @@ import java.util.Objects;
 @Debug(export = true)
 @Mixin(MinecraftClient.class)
 public class MinecraftClientMixin {
-    private boolean firstTime = true;
+    @Unique
+    private boolean rebindmykeys$firstTime = true;
     @Redirect(method = "handleInputEvents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBinding;wasPressed()Z", ordinal = 7))
     public boolean rebindmykeys$isDropKeyPressed(KeyBinding instance) {
-        if (!firstTime) {
-            firstTime = true;
+        if (!rebindmykeys$firstTime) {
+            rebindmykeys$firstTime = true;
             return false;
         }
-        return KeyBindings.DROP.get("key").isActive() || KeyBindings.DROP_STACK.get("lulu.key").isActive();
+        return KeyBindings.DROP.get("key").isActive() || KeyBindings.DROP_STACK.get("rebindmykeys.key").isActive();
     }
 
     @Redirect(method = "handleInputEvents", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;hasControlDown()Z", ordinal = 0))
     public boolean rebindmykeys$shouldDropStack() {
-        firstTime = false;
-        return KeyBindings.DROP_STACK.get("lulu.key").isActive();
+        rebindmykeys$firstTime = false;
+        return KeyBindings.DROP_STACK.get("rebindmykeys.key").isActive();
     }
 
     @Inject(method = "setScreen", at = @At("RETURN"))
@@ -42,5 +44,10 @@ public class MinecraftClientMixin {
             //RebindMyKeys.DEBUG.info("Screen changed to " + MinecraftClient.getInstance().currentScreen);
             KeyBindingUtil.checkContext();
         });
+    }
+
+    @ModifyVariable(method = "setScreen", at = @At("HEAD"), index = 1, argsOnly = true)
+    public Screen rebindmykeys$setScreen(Screen screen) {
+        return screen instanceof KeybindsScreen keybindsScreen? new KeyBindingScreen(keybindsScreen.parent) : screen;
     }
 }

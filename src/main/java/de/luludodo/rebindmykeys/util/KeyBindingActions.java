@@ -12,7 +12,7 @@ public class KeyBindingActions {
     private static final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
     public static void leftClick() {
-        if (KeyBindings.LEFT_CLICK.get("lulu.key").isPressed()) {
+        if (KeyBindings.LEFT_CLICK.get("rebindmykeys.key").isPressed()) {
             CLIENT.currentScreen.mouseClicked(Mouse.getX(), Mouse.getY(), Mouse.LEFT.getButton());
         } else {
             CLIENT.currentScreen.mouseReleased(Mouse.getX(), Mouse.getY(), Mouse.LEFT.getButton());
@@ -20,7 +20,7 @@ public class KeyBindingActions {
     }
 
     public static void rightClick() {
-        if (KeyBindings.LEFT_CLICK.get("lulu.key").isPressed()) {
+        if (KeyBindings.LEFT_CLICK.get("rebindmykeys.key").isPressed()) {
             CLIENT.currentScreen.mouseClicked(Mouse.getX(), Mouse.getY(), Mouse.RIGHT.getButton());
         } else {
             CLIENT.currentScreen.mouseReleased(Mouse.getX(), Mouse.getY(), Mouse.RIGHT.getButton());
@@ -48,7 +48,7 @@ public class KeyBindingActions {
 
     public static void pauseGame() {
         //RebindMyKeys.DEBUG.info("Pausing Game");
-        CLIENT.openGameMenu(KeyBindings.DEBUG_MENU.get("lulu.key").isPressed());
+        CLIENT.openGameMenu(KeyBindings.DEBUG_MENU.get("rebindmykeys.key").isPressed());
     }
 
     public static void narrator() { // TODO: Implement

@@ -6,6 +6,7 @@ import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.reference.KeyReference
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.interfaces.Action;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -62,8 +63,8 @@ public class ModifierKey implements Key {
     }
 
     @Override
-    public String toString() {
-        return modifier.toString();
+    public Text getText() {
+        return Text.translatable(modifier.getTranslationKey());
     }
 
     @Override

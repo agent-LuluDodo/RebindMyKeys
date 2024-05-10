@@ -198,6 +198,10 @@ public class KeyUtil {
     }
 
     public static void setCategory(String category) {
+        currentCategory = parseCategory(category);
+    }
+
+    private static String parseCategory(String category) {
         category = category.strip();
         if (category.isEmpty())
             throw new IllegalArgumentException("category is empty");
@@ -205,9 +209,9 @@ public class KeyUtil {
             category = category.substring(1).strip();
             if (category.isEmpty())
                 throw new IllegalArgumentException("category is empty");
-            currentCategory = category;
+            return category;
         } else {
-            currentCategory = currentCategoryPrefix + category;
+            return currentCategoryPrefix + category;
         }
     }
 
@@ -234,12 +238,43 @@ public class KeyUtil {
     }
 
     private static final Map<String, KeyBinding> idToBinding = new HashMap<>();
+    private static final Map<String, List<KeyBinding>> categoryToBindings = new HashMap<>();
+    private static final List<String> categoryOrder = new ArrayList<>();
     private static final Map<Integer, List<KeyCombo>> lengthToCombos = new TreeMap<>(Collections.reverseOrder());
     public static KeyBinding register(KeyBinding binding) {
         if (idToBinding.containsKey(binding.getId()))
             throw new IllegalArgumentException("A KeyBinding with the id '" + binding.getId() + "' already exists.");
         idToBinding.put(binding.getId(), binding);
+        if (!categoryToBindings.containsKey(currentCategory)) {
+            categoryToBindings.put(currentCategory, new ArrayList<>());
+            categoryOrder.add(currentCategory);
+        }
+        categoryToBindings.get(currentCategory).add(binding);
         return binding;
+    }
+
+    public static Map<String, List<KeyBinding>> getCategories() {
+        return Collections.unmodifiableMap(MapUtil.sortByKey(categoryToBindings, Comparator.comparingInt(categoryOrder::indexOf)));
+    }
+
+    public static void moveCategoryToTop() {
+        categoryOrder.remove(currentCategory);
+        categoryOrder.add(0, currentCategory);
+    }
+
+    public static void moveCategoryToBottom() {
+        categoryOrder.remove(currentCategory);
+        categoryOrder.add(currentCategory);
+    }
+
+    public static void moveCategoryAfter(String target) {
+        categoryOrder.remove(currentCategory);
+        categoryOrder.add(categoryOrder.indexOf(parseCategory(target)) + 1, currentCategory);
+    }
+
+    public static void moveCategoryBefore(String target) {
+        categoryOrder.remove(currentCategory);
+        categoryOrder.add(categoryOrder.indexOf(parseCategory(target)), currentCategory);
     }
 
     public static KeyBinding get(String id) {
