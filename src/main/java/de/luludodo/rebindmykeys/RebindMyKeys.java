@@ -378,6 +378,13 @@ public class RebindMyKeys implements ClientModInitializer {
                 .keysm(Key.C)
                 .onToggle(KeyBindingActions::debugCrash)
                 .register();
+        KeyUtil.create(KeyBindings.DEBUG_CRASH_JAVA)
+                .operationMode(new HoldMode())
+                .context(Context.PLAYING)
+                .reference(KeyBindings.DEBUG_CRASH)
+                .modifier(Modifier.CONTROL)
+                .onToggle(KeyBindingActions::debugCrashJava)
+                .register();
         KeyUtil.create(KeyBindings.RELOAD_CHUNKS)
                 .context(Context.PLAYING)
                 .reference(KeyBindings.DEBUG_MENU)

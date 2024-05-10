@@ -13,6 +13,7 @@ public enum KeyBindings implements IKeyBinding {
     HUD("hud"),
     DEBUG_MENU("debug.menu"),
     DEBUG_CRASH("debug.crash"),
+    DEBUG_CRASH_JAVA("debug.crashJava"),
     PROFILER_CHART("debug.charts.profiler"),
     FRAME_TIME_CHARTS("debug.charts.frameTime"),
     NETWORK_CHARTS("debug.charts.network"),

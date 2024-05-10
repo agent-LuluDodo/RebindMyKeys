@@ -8,7 +8,9 @@ import java.util.function.Supplier;
 
 public enum OnKeyAction {
     START_DEBUG_CRASH,
+    START_DEBUG_CRASH_JAVA,
     STOP_DEBUG_CRASH,
+    STOP_DEBUG_CRASH_JAVA,
     TOGGLE_FULLSCREEN,
     ACTION_SCREENSHOT,
     ACTION_CYCLE_NARRATOR,

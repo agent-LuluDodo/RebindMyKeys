@@ -75,6 +75,14 @@ public class KeyBindingActions {
         }
     }
 
+    public static void debugCrashJava(boolean newState) {
+        if (newState) {
+            OnKeyAction.START_DEBUG_CRASH_JAVA.trigger();
+        } else {
+            OnKeyAction.STOP_DEBUG_CRASH_JAVA.trigger();
+        }
+    }
+
     public static void postProcessing(boolean newState) {
         CLIENT.gameRenderer.togglePostProcessorEnabled();
     }

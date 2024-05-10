@@ -29,6 +29,7 @@ public class KeyboardMixin {
 
     @Unique private OnKeyAction rebindmykeys$action;
     @Unique private static boolean rebindmykeys$debugCrashActive = false;
+    @Unique private static boolean rebindmykeys$debugCrashJavaActive = false;
     @Unique private boolean rebindmykeys$isDebugCombo;
 
     @Inject(method = "onKey", at = @At("HEAD"), cancellable = true)
@@ -40,6 +41,10 @@ public class KeyboardMixin {
             switch (rebindmykeys$action) {
                 case START_DEBUG_CRASH -> rebindmykeys$debugCrashActive = true;
                 case STOP_DEBUG_CRASH -> rebindmykeys$debugCrashActive = false;
+            }
+            switch (rebindmykeys$action) {
+                case START_DEBUG_CRASH_JAVA -> rebindmykeys$debugCrashJavaActive = true;
+                case STOP_DEBUG_CRASH_JAVA -> rebindmykeys$debugCrashJavaActive = false;
             }
             rebindmykeys$isDebugCombo = switch (rebindmykeys$action) {
                 case ACTION_PAUSE_WITHOUT_MENU, ACTION_RELOAD_CHUNKS, TOGGLE_HITBOXES, ACTION_COPY_LOCATION,
@@ -94,7 +99,7 @@ public class KeyboardMixin {
             )
     ) // 339: boolean bl = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3);
     private boolean rebindmykeys$debugCrash_debugCombo(long handle, int code) {
-        return rebindmykeys$debugCrashActive || rebindmykeys$isDebugCombo;
+        return rebindmykeys$debugCrashActive || rebindmykeys$debugCrashJavaActive || rebindmykeys$isDebugCombo;
     }
 
     @Redirect(
@@ -106,7 +111,7 @@ public class KeyboardMixin {
             )
     ) // 341: if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_C) || !bl) {
     private boolean rebindmykeys$debugCrash$1(long handle, int code) {
-        return rebindmykeys$debugCrashActive;
+        return rebindmykeys$debugCrashActive || rebindmykeys$debugCrashJavaActive;
     }
 
     @Redirect(
@@ -118,7 +123,7 @@ public class KeyboardMixin {
             )
     ) // 344: } else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_C) && bl) {
     private boolean rebindmykeys$debugCrash$2(long handle, int code) {
-        return rebindmykeys$debugCrashActive;
+        return rebindmykeys$debugCrashActive || rebindmykeys$debugCrashJavaActive;
     }
 
     @Inject(
@@ -574,5 +579,17 @@ public class KeyboardMixin {
             case TOGGLE_NETWORK_CHARTS -> 3;
             default -> throw new Error("Problem with KeyboardMixin#rebindmykeys$charts$3 or KeyboardMixin#rebindmykeys$charts$1"); // should never be reached
         };
+    }
+
+    @Redirect(
+            method = "pollDebugCrash",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/screen/Screen;hasControlDown()Z",
+                    ordinal = 0
+            )
+    )
+    private boolean rebindmykeys$debugCrashJava() {
+        return rebindmykeys$debugCrashJavaActive;
     }
 }
