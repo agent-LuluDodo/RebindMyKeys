@@ -1,14 +1,13 @@
 package de.luludodo.rebindmykeys.gui.widgets;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import de.luludodo.rebindmykeys.util.RenderUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.texture.GuiAtlasManager;
-import net.minecraft.resource.ResourceReloader;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -43,12 +42,7 @@ public class IconButtonWidget extends ButtonWidget {
 
     @Override
     public void drawMessage(DrawContext context, TextRenderer textRenderer, int color) {
-        context.setShaderColor(
-                ColorHelper.Argb.getRed(color) / (float) 0xFF,
-                ColorHelper.Argb.getGreen(color) / (float) 0xFF,
-                ColorHelper.Argb.getBlue(color) / (float) 0xFF,
-                ColorHelper.Argb.getAlpha(color) / (float) 0xFF
-        );
+        RenderUtil.setShaderColor(context, color);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
         context.drawTexture(this.icon, getX() + iconX, getY() + iconY, u, v, iconWidth, iconHeight, textureWidth, textureHeight);

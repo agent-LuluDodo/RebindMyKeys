@@ -12,6 +12,8 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Objects;
+
 public class BasicKey implements Key {
     private final InputUtil.Key key;
     private boolean pressed = false;
@@ -66,5 +68,10 @@ public class BasicKey implements Key {
             return bk.key.equals(key);
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(key);
     }
 }

@@ -2,10 +2,12 @@ package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.toggle;
 
 import com.google.gson.JsonElement;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMode;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationModeRegistry;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.PressCountOperationMode;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import net.minecraft.util.Identifier;
 
-public class ToggleMode implements OperationMode {
+public class ToggleMode extends PressCountOperationMode {
     private boolean initialState;
     private boolean toggleOnPress;
     private boolean toggled;
@@ -24,19 +26,32 @@ public class ToggleMode implements OperationMode {
 
 
     @Override
-    public void onKeyDown() {
-        if (toggleOnPress) {
+    public boolean updateKeyDown() {
+        return toggleOnPress;
+    }
+
+    @Override
+    public boolean updateKeyUp() {
+        return !toggleOnPress;
+    }
+
+    @Override
+    public void update(boolean active) {
+        if (applyMulti(active)) {
             toggled = !toggled;
-            wasTriggered = true;
+            wasTriggered = !wasTriggered;
         }
     }
 
     @Override
-    public void onKeyUp() {
-        if (!toggleOnPress) {
-            toggled = !toggled;
-            wasTriggered = true;
-        }
+    public void deactivate() {
+        wasTriggered = toggled && !wasTriggered;
+        toggled = false;
+    }
+    @Override
+    public void activate() {
+        wasTriggered = !toggled && !wasTriggered;
+        toggled = true;
     }
 
     @Override
@@ -54,19 +69,16 @@ public class ToggleMode implements OperationMode {
     }
 
     @Override
-    public void load(JsonElement json) {
-        JsonUtil.ObjectLoader loader = JsonUtil.object(json);
+    public void load(JsonUtil.ObjectLoader loader) {
         initialState = loader.get("initialState", Boolean.class);
         toggleOnPress = loader.get("toggleOnPress", Boolean.class);
         toggled = initialState;
     }
 
     @Override
-    public JsonElement save() {
-        return JsonUtil.object()
-                .add("initialState", initialState)
-                .add("toggleOnPress", toggleOnPress)
-                .build();
+    public void save(JsonUtil.ObjectBuilder builder) {
+        builder.add("initialState", initialState);
+        builder.add("toggleOnPress", toggleOnPress);
     }
 
     @Override
@@ -75,7 +87,20 @@ public class ToggleMode implements OperationMode {
     }
 
     @Override
-    public String getName() {
+    public String getTranslation() {
         return "rebindmykeys.operationMode.toggle";
+    }
+
+    public boolean getInitialState() {
+        return initialState;
+    }
+    public void setInitialState(boolean initialState) {
+        this.initialState = initialState;
+    }
+    public boolean getToggleOn() {
+        return toggleOnPress;
+    }
+    public void setToggleOn(boolean toggleOnPress) {
+        this.toggleOnPress = toggleOnPress;
     }
 }

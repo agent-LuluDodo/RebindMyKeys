@@ -1,5 +1,6 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
@@ -9,20 +10,19 @@ import de.luludodo.rebindmykeys.util.CollectionUtil;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
 
 import java.util.*;
 
 public class KeyCombo implements JsonSavable {
     private ComboSettings settings;
-    private final List<Key> keys;
+    private List<Key> keys;
     private boolean oldPressed = false;
     private boolean active;
     private final String id;
     private final UUID uuid = UUID.randomUUID();
     public KeyCombo(String id, List<Key> keys, ComboSettings settings) {
         this.id = id;
-        this.keys = keys;
+        this.keys = new ArrayList<>(keys);
         this.settings = settings;
         init();
     }
@@ -39,7 +39,7 @@ public class KeyCombo implements JsonSavable {
      * Promises to always return the same value on consecutive calls without other state changes.
      */
     public boolean wasTriggered() {
-        return settings.operationMode().wasTriggered() && contextValid && !filtered;
+        return settings.operationMode().wasTriggered() && contextValid;
     }
 
     public void done() {
@@ -65,6 +65,10 @@ public class KeyCombo implements JsonSavable {
 
     public List<Key> getKeys() {
         return Collections.unmodifiableList(keys);
+    }
+
+    public void setKeys(List<Key> keys) {
+        this.keys = new ArrayList<>(keys);
     }
 
     public void onKeyDown(InputUtil.Key key) {
@@ -125,7 +129,7 @@ public class KeyCombo implements JsonSavable {
         }
         for (KeyCombo keyCombo : keyCombos) {
             if (keyCombo == this) continue;
-            if (incompatibleIds.contains(keyCombo.getId()) || new HashSet<>(getKeys()).containsAll(keyCombo.getKeys())) {
+            if (incompatibleIds.contains(keyCombo.getId()) || (getLength() > keyCombo.getLength() && new HashSet<>(getKeys()).containsAll(keyCombo.getKeys()))) {
                 incompatibleUUIDs.add(keyCombo.getUUID());
             }
         }
@@ -139,9 +143,29 @@ public class KeyCombo implements JsonSavable {
         }
     }
 
+    //private static final Set<String> TARGET_IDS = Set.of("rebindmykeys.key.debug.menu", "rebindmykeys.key.debug.reloadChunks", "key.left");
+
     private boolean filtered = false;
     public void filter(Set<UUID> invalidUUIDs) {
-        filtered = invalidUUIDs.contains(uuid); // TODO: likely wrong way to do this..
+        if (settings.skipFilter()) {
+            filtered = false;
+            //if (TARGET_IDS.contains(id))
+            //    RebindMyKeys.DEBUG.info("filtered='{}' skipFilter='{}' id='{}' uuid='{}' incompatibleUUIDs='{}'", false, true, id, uuid, CollectionUtil.toString(incompatibleUUIDs));
+            return;
+        }
+
+        filtered = invalidUUIDs.contains(uuid);
+        if (filtered) {
+            settings.operationMode().deactivate();
+            active = false;
+        }
+
+        //if (TARGET_IDS.contains(id))
+        //    RebindMyKeys.DEBUG.info("filtered='{}' skipFilter='{}' id='{}' uuid='{}' incompatibleUUIDs='{}'", filtered, false, id, uuid, CollectionUtil.toString(incompatibleUUIDs));
+    }
+
+    protected boolean isFiltered() {
+        return filtered;
     }
 
     public boolean isPressed() { // Can't cache here cause of KeyReference's :)
@@ -149,7 +173,7 @@ public class KeyCombo implements JsonSavable {
     }
 
     public boolean isActive() {
-        return active && contextValid && !filtered;
+        return active && contextValid;
     }
 
     public ComboSettings getSettings() {
@@ -163,10 +187,15 @@ public class KeyCombo implements JsonSavable {
 
     @Override
     public JsonElement save() {
+        JsonUtil.ArrayBuilder keysBuilder = JsonUtil.array(keys.size());
+        for (Key key : keys) {
+            keysBuilder.add(Key.save(key));
+        }
+
         return JsonUtil.object()
                 .add("id", id)
                 .add("settings", settings)
-                .add("keys", keys)
+                .add("keys", keysBuilder.build())
                 .build();
     }
 
@@ -181,5 +210,9 @@ public class KeyCombo implements JsonSavable {
 
     public void release() {
         keys.forEach(Key::release);
+    }
+
+    public boolean isUnbound() {
+        return keys.isEmpty();
     }
 }

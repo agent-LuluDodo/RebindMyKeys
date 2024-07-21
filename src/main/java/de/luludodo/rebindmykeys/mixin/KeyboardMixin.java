@@ -5,6 +5,8 @@ import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import de.luludodo.rebindmykeys.RebindMyKeys;
+import de.luludodo.rebindmykeys.config.GlobalConfig;
+import de.luludodo.rebindmykeys.profiles.ProfileManager;
 import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import de.luludodo.rebindmykeys.util.TimerUtil;
 import de.luludodo.rebindmykeys.util.enums.Key;
@@ -22,48 +24,54 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Stack;
+
 @Debug(export = true)
 @Mixin(Keyboard.class)
 public class KeyboardMixin {
     @Shadow @Final private MinecraftClient client;
 
-    @Unique private OnKeyAction rebindmykeys$action;
+    @Unique private final Stack<OnKeyAction> rebindmykeys$action = new Stack<>(); // needed for recursive calls
     @Unique private static boolean rebindmykeys$debugCrashActive = false;
     @Unique private static boolean rebindmykeys$debugCrashJavaActive = false;
-    @Unique private boolean rebindmykeys$isDebugCombo;
+    @Unique private final Stack<Boolean> rebindmykeys$isDebugCombo = new Stack<>();
 
-    @Inject(method = "onKey", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "onKey", at = @At("HEAD"))
     public void rebindmykeys$onKey(long window, int keycode, int scancode, int action, int modifiers, CallbackInfo ci) {
         if (OnKeyAction.hasCurrentAction()) {
-            rebindmykeys$action = OnKeyAction.consumeCurrentAction();
-            if (rebindmykeys$action == null)
+            rebindmykeys$action.push(OnKeyAction.consumeCurrentAction());
+            if (rebindmykeys$action.peek() == null)
                 throw new IllegalStateException("Couldn't consume current action!");
-            switch (rebindmykeys$action) {
+            switch (rebindmykeys$action.peek()) {
                 case START_DEBUG_CRASH -> rebindmykeys$debugCrashActive = true;
                 case STOP_DEBUG_CRASH -> rebindmykeys$debugCrashActive = false;
             }
-            switch (rebindmykeys$action) {
+            switch (rebindmykeys$action.peek()) {
                 case START_DEBUG_CRASH_JAVA -> rebindmykeys$debugCrashJavaActive = true;
                 case STOP_DEBUG_CRASH_JAVA -> rebindmykeys$debugCrashJavaActive = false;
             }
-            rebindmykeys$isDebugCombo = switch (rebindmykeys$action) {
+            rebindmykeys$isDebugCombo.push(switch (rebindmykeys$action.peek()) {
                 case ACTION_PAUSE_WITHOUT_MENU, ACTION_RELOAD_CHUNKS, TOGGLE_HITBOXES, ACTION_COPY_LOCATION,
                      ACTION_CLEAR_CHAT, TOGGLE_CHUNK_BORDERS, TOGGLE_ADVANCED_TOOLTIPS, ACTION_COPY_SERVER_DATA,
                      ACTION_COPY_CLIENT_DATA, TOGGLE_DEBUG_PROFILER, TOGGLE_SPECTATOR,
                      TOGGLE_PAUSE_ON_LOST_FOCUS, ACTION_PRINT_HELP, ACTION_DUMP_TEXTURES, ACTION_RELOAD_RESOURCES,
                      ACTION_OPEN_GAMEMODE_SWITCHER -> true; // F3 combos
                 default -> false;
-            };
+            });
             return;
+        } else {
+            rebindmykeys$action.push(OnKeyAction.UPDATE_SCREEN_KEYS);
+            rebindmykeys$isDebugCombo.push(false);
         }
 
-        if (window != client.getWindow().getHandle()) return; // if the minecraft window isn't focused return
+        if (window != client.getWindow().getHandle()) {
+            return; // if the minecraft window isn't focused return
+        }
 
         if (action == GLFW.GLFW_PRESS && keycode == Key.Z.getCode()) // benchmark
             TimerUtil.start();
 
         if (action != GLFW.GLFW_PRESS && action != GLFW.GLFW_RELEASE) {
-            ci.cancel();
             return; // if the action is not press and not release
         }
 
@@ -72,7 +80,12 @@ public class KeyboardMixin {
 
         KeyBindingUtil.update();
 
-        ci.cancel();
+    }
+
+    @Inject(method = "onKey", at = @At("RETURN"))
+    public void rebindmykeys$endOnKey(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
+        rebindmykeys$action.pop();
+        rebindmykeys$isDebugCombo.pop();
     }
 
     /* ************************************************************************************************************** */
@@ -86,7 +99,7 @@ public class KeyboardMixin {
                     target = "Lnet/minecraft/client/util/Window;getHandle()J"
             )
     ) // 336: if (window != this.client.getWindow().getHandle()) {
-    private long rebindmykeys$all$1(Window instance, long window, int key, int scancode, int action, int modifiers) {
+    private long rebindmykeys$all(Window instance, long window, int key, int scancode, int action, int modifiers) {
         return window;
     }
 
@@ -99,7 +112,7 @@ public class KeyboardMixin {
             )
     ) // 339: boolean bl = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3);
     private boolean rebindmykeys$debugCrash_debugCombo(long handle, int code) {
-        return rebindmykeys$debugCrashActive || rebindmykeys$debugCrashJavaActive || rebindmykeys$isDebugCombo;
+        return rebindmykeys$debugCrashActive || rebindmykeys$debugCrashJavaActive || rebindmykeys$isDebugCombo.peek();
     }
 
     @Redirect(
@@ -143,8 +156,9 @@ public class KeyboardMixin {
     ) // 350: if ((screen2 = this.client.currentScreen) != null) {
     // 383: && bl2) {
     // 395: if (screen2 != null) {
-    private void rebindmykeys$all$2(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci, @Local(ordinal = 0) LocalRef<Screen> screen2) {
-        screen2.set(null);
+    private void rebindmykeys$updateScreenKeys(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci, @Local(ordinal = 0) LocalRef<Screen> screen2) {
+        if (rebindmykeys$action.peek() != OnKeyAction.UPDATE_SCREEN_KEYS)
+            screen2.set(null);
     }
 
     @ModifyConstant(
@@ -162,7 +176,7 @@ public class KeyboardMixin {
             )
     ) // 364: if (!(action != 1 ||
     private int rebindmykeys$fullscreen_screenshot$1(int constant, long window, int keycode, int scancode, int action, int modifiers) {
-        return switch (rebindmykeys$action) {
+        return switch (rebindmykeys$action.peek()) {
             case TOGGLE_FULLSCREEN, ACTION_SCREENSHOT -> action;
             default -> action + 1;
         };
@@ -203,7 +217,7 @@ public class KeyboardMixin {
             )
     ) // 365: if (this.client.options.fullscreenKey.matchesKey(key, scancode)) {
     private boolean rebindmykeys$fullscreen(KeyBinding instance, int keyCode, int scanCode) {
-        return rebindmykeys$action == OnKeyAction.TOGGLE_FULLSCREEN;
+        return rebindmykeys$action.peek() == OnKeyAction.TOGGLE_FULLSCREEN;
     }
 
     @Redirect(
@@ -222,7 +236,7 @@ public class KeyboardMixin {
             )
     ) // 370: if (this.client.options.screenshotKey.matchesKey(key, scancode)) {
     private boolean rebindmykeys$screenshot(KeyBinding instance, int keyCode, int scanCode) {
-        return rebindmykeys$action == OnKeyAction.ACTION_SCREENSHOT;
+        return rebindmykeys$action.peek() == OnKeyAction.ACTION_SCREENSHOT;
     }
 
     @Redirect(
@@ -241,7 +255,7 @@ public class KeyboardMixin {
             )
     ) // 378: if (this.client.getNarratorManager().isActive() && this.client.options.getNarratorHotkey().getValue().booleanValue()) {
     private boolean rebindmykeys$narrator$1(Boolean instance) {
-        return rebindmykeys$action == OnKeyAction.ACTION_CYCLE_NARRATOR;
+        return rebindmykeys$action.peek() == OnKeyAction.ACTION_CYCLE_NARRATOR;
     }
 
     @ModifyConstant(
@@ -315,27 +329,8 @@ public class KeyboardMixin {
             )
     ) // 412: if (action == 0) {
     private void rebindmykeys$debugHud$1(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci, @Local(argsOnly = true, ordinal = 2) LocalIntRef actionRef) {
-        actionRef.set(rebindmykeys$action == OnKeyAction.TOGGLE_DEBUG_HUD? 0 : 1);
+        actionRef.set(rebindmykeys$action.peek() == OnKeyAction.TOGGLE_DEBUG_HUD? 0 : 1);
     }
-    /*
-    @ModifyConstant(
-            method = "onKey",
-            slice = @Slice(
-                    from = @At(
-                            value = "INVOKE",
-                            target = "Lnet/minecraft/client/util/InputUtil;fromKeyCode(II)Lnet/minecraft/client/util/InputUtil$Key;",
-                            ordinal = 0
-                    )
-            ),
-            constant = @Constant(
-                    intValue = 0,
-                    ordinal = 0
-            )
-    ) // 412: if (action == 0) { FIXME: JUMP statement likely (eg IFNE)
-    private int rebindmykeys$debugHud$1(int constant, long window, int keycode, int scanCode, int action, int modifiers) {
-        return rebindmykeys$action == OnKeyAction.TOGGLE_DEBUG_HUD? action : action + 1;
-    }
-     */
 
     @Redirect(
             method = "onKey",
@@ -395,10 +390,10 @@ public class KeyboardMixin {
     // 440: if (bl3) {
     private void rebindmykeys$postProcessor_pause_pauseWithoutMenu_debugCombo_hideHud_charts(long window, int keycode, int scancode, int action, int modifiers, CallbackInfo ci, @Local(ordinal = 2) LocalBooleanRef bl4, @Local(ordinal = 1) LocalBooleanRef bl3) {
         bl3.set(false);
-        bl4.set(switch (rebindmykeys$action) {
+        bl4.set(switch (rebindmykeys$action.peek()) {
             case TOGGLE_POST_PROCESSOR, ACTION_PAUSE, TOGGLE_HUD, TOGGLE_PROFILER_CHART,
                  TOGGLE_FRAME_TIME_CHARTS, TOGGLE_NETWORK_CHARTS -> true;
-            default -> rebindmykeys$isDebugCombo;
+            default -> rebindmykeys$isDebugCombo.peek();
         });
     }
 
@@ -417,7 +412,7 @@ public class KeyboardMixin {
             )
     ) // 425: if (key == GLFW.GLFW_KEY_F4 && this.client.gameRenderer != null) {
     private int rebindmykeys$postProcessor(int constant, long window, int keycode, int scancode, int action, int modifiers) {
-        return rebindmykeys$action == OnKeyAction.TOGGLE_POST_PROCESSOR? keycode : keycode + 1;
+        return rebindmykeys$action.peek() == OnKeyAction.TOGGLE_POST_PROCESSOR? keycode : keycode + 1;
     }
 
     @ModifyConstant(
@@ -435,7 +430,7 @@ public class KeyboardMixin {
             )
     ) // 428: if (key == GLFW.GLFW_KEY_ESCAPE) {
     private int rebindmykeys$pause_pauseWithoutMenu(int constant, long window, int keycode, int scancode, int action, int modifiers) {
-        return switch (rebindmykeys$action) {
+        return switch (rebindmykeys$action.peek()) {
             case ACTION_PAUSE, ACTION_PAUSE_WITHOUT_MENU -> keycode;
             default -> keycode + 1;
         };
@@ -458,7 +453,7 @@ public class KeyboardMixin {
             index = 0
     ) // 432: this.client.handleProfilerKeyPress(key - GLFW.GLFW_KEY_0);
     private int rebindmykeys$debugCombo(int key) {
-        return switch (rebindmykeys$action) {
+        return switch (rebindmykeys$action.peek()) {
             case ACTION_RELOAD_CHUNKS -> GLFW.GLFW_KEY_A;
             case TOGGLE_HITBOXES -> GLFW.GLFW_KEY_B;
             case ACTION_CLEAR_CHAT -> GLFW.GLFW_KEY_D;
@@ -496,7 +491,7 @@ public class KeyboardMixin {
             )
     ) // 163: this.copyLookAt(this.client.player.hasPermissionLevel(2), !Screen.hasShiftDown());
     private boolean rebindmykeys$copyData() {
-        return rebindmykeys$action == OnKeyAction.ACTION_COPY_CLIENT_DATA;
+        return rebindmykeys$action.peek() == OnKeyAction.ACTION_COPY_CLIENT_DATA;
     }
 
     @ModifyConstant(
@@ -514,7 +509,7 @@ public class KeyboardMixin {
             )
     ) // 433: if (key == GLFW.GLFW_KEY_F1) {
     private int rebindmykeys$hideHud(int constant, long window, int keycode, int scancode, int action, int modifiers) {
-        return rebindmykeys$action == OnKeyAction.TOGGLE_HUD? keycode : keycode + 1;
+        return rebindmykeys$action.peek() == OnKeyAction.TOGGLE_HUD? keycode : keycode + 1;
     }
 
     @ModifyConstant(
@@ -532,7 +527,7 @@ public class KeyboardMixin {
             )
     ) // 436: if (this.client.getDebugHud().shouldShowRenderingChart() && !bl && key >= GLFW.GLFW_KEY_0 &&
     private int rebindmykeys$charts$1(int constant, long window, int keycode, int scancode, int action, int modifiers) {
-        return switch (rebindmykeys$action) {
+        return switch (rebindmykeys$action.peek()) {
             case TOGGLE_PROFILER_CHART, TOGGLE_FRAME_TIME_CHARTS, TOGGLE_NETWORK_CHARTS -> keycode;
             default -> keycode + 1;
         };
@@ -573,12 +568,25 @@ public class KeyboardMixin {
             index = 0
     ) // 437: this.client.handleProfilerKeyPress(key - GLFW.GLFW_KEY_0);
     private int rebindmykeys$chats$3(int digit) {
-        return switch(rebindmykeys$action) {
+        return switch(rebindmykeys$action.peek()) {
             case TOGGLE_PROFILER_CHART -> 1;
             case TOGGLE_FRAME_TIME_CHARTS -> 2;
             case TOGGLE_NETWORK_CHARTS -> 3;
             default -> throw new Error("Problem with KeyboardMixin#rebindmykeys$charts$3 or KeyboardMixin#rebindmykeys$charts$1"); // should never be reached
         };
+    }
+
+    @ModifyConstant(
+            method = "pollDebugCrash",
+            constant = @Constant(
+                    longValue = 10000L,
+                    ordinal = 0
+            )
+    ) // 488: long m = 10000L - (l - this.debugCrashStartTime);
+    private long rebindmykeys$debugCrash$3(long original) {
+        return rebindmykeys$debugCrashJavaActive?
+                ProfileManager.getCurrentProfile().getGlobal().getDebugCrashJavaTime() :
+                ProfileManager.getCurrentProfile().getGlobal().getDebugCrashTime();
     }
 
     @Redirect(
@@ -588,7 +596,7 @@ public class KeyboardMixin {
                     target = "Lnet/minecraft/client/gui/screen/Screen;hasControlDown()Z",
                     ordinal = 0
             )
-    )
+    ) // 491: if (Screen.hasControlDown()) {
     private boolean rebindmykeys$debugCrashJava() {
         return rebindmykeys$debugCrashJavaActive;
     }

@@ -11,6 +11,8 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class KeyReference implements Key {
     private final String reference;
     private KeyBinding binding = null;
@@ -66,5 +68,10 @@ public class KeyReference implements Key {
             return kr.reference.equals(reference);
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(reference);
     }
 }

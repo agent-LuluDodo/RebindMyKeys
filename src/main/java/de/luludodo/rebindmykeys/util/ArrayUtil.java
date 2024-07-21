@@ -1,8 +1,11 @@
 package de.luludodo.rebindmykeys.util;
 
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.function.Function;
 
 /**
@@ -98,5 +101,45 @@ public class ArrayUtil {
             builder.append(toString.apply(t));
         }
         return builder.append(']').toString();
+    }
+
+    public static <T> String toString(T[] array, Function<T, String> toString, String start, String delimiter, String end) {
+        StringBuilder builder = new StringBuilder(start);
+        boolean first = true;
+        for (T t : array) {
+            if (first) {
+                first = false;
+                builder.append(start);
+            } else {
+                builder.append(delimiter);
+            }
+            builder.append(toString.apply(t));
+        }
+        builder.append(end);
+        return builder.toString();
+    }
+
+    public static String toString(Object[] array, String start, String delimiter, String end) {
+        return toString(array, Object::toString, start, delimiter, end);
+    }
+
+    public static <T> MutableText toText(T[] array, Function<T, Text> toText, Text start, Text delimiter, Text end) {
+        MutableText text = Text.empty();
+        boolean first = true;
+        for (T t : array) {
+            if (first) {
+                first = false;
+                text.append(start);
+            } else {
+                text.append(delimiter);
+            }
+            text.append(toText.apply(t));
+        }
+        text.append(end);
+        return text;
+    }
+
+    public static <T> MutableText toText(T[] array, Function<T, Text> toText, String start, String delimiter, String end) {
+        return toText(array, toText, Text.literal(start), Text.literal(delimiter), Text.literal(end));
     }
 }

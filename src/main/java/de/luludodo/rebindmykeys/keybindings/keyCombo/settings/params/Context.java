@@ -1,14 +1,8 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params;
 
-import de.luludodo.rebindmykeys.RebindMyKeys;
-import de.luludodo.rebindmykeys.util.interfaces.Action;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
-
-import java.util.Objects;
 
 public enum Context implements IContext {
     EVERYWHERE,
@@ -46,6 +40,19 @@ public enum Context implements IContext {
             case IN_INVENTORY -> CLIENT.currentScreen instanceof InventoryScreen;
             case IN_MENU -> !isCurrent(IN_GAME) && isCurrent(IN_SCREEN);
             case IN_MULTIPLAYER_SCREEN -> CLIENT.currentScreen instanceof MultiplayerScreen;
+        };
+    }
+
+    public String getId() {
+        return "rebindmykeys.context." + switch (this) {
+            case EVERYWHERE -> "everywhere";
+            case IN_GAME -> "inGame";
+            case IN_SCREEN -> "inScreen";
+            case PLAYING -> "playing";
+            case IN_GUI -> "inGui";
+            case IN_INVENTORY -> "inInventory";
+            case IN_MENU -> "inMenu";
+            case IN_MULTIPLAYER_SCREEN -> "inMultiplayerScreen";
         };
     }
 }

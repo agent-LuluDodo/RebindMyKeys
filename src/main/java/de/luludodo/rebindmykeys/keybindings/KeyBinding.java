@@ -1,26 +1,32 @@
 package de.luludodo.rebindmykeys.keybindings;
 
 import com.google.gson.JsonElement;
+import de.luludodo.rebindmykeys.RebindMyKeys;
+import de.luludodo.rebindmykeys.config.KeyBindingConfig;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.KeyCombo;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActionMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.ComboSettings;
+import de.luludodo.rebindmykeys.profiles.ProfileManager;
 import de.luludodo.rebindmykeys.util.CollectionUtil;
+import de.luludodo.rebindmykeys.util.InitialKeyBindings;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.interfaces.JsonLoadable;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
-import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.util.InputUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class KeyBinding implements JsonSavable, JsonLoadable {
     private final String id;
-    private final Class<? extends ClientModInitializer> mod;
+    private final ModContainer mod;
     private final List<KeyCombo> defaultKeyCombos;
     private List<KeyCombo> keyCombos;
     private final ComboSettings defaultSettings;
     private final boolean isAction;
-    public KeyBinding(String id, Class<? extends ClientModInitializer> mod, List<KeyCombo> keyCombos, ComboSettings defaultSettings) {
+    public KeyBinding(String id, ModContainer mod, List<KeyCombo> keyCombos, ComboSettings defaultSettings) {
         this.id = id;
         this.mod = mod;
         defaultKeyCombos = keyCombos;
@@ -50,12 +56,12 @@ public class KeyBinding implements JsonSavable, JsonLoadable {
         return id;
     }
 
-    public Class<? extends ClientModInitializer> getMod() {
+    public ModContainer getMod() {
         return mod;
     }
 
     public String getModName() {
-        return mod == null ? "Minecraft" : mod.getSimpleName();
+        return mod == null ? "Minecraft" : mod.getMetadata().getName();
     }
 
     public void reset() {
@@ -116,6 +122,34 @@ public class KeyBinding implements JsonSavable, JsonLoadable {
     public void load(JsonElement json) {
         JsonUtil.ObjectLoader loader = JsonUtil.object(json);
         keyCombos = loader.array("keyCombos").toList(KeyCombo::load);
+    }
+
+    /**
+     * Gets the KeyBinding with the specified id.
+     * @param id The id of the KeyBinding
+     * @return The KeyBinding with the specified id
+     * @throws IllegalStateException If neither {@link InitialKeyBindings#isActive()} nor {@link KeyBindingConfig#isLoaded()} return {@code true}
+     * @throws IllegalArgumentException If no KeyBinding with the specified id exists.
+     * @see InitialKeyBindings#get(String)
+     * @see KeyBindingConfig#get(String)
+     */
+    public static @Nullable KeyBinding get(String id) {
+        boolean initialActive = InitialKeyBindings.isActive();
+        boolean configLoaded = ProfileManager.getCurrentProfile().getConfig().isLoaded();
+        if (!initialActive && !configLoaded) {
+            throw new IllegalStateException("Neither InitialKeyBindings nor KeyBindingConfig is active");
+        }
+        if (initialActive && configLoaded) {
+            RebindMyKeys.LOG.error("Both InitialKeyBindings and KeyBindingConfig are active -> disabling InitialKeyBindings");
+            InitialKeyBindings.disable();
+        }
+        KeyBinding binding;
+        if (initialActive) {
+            binding = InitialKeyBindings.get(id);
+        } else {
+            binding = ProfileManager.getCurrentProfile().getConfig().get(id);
+        }
+        return binding;
     }
 
     public void release() {

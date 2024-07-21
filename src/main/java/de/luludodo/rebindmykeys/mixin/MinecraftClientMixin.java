@@ -1,6 +1,6 @@
 package de.luludodo.rebindmykeys.mixin;
 
-import de.luludodo.rebindmykeys.gui.KeyBindingScreen;
+import de.luludodo.rebindmykeys.gui.binding.screen.KeyBindingScreen;
 import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import de.luludodo.rebindmykeys.util.TickUtil;
 import de.luludodo.rebindmykeys.util.enums.KeyBindings;

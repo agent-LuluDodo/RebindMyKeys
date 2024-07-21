@@ -2,10 +2,11 @@ package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.hold;
 
 import com.google.gson.JsonElement;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMode;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.PressCountOperationMode;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import net.minecraft.util.Identifier;
 
-public class HoldMode implements OperationMode {
+public class HoldMode extends PressCountOperationMode {
     private boolean inverted = false;
     private boolean pressed = false;
     private boolean wasTriggered = false;
@@ -20,15 +21,24 @@ public class HoldMode implements OperationMode {
     }
 
     @Override
-    public void onKeyDown() {
-        pressed = true;
-        wasTriggered = true;
+    public boolean updateKeyDown() {
+        return !inverted;
     }
 
     @Override
-    public void onKeyUp() {
+    public boolean updateKeyUp() {
+        return inverted;
+    }
+
+    @Override
+    public void deactivate() {
+        wasTriggered = pressed && !wasTriggered;
         pressed = false;
-        wasTriggered = true;
+    }
+    @Override
+    public void activate() {
+        wasTriggered = !pressed && !wasTriggered;
+        pressed = true;
     }
 
     public void done() {
@@ -46,16 +56,13 @@ public class HoldMode implements OperationMode {
     }
 
     @Override
-    public void load(JsonElement json) {
-        JsonUtil.ObjectLoader loader = JsonUtil.object(json);
+    protected void load(JsonUtil.ObjectLoader loader) {
         inverted = loader.get("inverted", Boolean.class);
     }
 
     @Override
-    public JsonElement save() {
-        return JsonUtil.object()
-                .add("inverted", inverted)
-                .build();
+    protected void save(JsonUtil.ObjectBuilder builder) {
+        builder.add("inverted", inverted);
     }
 
     @Override
@@ -64,7 +71,14 @@ public class HoldMode implements OperationMode {
     }
 
     @Override
-    public String getName() {
+    public String getTranslation() {
         return "rebindmykeys.operationMode.hold";
+    }
+
+    public boolean getInverted() {
+        return inverted;
+    }
+    public void setInverted(boolean inverted) {
+        this.inverted = inverted;
     }
 }

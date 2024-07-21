@@ -1,5 +1,6 @@
 package de.luludodo.rebindmykeys.mixin;
 
+import de.luludodo.rebindmykeys.profiles.ProfileManager;
 import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
@@ -11,6 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Debug(export = true)
@@ -29,5 +31,10 @@ public class MouseMixin {
         KeyBindingUtil.update();
 
         ci.cancel();
+    }
+
+    @ModifyVariable(method = "onMouseScroll", at = @At("HEAD"), ordinal = 1, argsOnly = true)
+    public double rebindmykeys$onMouseScroll(double horizontal) {
+        return horizontal * ProfileManager.getCurrentProfile().getGlobal().getHorizontalScrollSpeedModifier();
     }
 }

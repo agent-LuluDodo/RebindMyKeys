@@ -1,11 +1,24 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import de.luludodo.rebindmykeys.RebindMyKeys;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.KeyTypes;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.basic.BasicKey;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.modifier.ModifierKey;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.reference.KeyReference;
+import de.luludodo.rebindmykeys.util.JsonUtil;
+import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
+
 import java.util.HashSet;
 import java.util.Set;
 
-public interface IContext {
+public interface IContext extends JsonSavable {
     IContext[] getParents();
     boolean isCurrent();
+    String getId();
 
     static boolean conflicts(IContext context1, IContext context2) {
         return getAllParentsAndSelf(context1).contains(context2) || getAllParentsAndSelf(context2).contains(context1);
@@ -18,5 +31,16 @@ public interface IContext {
             parents.addAll(getAllParentsAndSelf(parent));
         }
         return parents;
+    }
+
+    default JsonElement save() {
+        return new JsonPrimitive(getId());
+    }
+
+    static IContext load(JsonElement json) {
+        RebindMyKeys.DEBUG.info("Loading context: " + json);
+        IContext context = IContextRegistry.get(json.getAsString());
+        RebindMyKeys.DEBUG.info("Class: {} ID: {}", context.getClass().getSimpleName(), context.getId());
+        return context;
     }
 }

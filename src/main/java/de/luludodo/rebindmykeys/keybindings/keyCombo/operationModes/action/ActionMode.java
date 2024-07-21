@@ -1,11 +1,11 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action;
 
 import com.google.gson.JsonElement;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMode;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.PressCountOperationMode;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import net.minecraft.util.Identifier;
 
-public class ActionMode implements OperationMode {
+public class ActionMode extends PressCountOperationMode {
     private ActivateOn activateOn;
     private boolean active = false;
     private boolean wasTriggered = false;
@@ -20,29 +20,31 @@ public class ActionMode implements OperationMode {
     }
 
     @Override
-    public void onKeyDown() {
-        switch (activateOn) {
-            case PRESS, BOTH, UNKNOWN -> {
-                active = true;
-                wasTriggered = true;
-            }
-            default -> {
-                active = false;
-            }
-        }
+    public boolean updateKeyDown() {
+        return switch (activateOn) {
+            case PRESS, BOTH, UNKNOWN -> true;
+            default -> false;
+        };
     }
 
     @Override
-    public void onKeyUp() {
-        switch (activateOn) {
-            case RELEASE, BOTH -> {
-                active = true;
-                wasTriggered = true;
-            }
-            default -> {
-                active = false;
-            }
-        }
+    public boolean updateKeyUp() {
+        return switch (activateOn) {
+            case RELEASE, BOTH -> true;
+            default -> false;
+        };
+    }
+
+    @Override
+    public void activate() {
+        active = true;
+        wasTriggered = true;
+    }
+
+    @Override
+    public void deactivate() {
+        active = false;
+        wasTriggered = false;
     }
 
     @Override
@@ -71,17 +73,14 @@ public class ActionMode implements OperationMode {
     }
 
     @Override
-    public void load(JsonElement json) {
-        JsonUtil.ObjectLoader loader = JsonUtil.object(json);
+    protected void load(JsonUtil.ObjectLoader loader) {
         activateOn = loader.get("activateOn", ActivateOn.class);
         active = false;
     }
 
     @Override
-    public JsonElement save() {
-        return JsonUtil.object()
-                .add("activateOn", activateOn)
-                .build();
+    protected void save(JsonUtil.ObjectBuilder builder) {
+        builder.add("activateOn", activateOn);
     }
 
     @Override
@@ -90,7 +89,7 @@ public class ActionMode implements OperationMode {
     }
 
     @Override
-    public String getName() {
+    public String getTranslation() {
         return "rebindmykeys.operationMode.action";
     }
 }

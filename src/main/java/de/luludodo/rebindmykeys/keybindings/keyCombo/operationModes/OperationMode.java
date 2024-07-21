@@ -5,13 +5,14 @@ import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.Actio
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.hold.HoldMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.toggle.ToggleMode;
 import de.luludodo.rebindmykeys.util.JsonUtil;
-import de.luludodo.rebindmykeys.util.interfaces.JsonLoadable;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
 import net.minecraft.util.Identifier;
 
-public interface OperationMode extends JsonSavable, JsonLoadable {
+public interface OperationMode extends JsonSavable {
     void onKeyDown();
     void onKeyUp();
+    void activate();
+    void deactivate();
     boolean isActive();
 
     /**
@@ -19,8 +20,11 @@ public interface OperationMode extends JsonSavable, JsonLoadable {
      */
     boolean wasTriggered();
 
+    int getPressCount();
+    void setPressCount(int pressCount);
+
     Identifier getIcon();
-    String getName();
+    String getTranslation();
 
     /**
      * Resets {@link OperationMode#wasTriggered()}.
@@ -29,7 +33,8 @@ public interface OperationMode extends JsonSavable, JsonLoadable {
 
     static JsonElement save(OperationMode mode) {
         return JsonUtil.object()
-                .add("type", OperationModeTypes.get(mode))
+                .add("type", OperationModeRegistry.getIdOptional(mode.getClass()).orElseThrow())
+                .add("pressCount", mode.getPressCount())
                 .add("settings", mode.save())
                 .build();
     }
@@ -37,10 +42,9 @@ public interface OperationMode extends JsonSavable, JsonLoadable {
     static OperationMode create(JsonElement json) {
         JsonUtil.ObjectLoader loader = JsonUtil.object(json);
         JsonElement settings = loader.get("settings", JsonElement.class);
-        return switch (loader.get("type", OperationModeTypes.class)) {
-            case ACTION -> new ActionMode(settings);
-            case TOGGLE -> new ToggleMode(settings);
-            case HOLD -> new HoldMode(settings);
-        };
+        OperationMode mode = OperationModeRegistry.getOptional(loader.get("type", Identifier.class))
+                .orElseThrow().construct(settings);
+        mode.setPressCount(loader.get("pressCount", Integer.class));
+        return mode;
     }
 }

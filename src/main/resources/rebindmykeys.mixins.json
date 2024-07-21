@@ -6,11 +6,13 @@
   "mixins": [
   ],
   "client": [
+    "DrawContextMixin",
     "KeyBindingMixin",
     "KeyboardMixin",
     "MinecraftClientMixin",
     "MouseMixin",
-    "MultiplayerScreenMixin"
+    "MultiplayerScreenMixin",
+    "ScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

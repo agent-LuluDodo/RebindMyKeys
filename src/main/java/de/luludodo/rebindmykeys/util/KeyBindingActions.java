@@ -27,8 +27,12 @@ public class KeyBindingActions {
         }
     }
 
-    public static void closeMenu() { // FIXME: crash if opening menu then closing it really fast
-        //RebindMyKeys.DEBUG.info("Closing Menu");
+    public static void closeMenu() {
+        if (CLIENT.currentScreen.shouldCloseOnEsc())
+            CLIENT.currentScreen.close();
+    }
+
+    public static void forceCloseMenu() {
         CLIENT.currentScreen.close();
     }
 
@@ -45,19 +49,6 @@ public class KeyBindingActions {
         client.currentScreen.mouseClicked(Mouse.getX(), Mouse.getY(), Mouse.RIGHT.getButton());
     }
     */
-
-    public static void pauseGame() {
-        //RebindMyKeys.DEBUG.info("Pausing Game");
-        CLIENT.openGameMenu(KeyBindings.DEBUG_MENU.get("rebindmykeys.key").isPressed());
-    }
-
-    public static void narrator() { // TODO: Implement
-        // Best bet somehow running minecraft's code which remains in onKey() [Together with debug combos]
-    }
-
-    public static void hud(boolean newState) {
-        CLIENT.options.hudHidden = newState;
-    }
 
     private static boolean debugMenuState = false;
     public static void debugMenu(boolean newState) { // TODO: Implement debug key combos
@@ -81,10 +72,6 @@ public class KeyBindingActions {
         } else {
             OnKeyAction.STOP_DEBUG_CRASH_JAVA.trigger();
         }
-    }
-
-    public static void postProcessing(boolean newState) {
-        CLIENT.gameRenderer.togglePostProcessorEnabled();
     }
 
     /**
@@ -199,16 +186,8 @@ public class KeyBindingActions {
         CLIENT.options.spectatorOutlinesKey.timesPressed++;
     }
 
-    public static void takeScreenshot() {
-        CLIENT.options.screenshotKey.timesPressed++;
-    }
-
     public static void cinematicCamera(boolean newState) {
         CLIENT.options.smoothCameraKey.setPressed(newState);
-    }
-
-    public static void fullscreen(boolean newState) { // TODO: Implement with debug combo
-
     }
 
     public static void perspectives() {

@@ -2,30 +2,55 @@ package de.luludodo.rebindmykeys.gui.widgets;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Allows each entry to have a different itemHeight, rowWidth, rowMargin, scrollbarMargin
+ * Adds:
+ * <ul>
+ *     <li>itemHeight per Entry</li>
+ *     <li>rowWidth</li>
+ *     <li>rowMargin</li>
+ *     <li>scrollbarMargin</li>
+ *     <li>topMargin</li>
+ *     <li>bottomMargin</li>
+ *     <li>Resizable</li>
+ * </ul>
  */
-public abstract class VariableElementListWidget<E extends VariableElementListWidget.Entry<E>> extends ElementListWidget<E> {
+public abstract class VariableElementListWidget<E extends VariableElementListWidget.Entry<E>> extends ElementListWidget<E> implements Resizable {
     private int rowWidth;
     private int scrollbarMargin = 14;
     private int rowMargin = 4;
-    public VariableElementListWidget(MinecraftClient minecraftClient, int width, int height, int y, int rowWidth) {
-        super(minecraftClient, width, height, y, -1);
+    private final Screen parent;
+    private final int widthDifference;
+    private final int heightDifference;
+    private int topMargin = 2;
+    private int bottomMargin = 2;
+    public VariableElementListWidget(MinecraftClient client, Screen parent, int width, int height, int x, int y, int rowWidth) {
+        super(client, width, height, y, -1);
+        setX(x);
+        this.parent = parent;
+        widthDifference = parent.width - width;
+        heightDifference = parent.height - height;
         this.rowWidth = rowWidth;
     }
-    public VariableElementListWidget(MinecraftClient minecraftClient, int width, int height, int y) {
-        this(minecraftClient, width, height, y, 220);
+    public VariableElementListWidget(MinecraftClient client, Screen parent, int width, int height, int x, int y) {
+        this(client, parent, width, height, x, y, 220);
+    }
+
+    @Contract(pure = true)
+    public Screen getParent() {
+        return parent;
     }
 
     public void setRowWidth(int width) {
         rowWidth = width;
     }
     public void fitRowWidth() {
-        rowWidth = Math.min(rowWidth, width - getScrollbarMargin() - getScrollbarWidth());
+        setRowWidth(Math.min(getRowWidth(), getWidth() - (getMaxScroll() > 0? (getScrollbarMargin() + getScrollbarWidth()) : 0)));
     }
     public void setScrollBarMargin(int margin) {
         scrollbarMargin = margin;
@@ -33,38 +58,64 @@ public abstract class VariableElementListWidget<E extends VariableElementListWid
     public void setRowMargin(int margin) {
         rowMargin = margin;
     }
+    public void setTopMargin(int margin) {
+        topMargin = margin;
+    }
+    public void setBottomMargin(int margin) {
+        bottomMargin = margin;
+    }
 
     @Override
+    @Contract(pure = true)
     public int getRowWidth() {
         return rowWidth;
     }
+    @Contract(pure = true)
     public int getScrollbarMargin() {
         return scrollbarMargin;
     }
+    @Contract(pure = true)
     public int getRowMargin() {
         return rowMargin;
     }
+    @Contract(pure = true)
+    public int getTopMargin() {
+        return topMargin;
+    }
+    @Contract(pure = true)
+    public int getBottomMargin() {
+        return bottomMargin;
+    }
 
+    public int getMaxScroll() {
+        return Math.max(0, getMaxPosition() - (height - (getTopMargin() + getBottomMargin())));
+    }
+
+    @Contract(pure = true)
     public int getContentWidth() {
-        return getRowWidth() + getScrollbarMargin() + getScrollbarWidth();
+        return getRowWidth() + (getMaxScroll() > 0? (getScrollbarMargin() + getScrollbarWidth()) : 0);
     }
 
     @Override
+    @Contract(pure = true)
     public int getScrollbarPositionX() {
         return getRowRight() + getScrollbarMargin();
     }
 
+    @Contract(pure = true)
     public int getScrollbarWidth() {
         return 6;
     }
 
     @Override
+    @Contract(pure = true)
     public int getRowLeft() {
-        return width / 2 - getContentWidth() / 2;
+        return getWidth() / 2 - getContentWidth() / 2 + getX();
     }
 
     @Override
     @Nullable
+    @Contract(pure = true)
     protected E getEntryAtPosition(double x, double y) { // <- Incorrectly flagged as error
         int halfRowWidth = getRowWidth() / 2;
         int center = getX() + getWidth() / 2;
@@ -87,16 +138,19 @@ public abstract class VariableElementListWidget<E extends VariableElementListWid
     }
 
     @Override
+    @Contract(pure = true)
     protected int getMaxPosition() {
         return getTotalHeight() + headerHeight - 2;
     }
 
+    @Contract(pure = true)
     private int getTotalHeight() {
         return getAbsoluteY(getEntryCount());
     }
 
+    @Contract(pure = true)
     protected int getAbsoluteY(E entry) {
-        int absoluteY = 2;
+        int absoluteY = getTopMargin();
         for (int index = 0; index < getEntryCount(); index++) {
             E e = getEntry(index);
             absoluteY += getRowMargin();
@@ -106,8 +160,9 @@ public abstract class VariableElementListWidget<E extends VariableElementListWid
         throw new IllegalArgumentException("No such element: " + entry);
     }
 
+    @Contract(pure = true)
     protected int getAbsoluteY(int finalIndex) {
-        int absoluteY = 2;
+        int absoluteY = getTopMargin();
         for (int index = 0; index < finalIndex; index++) {
             E e = getEntry(index);
             absoluteY += getRowMargin();
@@ -160,11 +215,13 @@ public abstract class VariableElementListWidget<E extends VariableElementListWid
     }
 
     @Override
+    @Contract(pure = true)
     protected int getRowTop(int index) {
         return getY() - (int) getScrollAmount() + getAbsoluteY(index) + headerHeight;
     }
 
     @Override
+    @Contract(pure = true)
     protected int getRowBottom(int index) {
         return getRowTop(index) + getEntry(index).getHeight();
     }
@@ -173,7 +230,20 @@ public abstract class VariableElementListWidget<E extends VariableElementListWid
         this.setScrollAmount(this.getScrollAmount() + (double)amount);
     }
 
+    @Override
+    public void resize(int totalWidth, int totalHeight) {
+        double oldMaxPosition = getMaxPosition();
+        setWidth(totalWidth - widthDifference);
+        setHeight(totalHeight - heightDifference);
+        if (oldMaxPosition > 0) {
+            setScrollAmount((getScrollAmount() + getHeight()) * (getMaxPosition() / oldMaxPosition) - getHeight());
+        } else {
+            setScrollAmount(getScrollAmount());
+        }
+    }
+
     public abstract static class Entry<E extends ElementListWidget.Entry<E>> extends ElementListWidget.Entry<E> {
+        @Contract(pure = true)
         public abstract int getHeight();
     }
 }

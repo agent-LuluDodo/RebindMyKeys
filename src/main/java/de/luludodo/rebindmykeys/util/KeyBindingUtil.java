@@ -6,6 +6,7 @@ import de.luludodo.rebindmykeys.keybindings.keyCombo.KeyCombo;
 import de.luludodo.rebindmykeys.util.interfaces.Action;
 import net.minecraft.client.util.InputUtil;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -43,6 +44,16 @@ public class KeyBindingUtil {
     }
 
     public static void onKey(InputUtil.Key key, boolean press) {
+        // If recording for a KeyCombo don't execute actions
+        if (KeyUtil.isRecording()) {
+            if (press) {
+                KeyUtil.addRecordedKey(key);
+                return;
+            } else if (KeyUtil.isInRecording(key)) {
+                KeyUtil.stopRecording();
+                return;
+            }
+        }
         // Send press/release to every KeyBinding
         KeyUtil.getAll().forEach(keyBinding -> {
             if (press) {
@@ -69,6 +80,7 @@ public class KeyBindingUtil {
     private static void filter() {
         // Apply some filter rules to only keep valid ones (example: when "CRTL + Q -> Drop Stack" triggers "Q -> Drop Item" shouldn't trigger)
         Set<UUID> invalidUUIDs = CollectionUtil.joinCollection(HashSet::new, CollectionUtil.run(KeyUtil.getAll(), KeyBinding::getIncompatibleUUIDs));
+        //RebindMyKeys.DEBUG.info("invalidUUIDs='{}'", CollectionUtil.toString(invalidUUIDs));
         KeyUtil.getAll().forEach(binding -> binding.filter(invalidUUIDs));
     }
 

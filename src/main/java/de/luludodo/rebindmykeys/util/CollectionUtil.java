@@ -252,7 +252,6 @@ public class CollectionUtil {
         for (E element : collection) {
             if (first) {
                 first = false;
-                builder.append(start);
             } else {
                 builder.append(delimiter);
             }
@@ -263,16 +262,19 @@ public class CollectionUtil {
     }
 
     public static String toString(Collection<?> collection, String start, String delimiter, String end) {
-        return toString(collection, Object::toString, start, delimiter, end);
+        return toString(collection, String::valueOf, start, delimiter, end);
+    }
+
+    public static String toString(Collection<?> collection) {
+        return toString(collection, "[", ", ", "]");
     }
 
     public static <E> MutableText toText(Collection<E> collection, Function<E, Text> toText, Text start, Text delimiter, Text end) {
-        MutableText text = Text.empty();
+        MutableText text = start.copy();
         boolean first = true;
         for (E element : collection) {
             if (first) {
                 first = false;
-                text.append(start);
             } else {
                 text.append(delimiter);
             }

@@ -1,9 +1,12 @@
 package de.luludodo.rebindmykeys.util;
 
 import com.google.gson.*;
+import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.util.interfaces.Action;
 import de.luludodo.rebindmykeys.util.interfaces.JsonLoadable;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
+import net.minecraft.util.Identifier;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,6 +43,7 @@ public class JsonUtil {
          *     If the {@code object} is an instance of {@link JsonElement} the unmodified {@code object} will be returned. <br>
          *     If the {@code object} is an instance of {@link Enum} the {@code object} parsed using {@link JEnum#toJson(Enum)} will be returned. <br>
          *     If the {@code object} is an instance of {@link Collection} the {@code object} parsed using {@link ArrayBuilder#addAll(Collection)} will be returned. <br>
+         *     If the {@code object} is an instance of {@link Identifier} the result of {@link JsonPrimitive#JsonPrimitive(String)} for {@link Identifier#toString()} will be returned. <br>
          *     If the {@code object} is an Array the {@code object} parsed using {@link ArrayBuilder#addAll(Object[])} will be returned. <br>
          *     Otherwise the {@code object} parsed using {@link Gson#toJsonTree(Object)} will be returned.
          * </p>
@@ -437,7 +441,7 @@ public class JsonUtil {
          * @see JsonUtil#fromJson(JsonElement, Class)
          */
         public <R> R[] toArray(Class<R> cl) {
-            return toArray(json -> JsonUtil.fromJson(json, cl));
+            return toArray(json -> JsonUtil.fromJson(json, cl), cl);
         }
 
         /**
@@ -457,12 +461,12 @@ public class JsonUtil {
          * @return The Array
          * @param <R> The {@link Class} of the Array as a generic.
          */
-        @SuppressWarnings("unchecked")
-        public <R> R[] toArray(Function<JsonElement, R> converter) {
-            R[] array = (R[]) new Object[json.size()];
+        public <R> R[] toArray(Function<JsonElement, R> converter, Class<R> cl) {
+            R[] array = ArrayUtils.newInstance(cl, json.size());
             for (int index = 0; index < array.length; index++) {
                 array[index] = converter.apply(json.get(index));
             }
+            RebindMyKeys.DEBUG.info("Class array {} content {}", array.getClass().getSimpleName(), Arrays.toString(array));
             return array;
         }
 
@@ -627,6 +631,7 @@ public class JsonUtil {
      *     If the {@code object} is an instance of {@link JsonElement} the unmodified {@code object} will be returned. <br>
      *     If the {@code object} is an instance of {@link Enum} the {@code object} parsed using {@link JEnum#toJson(Enum)} will be returned. <br>
      *     If the {@code object} is an instance of {@link Collection} the {@code object} parsed using {@link ArrayBuilder#addAll(Collection)} will be returned. <br>
+     *     If the {@code object} is an instance of {@link Identifier} the result of {@link JsonPrimitive#JsonPrimitive(String)} for {@link Identifier#toString()} will be returned. <br>
      *     If the {@code object} is an Array the {@code object} parsed using {@link ArrayBuilder#addAll(Object[])} will be returned. <br>
      *     Otherwise the {@code object} parsed using {@link Gson#toJsonTree(Object)} will be returned.
      * </p>
@@ -639,6 +644,7 @@ public class JsonUtil {
         if (o instanceof JsonElement je) return je;
         if (o instanceof Enum<?> e) return JEnum.toJson(e);
         if (o instanceof Collection<?> c) return array(c.size()).addAll(c).build();
+        if (o instanceof Identifier id) return new JsonPrimitive(id.toString());
         if (o.getClass().isArray()) {
             Object[] array = (Object[]) o;
             return array(array.length).addAll(array).build();
@@ -664,7 +670,7 @@ public class JsonUtil {
     public static <R> R fromJson(JsonElement json, Class<R> cl) {
         JsonUtil.requireNonNull(json);
         if (cl.isArray()) {
-            return (R) array(json).toArray(cl.arrayType());
+            return (R) array(json).toArray(cl.componentType());
         } else if (JsonElement.class.isAssignableFrom(cl)) {
             return JsonUtil.require(json, cl);
         } else if (cl.isAssignableFrom(Boolean.class)) {
@@ -687,6 +693,8 @@ public class JsonUtil {
             return (R) JsonUtil.requireString(json);
         } else if (cl.isAssignableFrom(Enum.class)) {
             return (R) JsonUtil.requireEnum(json, (Class<? extends Enum>) cl);
+        } else if (cl.isAssignableFrom(Identifier.class)){
+            return (R) handle(() -> Objects.requireNonNull(Identifier.tryParse(JsonUtil.requireString(json))), json);
         } else {
             return GSON.fromJson(json, cl);
         }
@@ -1078,9 +1086,9 @@ public class JsonUtil {
         @Contract(value = "null -> fail", pure = true)
         public static Map<String, JsonElement> toStringMap(JsonElement json) {
             handle(() -> ObjectUtil.requireOneOf(json, JsonObject.class, JsonNull.class), json);
-            if (json instanceof JsonNull)
+            if (json instanceof JsonNull) {
                 return new HashMap<>(0);
-            if (json instanceof JsonObject jsonObject) {
+            } else if (json instanceof JsonObject jsonObject) {
                 Map<String, JsonElement> stringMap = new HashMap<>(jsonObject.size());
                 jsonObject.keySet().forEach(key -> stringMap.put(key, jsonObject.get(key)));
                 return stringMap;

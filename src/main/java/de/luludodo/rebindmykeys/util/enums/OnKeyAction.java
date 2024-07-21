@@ -1,5 +1,6 @@
 package de.luludodo.rebindmykeys.util.enums;
 
+import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.util.interfaces.Action;
 import net.minecraft.client.MinecraftClient;
 
@@ -36,7 +37,8 @@ public enum OnKeyAction {
     ACTION_PRINT_HELP,
     ACTION_DUMP_TEXTURES,
     ACTION_RELOAD_RESOURCES,
-    ACTION_OPEN_GAMEMODE_SWITCHER;
+    ACTION_OPEN_GAMEMODE_SWITCHER,
+    UPDATE_SCREEN_KEYS;
 
     OnKeyAction() {}
 

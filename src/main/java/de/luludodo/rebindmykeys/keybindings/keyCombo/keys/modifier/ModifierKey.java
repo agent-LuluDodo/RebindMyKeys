@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ModifierKey implements Key {
     private final Modifier modifier;
@@ -73,5 +74,10 @@ public class ModifierKey implements Key {
             return mk.modifier.equals(modifier);
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(modifier);
     }
 }

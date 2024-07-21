@@ -21,7 +21,7 @@ public interface Key extends JsonSavable {
     static JsonObject save(Key key) {
         return JsonUtil.object()
                 .add("type", KeyTypes.get(key))
-                .add("settings", key.save())
+                .add("settings", key)
                 .build();
     }
 

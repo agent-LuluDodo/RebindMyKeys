@@ -1,8 +1,11 @@
-package de.luludodo.rebindmykeys.gui.widgets;
+package de.luludodo.rebindmykeys.gui.binding.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.luludodo.rebindmykeys.RebindMyKeys;
-import de.luludodo.rebindmykeys.gui.KeyBindingScreen;
+import de.luludodo.rebindmykeys.gui.binding.screen.KeyBindingScreen;
+import de.luludodo.rebindmykeys.gui.binding.screen.SettingsPopup;
+import de.luludodo.rebindmykeys.gui.widgets.IconButtonWidget;
+import de.luludodo.rebindmykeys.gui.widgets.VariableElementListWidget;
 import de.luludodo.rebindmykeys.keybindings.KeyBinding;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.KeyCombo;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
@@ -13,37 +16,55 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidget.Entry> {
     private static final TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
-    private final @NotNull KeyBindingScreen parent;
+    private final HashMap<String, List<KeyBinding>> categoryToBindings = new HashMap<>();
     public KeyBindingsWidget(@NotNull KeyBindingScreen parent, MinecraftClient client) {
-        super(client, parent.width, parent.height - 52, 20);
-        this.parent = parent;
+        super(client, parent, parent.width, parent.height - 52, 0, 20);
 
-        AtomicInteger minWidth = new AtomicInteger(-1);
         KeyUtil.getCategories().forEach((category, bindings) -> {
             addEntry(new CategoryEntry(category));
-            bindings.sort((b1, b2) -> Text.translatable(b1.getId()).getString().compareToIgnoreCase(Text.translatable(b2.getId()).getString()));
-            bindings.forEach(binding -> {
-                BindingEntry entry = new BindingEntry(binding);
-                addEntry(entry);
-                int entryMinWidth = entry.getMinWidth();
-                if (minWidth.get() < entryMinWidth) {
-                    minWidth.set(entryMinWidth);
-                }
-            });
+            bindings.forEach(binding -> addEntry(new BindingEntry(binding)));
         });
-        setRowWidth(minWidth.get());
-        fitRowWidth();
+
+        calcWidth();
         setRowMargin(0);
+    }
+
+    public void resetAll() {
+
+    }
+
+    public boolean areAllDefault() {
+        return false;
+    }
+
+    private void calcWidth() {
+        int minWidth = -1;
+        for (int index = 0; index < getEntryCount(); index++) {
+            Entry entry = getEntry(index);
+            int entryMinWidth = entry.getMinWidth();
+            if (minWidth < entryMinWidth) {
+                minWidth = entryMinWidth;
+            }
+        }
+        setRowWidth(minWidth);
+        fitRowWidth();
+    }
+
+    @Override
+    public void resize(int totalWidth, int totalHeight) {
+        super.resize(totalWidth, totalHeight);
+        calcWidth();
     }
 
     @Override
@@ -51,7 +72,9 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
         super.renderWidget(context, mouseX, mouseY, delta);
     }
 
-    public abstract static class Entry extends VariableElementListWidget.Entry<Entry> {}
+    public abstract static class Entry extends VariableElementListWidget.Entry<Entry> {
+        public abstract int getMinWidth();
+    }
 
     public class BindingEntry extends Entry {
         private final KeyBinding binding;
@@ -62,17 +85,27 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
         }
 
         public void update() {
-            comboEntries = new ArrayList<>(binding.getKeyCombos().size());
-            for (KeyCombo keyCombo : binding.getKeyCombos()) {
-                comboEntries.add(new ComboEntry(this, keyCombo));
+            int size = binding.getKeyCombos().size();
+            if (size == 0) {
+                comboEntries = new ArrayList<>(1);
+                comboEntries.add(createUnbound());
+            } else {
+                comboEntries = new ArrayList<>(binding.getKeyCombos().size());
+                for (KeyCombo keyCombo : binding.getKeyCombos()) {
+                    comboEntries.add(new ComboEntry(this, keyCombo));
+                }
             }
+        }
+
+        public ComboEntry createUnbound() {
+            return new ComboEntry(this, new KeyCombo(binding.getId(), new ArrayList<>(), binding.getDefaultSettings()));
         }
 
         @Override
         public void render(DrawContext context, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovered, float delta) {
             // Stripes
             if (index % 2 == 1) {
-                context.fill(0, y - getRowMargin() / 2, KeyBindingsWidget.this.width, y + height + getRowMargin() / 2, 0x99FFFFFF);
+                context.fill(0, y - getRowMargin() / 2, KeyBindingsWidget.this.width, y + height + getRowMargin() / 2, 0x22FFFFFF);
             }
 
             // Id
@@ -106,12 +139,13 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             return Math.max(comboEntries.size(), 1) * 20;
         }
 
+        @Override
         public int getMinWidth() {
-            return 25 + textRenderer.getWidth(Text.translatable(binding.getId())) + 5 + 80 + 5 + 20 + 20 + 20;
+            return 25 + textRenderer.getWidth(Text.translatable(binding.getId())) + 170;
         }
     }
-
     public class ComboEntry extends Entry {
+
         private final ButtonWidget keyButton;
         private final IconButtonWidget removeButton = IconButtonWidget.builder(
                 Identifier.of("rebindmykeys", "textures/gui/remove.png"),
@@ -131,7 +165,7 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             this.parent = parent;
             this.combo = combo;
             keyButton = ButtonWidget.builder(
-                    CollectionUtil.toText(combo.getKeys(), Key::getText, "", " + ", ""),
+                    combo.isUnbound()? Text.translatable("key.keyboard.unknown") : CollectionUtil.toText(combo.getKeys(), Key::getText, "", " + ", ""),
                     this::onKeyButtonPressed
             ).size(100, 20).build();
         }
@@ -152,19 +186,28 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
         }
 
         private void onKeyButtonPressed(ButtonWidget keyButton) {
+            keyButton.setMessage(Text.translatable("rebindmykeys.gui.keyBindings.recording"));
+            KeyUtil.startRecording(keys -> {
+                combo.setKeys(keys);
+                parent.update();
+            });
             RebindMyKeys.DEBUG.info("Key button pressed");
         }
 
         private void onRemoveButtonPressed(ButtonWidget keyButton) {
             parent.binding.removeKeyCombo(combo);
             parent.update();
+            RebindMyKeys.DEBUG.info("Remove button pressed");
         }
 
         private void onSettingsButtonPressed(ButtonWidget keyButton) {
+            client.setScreen(new SettingsPopup((KeyBindingScreen) KeyBindingsWidget.this.getParent(), combo));
             RebindMyKeys.DEBUG.info("Settings button pressed");
         }
 
         private void onResetButtonPressed(ButtonWidget keyButton) {
+            combo.setSettings(parent.binding.getDefaultSettings());
+            parent.update();
             RebindMyKeys.DEBUG.info("Reset button pressed");
         }
 
@@ -182,6 +225,11 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
         public int getHeight() {
             return 20;
         }
+
+        @Override
+        public int getMinWidth() {
+            return -1;
+        }
     }
 
     public class CategoryEntry extends Entry {
@@ -194,11 +242,11 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
         public void render(DrawContext context, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovered, float delta) {
             // Stripes
             if (index % 2 == 1) {
-                context.fill(0, y - getRowMargin() / 2, KeyBindingsWidget.this.width, y + height + getRowMargin() / 2, 0x99FFFFFF);
+                context.fill(0, y - getRowMargin() / 2, KeyBindingsWidget.this.width, y + height + getRowMargin() / 2, 0x22FFFFFF);
             }
 
             // Name
-            drawScrollableText(context, textRenderer, Text.translatable(translationKey), x, y, x + width, y + height, 0xFFFFFFFF);
+            drawScrollableText(context, textRenderer, Text.translatable(translationKey).formatted(Formatting.UNDERLINE), x, y, x + width, y + height, 0xFFFFFFFF);
         }
 
         @Override
@@ -214,6 +262,11 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
         @Override
         public int getHeight() {
             return 20;
+        }
+
+        @Override
+        public int getMinWidth() {
+            return textRenderer.getWidth(Text.translatable(translationKey));
         }
     }
 }

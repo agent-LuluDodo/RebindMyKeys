@@ -1,12 +1,16 @@
 package de.luludodo.rebindmykeys;
 
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.modifier.Modifier;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationModeRegistry;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.hold.HoldMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActionMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActivateOn;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.toggle.ToggleMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.Context;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.IContextRegistry;
+import de.luludodo.rebindmykeys.profiles.ProfileManager;
 import de.luludodo.rebindmykeys.util.KeyBindingActions;
+import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import de.luludodo.rebindmykeys.util.KeyUtil;
 import de.luludodo.rebindmykeys.util.TimerUtil;
 import de.luludodo.rebindmykeys.util.enums.Key;
@@ -14,13 +18,18 @@ import de.luludodo.rebindmykeys.util.enums.KeyBindings;
 import de.luludodo.rebindmykeys.util.enums.Mouse;
 import de.luludodo.rebindmykeys.util.enums.OnKeyAction;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Environment(EnvType.CLIENT)
 public class RebindMyKeys implements ClientModInitializer {
     public static final Logger DEBUG = LoggerFactory.getLogger("RebindMyKeys DEBUG");
     public static final Logger LOG = LoggerFactory.getLogger("RebindMyKeys");
@@ -29,11 +38,17 @@ public class RebindMyKeys implements ClientModInitializer {
     public void onInitializeClient() {
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) { // ONLY FOR DEBUGGING (getting the stack trace of a gl error)
             ClientTickEvents.START_CLIENT_TICK.register(client ->
-                    GLFW.glfwSetErrorCallback((errorCode, description) -> {
-                        throw new RuntimeException("GLFW ERROR " + errorCode + ": " + description);
-                    })
+                    GLFW.glfwSetErrorCallback((errorCode, description) ->
+                        RebindMyKeys.LOG.error("GLFW ERROR " + errorCode + ": " + description, new Throwable("StackTrace"))
+                    )
             );
         }
+
+        OperationModeRegistry.register(Identifier.of("rebindmykeys", "action"), ActionMode.class, ActionMode::new);
+        OperationModeRegistry.register(Identifier.of("rebindmykeys", "hold"), HoldMode.class, HoldMode::new);
+        OperationModeRegistry.register(Identifier.of("rebindmykeys", "toggle"), ToggleMode.class, ToggleMode::new);
+
+        IContextRegistry.register(Context.values());
 
         KeyUtil.setMod(null, "key", "key.categories");
 
@@ -218,7 +233,7 @@ public class RebindMyKeys implements ClientModInitializer {
         KeyUtil.create(KeyBindings.TAKE_SCREENSHOT)
                 .context(Context.EVERYWHERE)
                 .keysm(Key.F2)
-                .onAction(KeyBindingActions::takeScreenshot)
+                .onAction(OnKeyAction.ACTION_SCREENSHOT.action())
                 .register();
         KeyUtil.create(KeyBindings.CINEMATIC_CAMERA)
                 .operationMode(new ToggleMode())
@@ -228,8 +243,8 @@ public class RebindMyKeys implements ClientModInitializer {
         KeyUtil.create(KeyBindings.FULLSCREEN)
                 .operationMode(new ToggleMode())
                 .context(Context.EVERYWHERE)
-                .keysm(Key.F12)
-                .onToggle(KeyBindingActions::fullscreen)
+                .keysm(Key.F11)
+                .onToggle(OnKeyAction.TOGGLE_FULLSCREEN.toggle())
                 .register();
         KeyUtil.create(KeyBindings.PERSPECTIVES)
                 .context(Context.PLAYING)
@@ -238,7 +253,7 @@ public class RebindMyKeys implements ClientModInitializer {
                 .register();
 
 
-        KeyUtil.setMod(RebindMyKeys.class, "rebindmykeys.key", "rebindmykeys.key.categories");
+        KeyUtil.setMod("rebindmykeys", "rebindmykeys.key", "rebindmykeys.key.categories");
 
         KeyUtil.setCategory("timer");
 
@@ -252,12 +267,14 @@ public class RebindMyKeys implements ClientModInitializer {
         KeyUtil.moveCategoryToTop();
 
         KeyUtil.create(KeyBindings.LEFT_CLICK)
+                .skipFilter(true)
                 .context(Context.IN_SCREEN)
-                .operationMode(new ActionMode(ActivateOn.BOTH)) // we need press and release
+                .operationMode(new ActionMode(ActivateOn.BOTH)) // we need press and release TODO: system to lock settings, so that you cannot accidentally change this and break left click :)
                 .mouse(Mouse.LEFT)
                 .onAction(KeyBindingActions::leftClick)
                 .register();
         KeyUtil.create(KeyBindings.RIGHT_CLICK)
+                .skipFilter(true)
                 .context(Context.IN_SCREEN)
                 .operationMode(new ActionMode(ActivateOn.BOTH)) // we need press and release
                 .mouse(Mouse.RIGHT)
@@ -265,14 +282,16 @@ public class RebindMyKeys implements ClientModInitializer {
                 .register();
         // TODO: scrolling
         KeyUtil.create(KeyBindings.PAUSE_GAME) // close menu is a separate keybind
+                .skipFilter(true)
                 .context(Context.PLAYING)
                 .keysm(Key.ESCAPE)
-                .onAction(KeyBindingActions::pauseGame)
+                .onAction(OnKeyAction.ACTION_PAUSE.action())
                 .register();
         KeyUtil.create(KeyBindings.CLOSE_MENU)
+                .skipFilter(true)
                 .context(Context.IN_SCREEN)
                 .keysm(Key.ESCAPE)
-                .onAction(KeyBindingActions::closeMenu)
+                .onAction(KeyBindingActions::forceCloseMenu)
                 .register();
 
         KeyUtil.setCategory("camera");
@@ -325,24 +344,29 @@ public class RebindMyKeys implements ClientModInitializer {
                 .context(Context.EVERYWHERE)
                 .keysm(Key.B)
                 .modifier(Modifier.CONTROL)
-                .onAction(KeyBindingActions::narrator)
+                .onAction(OnKeyAction.ACTION_CYCLE_NARRATOR.action())
                 .register();
         KeyUtil.create(KeyBindings.HUD)
                 .operationMode(new ToggleMode())
                 .context(Context.PLAYING)
                 .keysm(Key.F1)
-                .onToggle(KeyBindingActions::hud)
+                .onToggle(OnKeyAction.TOGGLE_HUD.toggle())
                 .register();
         KeyUtil.create(KeyBindings.POST_PROCESSING)
                 .operationMode(new ToggleMode())
                 .context(Context.PLAYING)
                 .keysm(Key.F4)
-                .onToggle(KeyBindingActions::postProcessing)
+                .onToggle(OnKeyAction.TOGGLE_POST_PROCESSOR.toggle())
                 .register();
         KeyUtil.create(KeyBindings.REFRESH_SERVER_LIST)
                 .context(Context.IN_MULTIPLAYER_SCREEN)
                 .keysm(Key.F5)
                 .onAction(KeyBindingActions::refreshServerList)
+                .register();
+        KeyUtil.create(KeyBindings.FORCE_CLOSE_MENU)
+                .skipFilter(true)
+                .context(Context.IN_SCREEN)
+                .onAction(KeyBindingActions::forceCloseMenu)
                 .register();
 
         KeyUtil.setCategory("debugCharts");
@@ -371,6 +395,12 @@ public class RebindMyKeys implements ClientModInitializer {
 
         KeyUtil.setCategory("debugCombos");
 
+        KeyUtil.create(KeyBindings.PAUSE_WITHOUT_MENU)
+                .context(Context.PLAYING)
+                .reference(KeyBindings.DEBUG_MENU)
+                .reference(KeyBindings.PAUSE_GAME)
+                .onAction(OnKeyAction.ACTION_PAUSE_WITHOUT_MENU.action())
+                .register();
         KeyUtil.create(KeyBindings.DEBUG_CRASH)
                 .operationMode(new HoldMode())
                 .context(Context.PLAYING)
@@ -608,5 +638,19 @@ public class RebindMyKeys implements ClientModInitializer {
                 .keysm(Key.NUM_4)
                 .onToggle(newState -> DEBUG.info("order-insensitive-toggle-hold-test toggled to " + newState))
                 .register();
+
+        ClientLifecycleEvents.CLIENT_STARTED.register(this::onClientStarted);
+        ClientLifecycleEvents.CLIENT_STOPPING.register(this::onClientStopping);
+    }
+
+    public void onClientStarted(MinecraftClient client) {
+        ProfileManager.init();
+
+        KeyUtil.validate();
+        KeyBindingUtil.calcIncompatibleUUIDs();
+    }
+
+    public void onClientStopping(MinecraftClient client) {
+        ProfileManager.save();
     }
 }
