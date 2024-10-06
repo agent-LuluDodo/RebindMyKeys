@@ -1,12 +1,16 @@
 package de.luludodo.rebindmykeys.gui.binding.screen;
 
+import de.luludodo.rebindmykeys.gui.globalConfig.screen.GlobalConfigPopup;
+import de.luludodo.rebindmykeys.gui.profile.screen.ProfileConfigPopup;
 import de.luludodo.rebindmykeys.gui.screen.ResizableScreen;
 import de.luludodo.rebindmykeys.gui.binding.widget.KeyBindingsWidget;
-import de.luludodo.rebindmykeys.gui.widgets.ResizableButtonWidget;
+import de.luludodo.rebindmykeys.gui.widget.IconButtonWidget;
+import de.luludodo.rebindmykeys.gui.widget.ResizableButtonWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 public class KeyBindingScreen extends ResizableScreen {
     private final Screen parent;
@@ -19,21 +23,61 @@ public class KeyBindingScreen extends ResizableScreen {
     private ResizableButtonWidget resetButton;
     @Override
     protected void init() {
-        bindings = addResizableChild(new KeyBindingsWidget(this, client));
-        resetButton = addResizableChild(ResizableButtonWidget.builder(this, Text.translatable("controls.resetAll"), button -> {
-            bindings.resetAll();
-        }).dimensions(
-                /* x: */ width -> width / 2 - 155,
-                /* y: */ height -> height - 29,
-                /* width: */ width -> 150,
-                /* height: */ height -> 20
-        ).build());
-        addResizableChild(ResizableButtonWidget.builder(this, ScreenTexts.DONE, button -> close()).dimensions(
-                /* x: */ width -> width / 2 + 5,
-                /* y: */ height -> height - 29,
-                /* width: */ width -> 150,
-                /* height: */ height -> 20
-        ).build());
+        bindings = addResizableChild(
+                new KeyBindingsWidget(this, client)
+        );
+        resetButton = addResizableChild(
+                ResizableButtonWidget.builder(
+                        this,
+                        Text.translatable("controls.resetAll"),
+                        button -> bindings.resetAll()
+                ).dimensions(
+                        /* x: */ width -> width / 2 - 155,
+                        /* y: */ height -> height - 29,
+                        /* width: */ width -> 150,
+                        /* height: */ height -> 20
+                ).build()
+        );
+        addResizableChild(
+                ResizableButtonWidget.builder(
+                        this,
+                        ScreenTexts.DONE,
+                        button -> close()
+                ).dimensions(
+                        /* x: */ width -> width / 2 + 5,
+                        /* y: */ height -> height - 29,
+                        /* width: */ width -> 150,
+                        /* height: */ height -> 20
+                ).build()
+        );
+        addResizableChild(
+                IconButtonWidget.builder(
+                        this,
+                        Identifier.of("rebindmykeys", "textures/gui/settings.png"),
+                        button -> client.setScreen(new GlobalConfigPopup(this))
+                ).dimensions(
+                        /* x: */ width -> width - 20,
+                        /* y: */ height -> 0,
+                        /* width: */ width -> 20,
+                        /* height: */ height -> 20
+                ).build()
+        );
+        addResizableChild(
+                ResizableButtonWidget.builder(
+                        this,
+                        Text.translatable("rebindmykeys.gui.profiles"),
+                        button -> client.setScreen(new ProfileConfigPopup(this))
+                ).dimensions(
+                        /* x: */ width -> 0,
+                        /* y: */ height -> 0,
+                        /* width: */ width -> 80,
+                        /* height: */ height -> 20
+                ).build()
+        );
+    }
+
+    public void reloadEntries() {
+        bindings.reloadEntries();
     }
 
     @Override

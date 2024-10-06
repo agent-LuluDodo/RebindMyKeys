@@ -1,4 +1,4 @@
-package de.luludodo.rebindmykeys.gui.widgets;
+package de.luludodo.rebindmykeys.gui.widget;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -96,6 +96,15 @@ public abstract class VariableElementListWidget<E extends VariableElementListWid
         return getRowWidth() + (getMaxScroll() > 0? (getScrollbarMargin() + getScrollbarWidth()) : 0);
     }
 
+    @Contract(pure = true)
+    public int getTargetHeight() {
+        int targetHeight = getTopMargin() + getBottomMargin() + getRowMargin() * (getEntryCount() - 1);
+        for (int index = 0; index < getEntryCount(); index++) {
+            targetHeight += getEntry(index).getHeight();
+        }
+        return targetHeight;
+    }
+
     @Override
     @Contract(pure = true)
     public int getScrollbarPositionX() {
@@ -140,7 +149,7 @@ public abstract class VariableElementListWidget<E extends VariableElementListWid
     @Override
     @Contract(pure = true)
     protected int getMaxPosition() {
-        return getTotalHeight() + headerHeight - 2;
+        return getTotalHeight() + headerHeight;
     }
 
     @Contract(pure = true)

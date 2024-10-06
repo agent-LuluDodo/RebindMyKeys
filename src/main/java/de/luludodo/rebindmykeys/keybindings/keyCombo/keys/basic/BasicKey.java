@@ -13,8 +13,10 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class BasicKey implements Key {
+    //private final UUID uuid = UUID.randomUUID(); If you ever need to differentiate Key use this
     private final InputUtil.Key key;
     private boolean pressed = false;
     public BasicKey(InputUtil.Key key) {

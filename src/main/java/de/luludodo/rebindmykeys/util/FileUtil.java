@@ -5,11 +5,13 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -228,5 +230,9 @@ public class FileUtil {
                 LOG.warn("RuntimeExceptions should be handled in the Reader (wrap the Exception in InvalidFileContentException to show this)");
         }
         return true;
+    }
+
+    public static String toValidFilename(String filename) {
+        return filename.toLowerCase().replaceAll("[^a-z0-9]", "_");
     }
 }

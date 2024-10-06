@@ -466,7 +466,7 @@ public class JsonUtil {
             for (int index = 0; index < array.length; index++) {
                 array[index] = converter.apply(json.get(index));
             }
-            RebindMyKeys.DEBUG.info("Class array {} content {}", array.getClass().getSimpleName(), Arrays.toString(array));
+            //RebindMyKeys.DEBUG.info("Class array {} content {}", array.getClass().getSimpleName(), Arrays.toString(array));
             return array;
         }
 

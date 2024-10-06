@@ -28,7 +28,7 @@ public record ComboSettings(OperationMode operationMode, IContext[] context, boo
         IContext[] contexts = loader.array("context").toArray(IContext::load, IContext.class);
         return new ComboSettings(
                 loader.get("operationMode", OperationMode::create),
-                (IContext[]) contexts,
+                contexts,
                 loader.get("orderSensitive", Boolean.class),
                 loader.get("skipFilter", Boolean.class)
         );

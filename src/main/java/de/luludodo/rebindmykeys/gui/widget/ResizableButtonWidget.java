@@ -1,9 +1,10 @@
-package de.luludodo.rebindmykeys.gui.widgets;
+package de.luludodo.rebindmykeys.gui.widget;
 
-import de.luludodo.rebindmykeys.gui.widgets.resizable.HeightCalculator;
-import de.luludodo.rebindmykeys.gui.widgets.resizable.WidthCalculator;
-import de.luludodo.rebindmykeys.gui.widgets.resizable.XCalculator;
-import de.luludodo.rebindmykeys.gui.widgets.resizable.YCalculator;
+import de.luludodo.rebindmykeys.gui.screen.ResizableScreen;
+import de.luludodo.rebindmykeys.gui.widget.resizable.HeightCalculator;
+import de.luludodo.rebindmykeys.gui.widget.resizable.WidthCalculator;
+import de.luludodo.rebindmykeys.gui.widget.resizable.XCalculator;
+import de.luludodo.rebindmykeys.gui.widget.resizable.YCalculator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
@@ -14,14 +15,19 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 public class ResizableButtonWidget extends ButtonWidget implements Resizable {
-
     private final Screen parent;
     private final XCalculator x;
     private final YCalculator y;
     private final WidthCalculator width;
     private final HeightCalculator height;
-    protected ResizableButtonWidget(Screen parent, XCalculator x, YCalculator y, WidthCalculator width, HeightCalculator height, Text message, PressAction onPress, NarrationSupplier narrationSupplier) {
-        super(x.calc(parent.width), y.calc(parent.height), width.calc(parent.width), height.calc(parent.height), message, onPress, narrationSupplier);
+    protected ResizableButtonWidget(@Nullable ResizableScreen parent, XCalculator x, YCalculator y, WidthCalculator width, HeightCalculator height, Text message, PressAction onPress, NarrationSupplier narrationSupplier) {
+        super(
+                x.calc(parent == null ? -1 : parent.getDefaultResizeWidth()),
+                y.calc(parent == null ? -1 : parent.getDefaultResizeHeight()),
+                width.calc(parent == null ? -1 : parent.getDefaultResizeWidth()),
+                height.calc(parent == null ? -1 : parent.getDefaultResizeHeight()),
+                message, onPress, narrationSupplier
+        );
         this.x = x;
         this.y = y;
         this.width = width;
@@ -44,7 +50,7 @@ public class ResizableButtonWidget extends ButtonWidget implements Resizable {
 
     @Environment(value= EnvType.CLIENT)
     public static class Builder {
-        private final Screen parent;
+        @Nullable private final ResizableScreen parent;
         private final Text message;
         private final PressAction onPress;
         @Nullable
@@ -55,7 +61,7 @@ public class ResizableButtonWidget extends ButtonWidget implements Resizable {
         private HeightCalculator height = height -> 20;
         private NarrationSupplier narrationSupplier = DEFAULT_NARRATION_SUPPLIER;
 
-        public Builder(Screen parent, Text message, PressAction onPress) {
+        public Builder(@Nullable ResizableScreen parent, Text message, PressAction onPress) {
             this.parent = parent;
             this.message = message;
             this.onPress = onPress;
@@ -99,7 +105,7 @@ public class ResizableButtonWidget extends ButtonWidget implements Resizable {
         }
     }
 
-    public static Builder builder(Screen parent, Text message, PressAction onPress) {
+    public static Builder builder(@Nullable ResizableScreen parent, Text message, PressAction onPress) {
         return new Builder(parent, message, onPress);
     }
 }

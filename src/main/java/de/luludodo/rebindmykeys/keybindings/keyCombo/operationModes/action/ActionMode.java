@@ -1,11 +1,13 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action;
 
-import com.google.gson.JsonElement;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.PressCountOperationMode;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.hold.HoldModeEditor;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.pressCount.PressCountOperationMode;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import net.minecraft.util.Identifier;
 
 public class ActionMode extends PressCountOperationMode {
+    public static final Identifier ID = new Identifier("rebindmykeys", "action");
+
     private ActivateOn activateOn;
     private boolean active = false;
     private boolean wasTriggered = false;
@@ -14,9 +16,6 @@ public class ActionMode extends PressCountOperationMode {
     }
     public ActionMode(ActivateOn activateOn) {
         this.activateOn = activateOn;
-    }
-    public ActionMode(JsonElement json) {
-        load(json);
     }
 
     @Override
@@ -81,6 +80,16 @@ public class ActionMode extends PressCountOperationMode {
     @Override
     protected void save(JsonUtil.ObjectBuilder builder) {
         builder.add("activateOn", activateOn);
+    }
+
+    @Override
+    public Identifier getId() {
+        return ID;
+    }
+
+    @Override
+    public ActionModeEditor getEditor() {
+        return new ActionModeEditor();
     }
 
     @Override

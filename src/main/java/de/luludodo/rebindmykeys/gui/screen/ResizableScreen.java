@@ -1,6 +1,6 @@
 package de.luludodo.rebindmykeys.gui.screen;
 
-import de.luludodo.rebindmykeys.gui.widgets.Resizable;
+import de.luludodo.rebindmykeys.gui.widget.Resizable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
@@ -21,9 +21,19 @@ public abstract class ResizableScreen extends Screen {
         return addDrawableChild(addResizable(resizeableElement));
     }
 
+    public void init(MinecraftClient client, int width, int height) {
+        super.init(client, width, height);
+    }
+
     protected <T extends Resizable> T addResizable(T resizable) {
         resizables.add(resizable);
         return resizable;
+    }
+
+    @Override
+    public void clearChildren() {
+        super.clearChildren();
+        resizables.clear();
     }
 
     @Override
@@ -31,5 +41,13 @@ public abstract class ResizableScreen extends Screen {
         this.width = width;
         this.height = height;
         resizables.forEach(resizable -> resizable.resize(width, height));
+    }
+
+    public int getDefaultResizeWidth() {
+        return width;
+    }
+
+    public int getDefaultResizeHeight() {
+        return height;
     }
 }

@@ -26,7 +26,7 @@ public class KeyReference implements Key {
     }
 
     private KeyBinding binding() {
-        if (binding == null) binding = KeyUtil.get(reference);
+        if (binding == null) binding = KeyBinding.get(reference);
         if (binding == null) throw new IllegalArgumentException("Couldn't find KeyBinding with id " + reference);
         return binding;
     }

@@ -6,7 +6,6 @@ import de.luludodo.rebindmykeys.keybindings.keyCombo.KeyCombo;
 import de.luludodo.rebindmykeys.util.interfaces.Action;
 import net.minecraft.client.util.InputUtil;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -44,18 +43,8 @@ public class KeyBindingUtil {
     }
 
     public static void onKey(InputUtil.Key key, boolean press) {
-        // If recording for a KeyCombo don't execute actions
-        if (KeyUtil.isRecording()) {
-            if (press) {
-                KeyUtil.addRecordedKey(key);
-                return;
-            } else if (KeyUtil.isInRecording(key)) {
-                KeyUtil.stopRecording();
-                return;
-            }
-        }
         // Send press/release to every KeyBinding
-        KeyUtil.getAll().forEach(keyBinding -> {
+        KeyBinding.getAll().forEach(keyBinding -> {
             if (press) {
                 keyBinding.onKeyDown(key);
             } else {
@@ -63,25 +52,25 @@ public class KeyBindingUtil {
             }
         });
         // Updates cached pressed state
-        KeyUtil.getAll().forEach(KeyBinding::updatePressed);
+        KeyBinding.getAll().forEach(KeyBinding::updatePressed);
     }
 
     public static void update() {
         // Update cached active state
-        KeyUtil.getAll().forEach(KeyBinding::updateActive);
+        KeyBinding.getAll().forEach(KeyBinding::updateActive);
         // Filter results
         filter();
         // Trigger KeyBinding if necessary
-        KeyUtil.getAll().forEach(KeyBindingUtil::tryTrigger);
+        KeyBinding.getAll().forEach(KeyBindingUtil::tryTrigger);
         // Tell KeyBindings that the update is done
-        KeyUtil.getAll().forEach(KeyBinding::done);
+        KeyBinding.getAll().forEach(KeyBinding::done);
     }
 
     private static void filter() {
         // Apply some filter rules to only keep valid ones (example: when "CRTL + Q -> Drop Stack" triggers "Q -> Drop Item" shouldn't trigger)
-        Set<UUID> invalidUUIDs = CollectionUtil.joinCollection(HashSet::new, CollectionUtil.run(KeyUtil.getAll(), KeyBinding::getIncompatibleUUIDs));
+        Set<UUID> invalidUUIDs = CollectionUtil.joinCollection(HashSet::new, CollectionUtil.run(KeyBinding.getAll(), KeyBinding::getIncompatibleUUIDs));
         //RebindMyKeys.DEBUG.info("invalidUUIDs='{}'", CollectionUtil.toString(invalidUUIDs));
-        KeyUtil.getAll().forEach(binding -> binding.filter(invalidUUIDs));
+        KeyBinding.getAll().forEach(binding -> binding.filter(invalidUUIDs));
     }
 
     private static void tryTrigger(KeyBinding binding) {
@@ -98,7 +87,7 @@ public class KeyBindingUtil {
 
     public static void checkContext() {
         // Checks if context changed for any KeyBinding, updates them if it did
-        if (CollectionUtil.oneCondition(KeyUtil.getAll(), KeyBinding::checkContext)) {
+        if (CollectionUtil.any(KeyBinding.getAll(), KeyBinding::checkContext)) {
             update();
         }
     }
@@ -106,9 +95,9 @@ public class KeyBindingUtil {
     public static void calcIncompatibleUUIDs() {
         // Collects all KeyCombos in a HashSet
         Set<KeyCombo> keyCombos = new HashSet<>();
-        KeyUtil.getAll().forEach(binding -> keyCombos.addAll(binding.getKeyCombos()));
+        KeyBinding.getAll().forEach(binding -> keyCombos.addAll(binding.getKeyCombos()));
         // Calculates all incompatible UUIDs
-        KeyUtil.getAll().forEach(binding -> binding.calcIncompatibleUUIDs(keyCombos));
+        KeyBinding.getAll().forEach(binding -> binding.calcIncompatibleUUIDs(keyCombos));
     }
 
     /*

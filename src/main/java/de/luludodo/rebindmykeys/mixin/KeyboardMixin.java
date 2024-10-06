@@ -5,9 +5,9 @@ import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import de.luludodo.rebindmykeys.RebindMyKeys;
-import de.luludodo.rebindmykeys.config.GlobalConfig;
 import de.luludodo.rebindmykeys.profiles.ProfileManager;
 import de.luludodo.rebindmykeys.util.KeyBindingUtil;
+import de.luludodo.rebindmykeys.util.KeyUtil;
 import de.luludodo.rebindmykeys.util.TimerUtil;
 import de.luludodo.rebindmykeys.util.enums.Key;
 import de.luludodo.rebindmykeys.util.enums.OnKeyAction;
@@ -36,7 +36,7 @@ public class KeyboardMixin {
     @Unique private static boolean rebindmykeys$debugCrashJavaActive = false;
     @Unique private final Stack<Boolean> rebindmykeys$isDebugCombo = new Stack<>();
 
-    @Inject(method = "onKey", at = @At("HEAD"))
+    @Inject(method = "onKey", at = @At("HEAD"), cancellable = true)
     public void rebindmykeys$onKey(long window, int keycode, int scancode, int action, int modifiers, CallbackInfo ci) {
         if (OnKeyAction.hasCurrentAction()) {
             rebindmykeys$action.push(OnKeyAction.consumeCurrentAction());
@@ -59,10 +59,20 @@ public class KeyboardMixin {
                 default -> false;
             });
             return;
-        } else {
-            rebindmykeys$action.push(OnKeyAction.UPDATE_SCREEN_KEYS);
-            rebindmykeys$isDebugCombo.push(false);
+        } else if (KeyUtil.isRecording()) {
+            InputUtil.Key key = InputUtil.fromKeyCode(keycode, scancode);
+            if (action == GLFW.GLFW_PRESS) {
+                KeyUtil.addRecordedKey(key);
+            } else if (action == GLFW.GLFW_RELEASE && KeyUtil.isInRecording(key)) {
+                KeyUtil.stopRecording();
+            }
+
+            ci.cancel();
+            return;
         }
+
+        rebindmykeys$action.push(OnKeyAction.UPDATE_SCREEN_KEYS);
+        rebindmykeys$isDebugCombo.push(false);
 
         if (window != client.getWindow().getHandle()) {
             return; // if the minecraft window isn't focused return
@@ -79,7 +89,6 @@ public class KeyboardMixin {
         KeyBindingUtil.onKey(key, action == GLFW.GLFW_PRESS);
 
         KeyBindingUtil.update();
-
     }
 
     @Inject(method = "onKey", at = @At("RETURN"))

@@ -1,4 +1,4 @@
-package de.luludodo.rebindmykeys.gui.widgets.resizable;
+package de.luludodo.rebindmykeys.gui.widget.resizable;
 
 public interface HeightCalculator {
     int calc(int height);

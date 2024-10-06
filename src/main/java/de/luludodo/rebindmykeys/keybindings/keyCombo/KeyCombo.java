@@ -1,6 +1,5 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
@@ -72,11 +71,15 @@ public class KeyCombo implements JsonSavable {
     }
 
     public void onKeyDown(InputUtil.Key key) {
+        if (Objects.equals(getId(), "rebindmykeys.key.leftClick"))
+            RebindMyKeys.DEBUG.info("rebindmykeys.key.leftClick KeyCombo onKeyDown()");
         if (settings.orderSensitive()) {
             int left = keys.size();
             boolean allPressed = true;
             for (Key k : keys) {
                 if (--left == 0) {
+                    if (Objects.equals(getId(), "rebindmykeys.key.leftClick"))
+                        RebindMyKeys.DEBUG.info("rebindmykeys.key.leftClick allPressed {} | key {} | k {}", allPressed, key, k.save().toString());
                     if (allPressed) k.onKeyDown(key);
                 } else {
                     if (!k.isPressed()) allPressed = false;
@@ -137,6 +140,10 @@ public class KeyCombo implements JsonSavable {
 
     public Set<UUID> getIncompatibleUUIDs() {
         if (wasTriggered()) {
+            if (incompatibleUUIDs == null) {
+                RebindMyKeys.DEBUG.error("{}\\\\{}: incompatibleUUIDs is null", id, uuid);
+                return new HashSet<>();
+            }
             return incompatibleUUIDs;
         } else {
             return new HashSet<>();
@@ -169,7 +176,7 @@ public class KeyCombo implements JsonSavable {
     }
 
     public boolean isPressed() { // Can't cache here cause of KeyReference's :)
-        return CollectionUtil.allConditions(keys, Key::isPressed);
+        return CollectionUtil.all(keys, Key::isPressed);
     }
 
     public boolean isActive() {
@@ -193,16 +200,15 @@ public class KeyCombo implements JsonSavable {
         }
 
         return JsonUtil.object()
-                .add("id", id)
                 .add("settings", settings)
                 .add("keys", keysBuilder.build())
                 .build();
     }
 
-    public static KeyCombo load(JsonElement json) {
+    public static KeyCombo load(JsonElement json, String id) {
         JsonUtil.ObjectLoader loader = JsonUtil.object(json);
         return new KeyCombo(
-                loader.get("id", String.class),
+                id,
                 loader.array("keys").toList(Key::load),
                 loader.get("settings", ComboSettings::load)
         );
@@ -214,5 +220,9 @@ public class KeyCombo implements JsonSavable {
 
     public boolean isUnbound() {
         return keys.isEmpty();
+    }
+
+    public KeyCombo copy() {
+        return load(save(), id);
     }
 }

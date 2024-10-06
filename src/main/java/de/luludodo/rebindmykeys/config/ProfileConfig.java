@@ -6,6 +6,7 @@ import de.luludodo.rebindmykeys.profiles.Profile;
 import de.luludodo.rebindmykeys.profiles.ProfileManager;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Stores the currently active {@link Profile} for the {@link ProfileManager}
@@ -18,13 +19,13 @@ public class ProfileConfig extends JsonMapConfig<String, Object> {
      * @see ProfileManager#getConfig()
      */
     public ProfileConfig() {
-        super("rebindmykeys/profiles", new ProfileConfigSerializer());
+        super("rebindmykeys/profiles", 1, new ProfileConfigSerializer());
     }
 
     @Override
     protected Map<String, Object> getDefaults() {
         return Map.of(
-                CURRENT_PROFILE, "default"
+                CURRENT_PROFILE, ProfileManager.DEFAULT_UUID
         );
     }
 
@@ -32,8 +33,8 @@ public class ProfileConfig extends JsonMapConfig<String, Object> {
      * @return The currently active profile's id.
      * @see ProfileManager#getCurrentProfile()
      */
-    public String getCurrentProfile() {
-        return (String) get(CURRENT_PROFILE);
+    public UUID getCurrentProfile() {
+        return (UUID) get(CURRENT_PROFILE);
     }
 
     /**
@@ -42,7 +43,7 @@ public class ProfileConfig extends JsonMapConfig<String, Object> {
      * @param profile The new id.
      * @see ProfileManager#setCurrentProfile(Profile)
      */
-    public void setCurrentProfile(String profile) {
+    public void setCurrentProfile(UUID profile) {
         set(CURRENT_PROFILE, profile);
     }
 }

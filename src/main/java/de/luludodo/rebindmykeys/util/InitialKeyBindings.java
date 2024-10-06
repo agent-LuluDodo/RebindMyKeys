@@ -3,6 +3,7 @@ package de.luludodo.rebindmykeys.util;
 import de.luludodo.rebindmykeys.keybindings.KeyBinding;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,8 +13,11 @@ public final class InitialKeyBindings {
     }
 
     private static final Map<String, KeyBinding> initialKeyBindings = new HashMap<>();
-    public static void add(KeyBinding keyBinding) {
-        initialKeyBindings.put(keyBinding.getId(), keyBinding);
+    public static void add(KeyBinding binding) {
+        if (initialKeyBindings.containsKey(binding.getId()))
+            throw new IllegalArgumentException("A KeyBinding with the id '" + binding.getId() + "' already exists.");
+
+        initialKeyBindings.put(binding.getId(), binding);
     }
 
     /**
@@ -21,6 +25,13 @@ public final class InitialKeyBindings {
      */
     public static @Nullable KeyBinding get(String id) {
         return initialKeyBindings.get(id);
+    }
+
+    /**
+     * <b>Use {@link KeyBinding#getAll()} instead of this!</b>
+     */
+    public static Collection<KeyBinding> getAll() {
+        return initialKeyBindings.values();
     }
 
     public static Map<String, KeyBinding> getDefaults() {

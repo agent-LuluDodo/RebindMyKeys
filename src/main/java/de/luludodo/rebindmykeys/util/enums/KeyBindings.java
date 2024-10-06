@@ -6,7 +6,6 @@ public enum KeyBindings implements IKeyBinding {
     LEFT_CLICK("leftClick"),
     RIGHT_CLICK("rightClick"),
     CLOSE_MENU("close"),
-    FORCE_CLOSE_MENU("forceClose"),
     GRAB_ITEM("grabItem"),
     GRAB_HALF("grabHalf"),
     PAUSE_GAME("pause"),

@@ -1,6 +1,7 @@
 package de.luludodo.rebindmykeys.config.serializer;
 
 import com.google.gson.*;
+import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.api.config.serializer.MapSerializer;
 import de.luludodo.rebindmykeys.keybindings.KeyBinding;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.ComboSettings;
@@ -8,12 +9,14 @@ import de.luludodo.rebindmykeys.util.InitialKeyBindings;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-public class KeyBindingConfigSerializer implements MapSerializer<String, KeyBinding> {
+public class KeyBindingConfigSerializer extends MapSerializer<String, KeyBinding> {
     public static class FakeKeyBinding extends KeyBinding {
         private FakeKeyBinding() {
-            super(null, null, null, new ComboSettings(null, null, false, false));
+            super(null, null, new ComboSettings(null, null, false, false));
         }
 
         private JsonElement json;
@@ -28,25 +31,43 @@ public class KeyBindingConfigSerializer implements MapSerializer<String, KeyBind
     }
 
     @Override
-    public HashMap<String, KeyBinding> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        JsonObject json = JsonUtil.require(jsonElement, JsonObject.class);
-        HashMap<String, KeyBinding> map = new HashMap<>();
-        json.entrySet().forEach(keyBindingEntry -> {
-            String id = keyBindingEntry.getKey();
-            KeyBinding keyBinding = InitialKeyBindings.get(keyBindingEntry.getKey());
-            if (keyBinding == null) {
-                keyBinding = new FakeKeyBinding();
-            }
-            keyBinding.load(keyBindingEntry.getValue());
-            map.put(id, keyBinding);
-        });
-        return map;
-    }
-
-    @Override
-    public JsonElement serialize(HashMap<String, KeyBinding> config, Type type, JsonSerializationContext jsonSerializationContext) {
+    public JsonElement serializeContent(HashMap<String, KeyBinding> config, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject json = new JsonObject();
         config.forEach((id, keyBinding) -> json.add(id, keyBinding.save()));
         return json;
+    }
+
+    @Override
+    public HashMap<String, KeyBinding> deserializeContent(JsonElement jsonElement, int fromVersion, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        if (fromVersion != getVersion())
+            throw new JsonParseException("Unsupported version v" + fromVersion + ", current version v" + getVersion());
+
+        JsonObject json = JsonUtil.require(jsonElement, JsonObject.class);
+        List<String> loadedIds = new ArrayList<>();
+        HashMap<String, KeyBinding> map = new HashMap<>();
+        InitialKeyBindings.getAll().forEach(binding -> {
+            String id = binding.getId();
+            if (json.has(id)) {
+                KeyBinding bindingCopy = binding.copy();
+                try {
+                    bindingCopy.load(json.get(id));
+                } catch (RuntimeException e) {
+                    RebindMyKeys.LOG.error("Failed to load KeyBinding " + binding.getId(), e);
+                    bindingCopy = binding.copy();
+                }
+                loadedIds.add(id);
+                map.put(id, bindingCopy);
+            }
+        });
+        json.entrySet().forEach(bindingEntry -> {
+            String id = bindingEntry.getKey();
+            if (!loadedIds.contains(id)) {
+                KeyBinding binding = new FakeKeyBinding();
+                binding.load(bindingEntry.getValue());
+                loadedIds.add(id);
+                map.put(id, binding);
+            }
+        });
+        return map;
     }
 }

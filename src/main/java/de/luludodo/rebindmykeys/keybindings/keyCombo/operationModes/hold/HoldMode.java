@@ -1,12 +1,12 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.hold;
 
-import com.google.gson.JsonElement;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMode;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.PressCountOperationMode;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.pressCount.PressCountOperationMode;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import net.minecraft.util.Identifier;
 
 public class HoldMode extends PressCountOperationMode {
+    public static final Identifier ID = new Identifier("rebindmykeys", "hold");
+
     private boolean inverted = false;
     private boolean pressed = false;
     private boolean wasTriggered = false;
@@ -15,9 +15,6 @@ public class HoldMode extends PressCountOperationMode {
     }
     public HoldMode(boolean inverted) {
         this.inverted = inverted;
-    }
-    public HoldMode(JsonElement json) {
-        load(json);
     }
 
     @Override
@@ -63,6 +60,16 @@ public class HoldMode extends PressCountOperationMode {
     @Override
     protected void save(JsonUtil.ObjectBuilder builder) {
         builder.add("inverted", inverted);
+    }
+
+    @Override
+    public Identifier getId() {
+        return ID;
+    }
+
+    @Override
+    public HoldModeEditor getEditor() {
+        return new HoldModeEditor();
     }
 
     @Override

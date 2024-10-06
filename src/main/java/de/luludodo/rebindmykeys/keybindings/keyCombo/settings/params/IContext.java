@@ -38,9 +38,9 @@ public interface IContext extends JsonSavable {
     }
 
     static IContext load(JsonElement json) {
-        RebindMyKeys.DEBUG.info("Loading context: " + json);
+        //RebindMyKeys.DEBUG.info("Loading context: " + json);
         IContext context = IContextRegistry.get(json.getAsString());
-        RebindMyKeys.DEBUG.info("Class: {} ID: {}", context.getClass().getSimpleName(), context.getId());
+        //RebindMyKeys.DEBUG.info("Class: {} ID: {}", context.getClass().getSimpleName(), context.getId());
         return context;
     }
 }

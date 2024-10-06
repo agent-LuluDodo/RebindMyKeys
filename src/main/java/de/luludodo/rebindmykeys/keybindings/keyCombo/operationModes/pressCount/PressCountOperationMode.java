@@ -1,12 +1,13 @@
-package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes;
+package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.pressCount;
 
 import com.google.gson.JsonElement;
-import de.luludodo.rebindmykeys.config.GlobalConfig;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMode;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationModeEditor;
 import de.luludodo.rebindmykeys.profiles.ProfileManager;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 
 public abstract class PressCountOperationMode implements OperationMode {
-    private int pressCount;
+    private int pressCount = 1;
     @Override
     public int getPressCount() {
         return pressCount;
@@ -69,4 +70,7 @@ public abstract class PressCountOperationMode implements OperationMode {
         return builder.build();
     }
     protected abstract void save(JsonUtil.ObjectBuilder builder);
+
+    @Override
+    public abstract PressCountOperationModeEditor<?> getEditor();
 }

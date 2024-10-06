@@ -1,6 +1,5 @@
 package de.luludodo.rebindmykeys.util.enums;
 
-import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.util.interfaces.Action;
 import net.minecraft.client.MinecraftClient;
 

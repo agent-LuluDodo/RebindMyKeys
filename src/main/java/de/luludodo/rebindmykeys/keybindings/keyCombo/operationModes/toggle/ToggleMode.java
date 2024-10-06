@@ -1,13 +1,14 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.toggle;
 
-import com.google.gson.JsonElement;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMode;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationModeRegistry;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.PressCountOperationMode;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.pressCount.PressCountOperationMode;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.pressCount.PressCountOperationModeEditor;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 public class ToggleMode extends PressCountOperationMode {
+    public static final Identifier ID = new Identifier("rebindmykeys", "toggle");
+
     private boolean initialState;
     private boolean toggleOnPress;
     private boolean toggled;
@@ -19,9 +20,6 @@ public class ToggleMode extends PressCountOperationMode {
         this.initialState = initialState;
         this.toggleOnPress = toggleOnPress;
         toggled = initialState;
-    }
-    public ToggleMode(JsonElement json) {
-        load(json);
     }
 
 
@@ -79,6 +77,16 @@ public class ToggleMode extends PressCountOperationMode {
     public void save(JsonUtil.ObjectBuilder builder) {
         builder.add("initialState", initialState);
         builder.add("toggleOnPress", toggleOnPress);
+    }
+
+    @Override
+    public ToggleModeEditor getEditor() {
+        return new ToggleModeEditor();
+    }
+
+    @Override
+    public Identifier getId() {
+        return ID;
     }
 
     @Override

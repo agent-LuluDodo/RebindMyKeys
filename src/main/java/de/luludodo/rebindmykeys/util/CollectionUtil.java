@@ -110,7 +110,7 @@ public class CollectionUtil {
      * @param <T> The {@link Class} of the elements of the {@code collection}.
      */
     @Contract(pure = true)
-    public static <T> boolean allConditions(Collection<T> collection, Function<T, Boolean> condition) {
+    public static <T> boolean all(Collection<T> collection, Function<T, Boolean> condition) {
         boolean valid = true;
         for (T element : collection) {
             if (!condition.apply(element)) valid = false;
@@ -126,8 +126,8 @@ public class CollectionUtil {
      * @param <T> The {@link Class} of the elements of the {@code collection}.
      */
     @Contract(pure = true)
-    public static <T> boolean oneCondition(Collection<T> collection, Function<T, Boolean> condition) {
-        return !allConditions(collection, element -> !condition.apply(element)); // Checks if not all conditions are invalid -> means at least one was valid
+    public static <T> boolean any(Collection<T> collection, Function<T, Boolean> condition) {
+        return !all(collection, element -> !condition.apply(element)); // Checks if not all conditions are invalid -> means at least one was valid
     }
 
     /**
@@ -138,8 +138,8 @@ public class CollectionUtil {
      * @param <T> The {@link Class} of the elements of the {@code collection}.
      */
     @Contract(pure = true)
-    public static <T> boolean noCondition(Collection<T> collection, Function<T, Boolean> condition) {
-        return allConditions(collection, element -> !condition.apply(element)); // Checks if all conditions are invalid -> means none were valid
+    public static <T> boolean no(Collection<T> collection, Function<T, Boolean> condition) {
+        return all(collection, element -> !condition.apply(element)); // Checks if all conditions are invalid -> means none were valid
     }
 
     /**
@@ -182,6 +182,12 @@ public class CollectionUtil {
             if (collection2.contains(element)) return true;
         }
         return false;
+    }
+
+    @SafeVarargs
+    public static <C extends Collection<E>, E> C add(C collection, E... entries) {
+        collection.addAll(Arrays.asList(entries));
+        return collection;
     }
 
     @SafeVarargs

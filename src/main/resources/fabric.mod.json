@@ -16,6 +16,9 @@
   "entrypoints": {
     "client": [
       "de.luludodo.rebindmykeys.RebindMyKeys"
+    ],
+    "modmenu": [
+      "de.luludodo.rebindmykeys.ModMenuIntegration"
     ]
   },
   "mixins": [
