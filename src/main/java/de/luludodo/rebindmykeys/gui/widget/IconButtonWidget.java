@@ -70,7 +70,7 @@ public class IconButtonWidget extends ResizableButtonWidget {
         if (renderBackground) {
             super.renderWidget(context, mouseX, mouseY, delta);
         } else {
-            drawMessage(context, null, (this.active ? 0xFFFFFF : 0xA0A0A0) | MathHelper.ceil(this.alpha * 255.0f) << 24);
+            drawMessage(context, null, (this.active ? (isSelected() ? 0xAAAAAA : 0xFFFFFF) : 0xA0A0A0) | MathHelper.ceil(this.alpha * 255.0f) << 24);
         }
     }
 
@@ -100,8 +100,8 @@ public class IconButtonWidget extends ResizableButtonWidget {
         private HeightCalculator iconHeight = height -> height - 2;
         private int u = 0;
         private int v = 0;
-        private Integer textureWidth = 18;
-        private Integer textureHeight = 18;
+        private int textureWidth = 18;
+        private int textureHeight = 18;
         private boolean renderBackground = true;
         private NarrationSupplier narrationSupplier = DEFAULT_NARRATION_SUPPLIER;
 

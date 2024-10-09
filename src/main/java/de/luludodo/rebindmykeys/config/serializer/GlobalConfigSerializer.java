@@ -2,6 +2,9 @@ package de.luludodo.rebindmykeys.config.serializer;
 
 import com.google.gson.*;
 import de.luludodo.rebindmykeys.api.config.serializer.MapSerializer;
+import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.SortAfter;
+import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.SortOrder;
+import de.luludodo.rebindmykeys.util.JsonUtil;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -19,6 +22,9 @@ public class GlobalConfigSerializer extends MapSerializer<String, Object> {
         global.add(DEBUG_CRASH_JAVA_TIME, new JsonPrimitive((long)config.get(DEBUG_CRASH_JAVA_TIME)));
         global.add(VERTICAL_SCROLL_SPEED_MODIFIER, new JsonPrimitive((double)config.get(VERTICAL_SCROLL_SPEED_MODIFIER)));
         global.add(HORIZONTAL_SCROLL_SPEED_MODIFIER, new JsonPrimitive((double)config.get(HORIZONTAL_SCROLL_SPEED_MODIFIER)));
+        global.add(SHOW_CONFIRM_POPUPS, new JsonPrimitive((boolean)config.get(SHOW_CONFIRM_POPUPS)));
+        global.add(SORT_AFTER, JsonUtil.JEnum.toJson(config.get(SORT_AFTER)));
+        global.add(SORT_ORDER, JsonUtil.JEnum.toJson(config.get(SORT_ORDER)));
         return global;
     }
 
@@ -36,6 +42,9 @@ public class GlobalConfigSerializer extends MapSerializer<String, Object> {
         global.put(DEBUG_CRASH_JAVA_TIME, json.get(DEBUG_CRASH_JAVA_TIME).getAsLong());
         global.put(VERTICAL_SCROLL_SPEED_MODIFIER, json.get(VERTICAL_SCROLL_SPEED_MODIFIER).getAsDouble());
         global.put(HORIZONTAL_SCROLL_SPEED_MODIFIER, json.get(HORIZONTAL_SCROLL_SPEED_MODIFIER).getAsDouble());
+        global.put(SHOW_CONFIRM_POPUPS, json.get(SHOW_CONFIRM_POPUPS).getAsBoolean());
+        global.put(SORT_AFTER, JsonUtil.fromJson(json.get(SORT_AFTER), SortAfter.class));
+        global.put(SORT_ORDER, JsonUtil.fromJson(json.get(SORT_ORDER), SortOrder.class));
         return global;
     }
 }

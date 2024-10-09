@@ -5,6 +5,7 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Contract;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -185,7 +186,7 @@ public class CollectionUtil {
     }
 
     @SafeVarargs
-    public static <C extends Collection<E>, E> C add(C collection, E... entries) {
+    public static <C extends Collection<? super E>, E> C add(C collection, E... entries) {
         collection.addAll(Arrays.asList(entries));
         return collection;
     }
@@ -292,5 +293,17 @@ public class CollectionUtil {
 
     public static <E> MutableText toText(Collection<E> collection, Function<E, Text> toText, String start, String delimiter, String end) {
         return toText(collection, toText, Text.literal(start), Text.literal(delimiter), Text.literal(end));
+    }
+
+    public static <E, R> R combine(Collection<E> collection, R initial, BiFunction<E, R, R> combine) {
+        R result = initial;
+        for (E element : collection) {
+            result = combine.apply(element, result);
+        }
+        return result;
+    }
+
+    public static <E> int combineInt(Collection<E> collection, Function<E, Integer> toInt) {
+        return combine(collection, 0, (element, value) -> value + toInt.apply(element));
     }
 }

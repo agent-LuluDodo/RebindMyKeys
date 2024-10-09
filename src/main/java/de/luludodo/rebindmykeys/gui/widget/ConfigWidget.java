@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.*;
 
@@ -160,12 +159,13 @@ public abstract class ConfigWidget extends VariableElementListWidget<ConfigWidge
         public CyclingButtonEntry(Text title, Function<T, Text> valueToText, T initially, CyclingButtonWidget.UpdateCallback<T> callback, T... values) {
             super(
                     title,
-                    CyclingButtonWidget.builder(valueToText).values(values).initially(initially).omitKeyText()
+                    ResizableCyclingButtonWidget.luluBuilder(valueToText).values(values).initially(initially).omitKeyText()
                             .build(
-                                    0,
-                                    0,
-                                    0,
-                                    0,
+                                    null,
+                                    w -> 0,
+                                    h -> 0,
+                                    w -> 0,
+                                    h -> 0,
                                     Text.empty(),
                                     callback
                             )
@@ -174,12 +174,13 @@ public abstract class ConfigWidget extends VariableElementListWidget<ConfigWidge
         public CyclingButtonEntry(Text title, Function<T, Text> valueToText, T initially, CyclingButtonWidget.UpdateCallback<T> callback, Collection<T> values) {
             super(
                     title,
-                    CyclingButtonWidget.builder(valueToText).values(values).initially(initially).omitKeyText()
+                    ResizableCyclingButtonWidget.luluBuilder(valueToText).values(values).initially(initially).omitKeyText()
                             .build(
-                                    0,
-                                    0,
-                                    0,
-                                    0,
+                                    null,
+                                    w -> 0,
+                                    h -> 0,
+                                    w -> 0,
+                                    h -> 0,
                                     Text.empty(),
                                     callback
                             )
@@ -191,12 +192,13 @@ public abstract class ConfigWidget extends VariableElementListWidget<ConfigWidge
         public OnOffButtonEntry(Text title, Text on, Text off, boolean initially, CyclingButtonWidget.UpdateCallback<Boolean> callback) {
             super(
                     title,
-                    CyclingButtonWidget.onOffBuilder(on, off).initially(initially).omitKeyText()
+                    ResizableCyclingButtonWidget.luluOnOffBuilder(on, off).initially(initially).omitKeyText()
                             .build(
-                                    0,
-                                    0,
-                                    0,
-                                    0,
+                                    null,
+                                    w -> 0,
+                                    h -> 0,
+                                    w -> 0,
+                                    h -> 0,
                                     Text.empty(),
                                     callback
                             )

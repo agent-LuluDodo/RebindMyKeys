@@ -2,6 +2,8 @@ package de.luludodo.rebindmykeys.config;
 
 import de.luludodo.rebindmykeys.api.config.JsonMapConfig;
 import de.luludodo.rebindmykeys.config.serializer.GlobalConfigSerializer;
+import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.SortAfter;
+import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.SortOrder;
 import de.luludodo.rebindmykeys.profiles.ProfileManager;
 
 import java.util.HashMap;
@@ -15,6 +17,9 @@ public class GlobalConfig extends JsonMapConfig<String, Object> {
     public static final String DEBUG_CRASH_JAVA_TIME = "debugCrashJavaTime";
     public static final String VERTICAL_SCROLL_SPEED_MODIFIER = "verticalScrollSpeedModifier";
     public static final String HORIZONTAL_SCROLL_SPEED_MODIFIER = "horizontalScrollSpeedModifier";
+    public static final String SHOW_CONFIRM_POPUPS = "showConfirmPopups";
+    public static final String SORT_AFTER = "sortAfter";
+    public static final String SORT_ORDER = "sortOrder";
 
     public static GlobalConfig getCurrent() {
         return ProfileManager.getCurrentProfile().getGlobal();
@@ -37,7 +42,10 @@ public class GlobalConfig extends JsonMapConfig<String, Object> {
                 DEBUG_CRASH_TIME, 10000L,
                 DEBUG_CRASH_JAVA_TIME, 10000L,
                 VERTICAL_SCROLL_SPEED_MODIFIER, 1d,
-                HORIZONTAL_SCROLL_SPEED_MODIFIER, 1d
+                HORIZONTAL_SCROLL_SPEED_MODIFIER, 1d,
+                SHOW_CONFIRM_POPUPS, true,
+                SORT_AFTER, SortAfter.CATEGORY,
+                SORT_ORDER, SortOrder.ASCENDING
         );
     }
 
@@ -82,6 +90,24 @@ public class GlobalConfig extends JsonMapConfig<String, Object> {
     }
     public void setHorizontalScrollSpeedModifier(double value) {
         set(HORIZONTAL_SCROLL_SPEED_MODIFIER, value);
+    }
+    public boolean getShowConfirmPopups() {
+        return (boolean) get(SHOW_CONFIRM_POPUPS);
+    }
+    public void setShowConfirmPopups(boolean value) {
+        set(SHOW_CONFIRM_POPUPS, value);
+    }
+    public SortAfter getSortAfter() {
+        return (SortAfter) get(SORT_AFTER);
+    }
+    public void setSortAfter(SortAfter value) {
+        set(SORT_AFTER, value);
+    }
+    public SortOrder getSortOrder() {
+        return (SortOrder) get(SORT_ORDER);
+    }
+    public void setSortOrder(SortOrder value) {
+        set(SORT_ORDER, value);
     }
 
     public GlobalConfig duplicate(String name) {

@@ -5,6 +5,7 @@ import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.api.config.serializer.MapSerializer;
 import de.luludodo.rebindmykeys.keybindings.KeyBinding;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.ComboSettings;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.FilterMode;
 import de.luludodo.rebindmykeys.util.InitialKeyBindings;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 
@@ -16,7 +17,7 @@ import java.util.List;
 public class KeyBindingConfigSerializer extends MapSerializer<String, KeyBinding> {
     public static class FakeKeyBinding extends KeyBinding {
         private FakeKeyBinding() {
-            super(null, null, new ComboSettings(null, null, false, false));
+            super(null, null, new ComboSettings(null, null, false, FilterMode.ALL));
         }
 
         private JsonElement json;

@@ -7,6 +7,7 @@ import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.Actio
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActivateOn;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.toggle.ToggleMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.Context;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.FilterMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.IContextRegistry;
 import de.luludodo.rebindmykeys.profiles.ProfileManager;
 import de.luludodo.rebindmykeys.util.KeyBindingActions;
@@ -74,6 +75,7 @@ public class RebindMyKeys implements ClientModInitializer {
                 .onToggle(KeyBindingActions::sprint)
                 .setDefaults()
                 .nextCombo()
+                .filter(FilterMode.SELF)
                 .pressCount(2)
                 .reference(KeyBindings.MOVE_FRONT) // FIXME: double tapping w stops walking and toggles if sprinting also toggles (should be line vanilla)
                 .register();
@@ -272,14 +274,14 @@ public class RebindMyKeys implements ClientModInitializer {
         setIndex(-1);
 
         KeyUtil.create(KeyBindings.LEFT_CLICK)
-                .skipFilter(true)
+                .filter(FilterMode.OTHERS)
                 .context(Context.IN_SCREEN)
                 .operationMode(() -> new ActionMode(ActivateOn.BOTH)) // we need press and release TODO: system to lock settings, so that you cannot accidentally change this and break left click :)
                 .mouse(Mouse.LEFT)
                 .onAction(KeyBindingActions::leftClick)
                 .register();
         KeyUtil.create(KeyBindings.RIGHT_CLICK)
-                .skipFilter(true)
+                .filter(FilterMode.OTHERS)
                 .context(Context.IN_SCREEN)
                 .operationMode(() -> new ActionMode(ActivateOn.BOTH)) // we need press and release
                 .mouse(Mouse.RIGHT)
@@ -287,13 +289,13 @@ public class RebindMyKeys implements ClientModInitializer {
                 .register();
         // TODO: scrolling
         KeyUtil.create(KeyBindings.PAUSE_GAME) // close menu is a separate keybind
-                .skipFilter(true)
+                .filter(FilterMode.OTHERS)
                 .context(Context.PLAYING)
                 .keysm(Key.ESCAPE)
                 .onAction(OnKeyAction.ACTION_PAUSE.action())
                 .register();
         KeyUtil.create(KeyBindings.CLOSE_MENU)
-                .skipFilter(true)
+                .filter(FilterMode.OTHERS)
                 .context(Context.IN_SCREEN)
                 .keysm(Key.ESCAPE)
                 .onAction(KeyBindingActions::closeMenu)

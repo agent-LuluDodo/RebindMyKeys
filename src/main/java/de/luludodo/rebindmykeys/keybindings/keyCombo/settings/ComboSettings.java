@@ -2,6 +2,7 @@ package de.luludodo.rebindmykeys.keybindings.keyCombo.settings;
 
 import com.google.gson.JsonElement;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMode;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.FilterMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.IContext;
 import de.luludodo.rebindmykeys.util.ArrayUtil;
 import de.luludodo.rebindmykeys.util.JsonUtil;
@@ -9,7 +10,7 @@ import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
 
 import java.util.Objects;
 
-public record ComboSettings(OperationMode operationMode, IContext[] context, boolean orderSensitive, boolean skipFilter) implements JsonSavable {
+public record ComboSettings(OperationMode operationMode, IContext[] context, boolean orderSensitive, FilterMode filter) implements JsonSavable {
     public boolean contextValid() {
         return ArrayUtil.oneCondition(this.context(), IContext::isCurrent);
     }
@@ -19,7 +20,7 @@ public record ComboSettings(OperationMode operationMode, IContext[] context, boo
                 .add("operationMode", OperationMode.save(operationMode))
                 .add("context", context)
                 .add("orderSensitive", orderSensitive)
-                .add("skipFilter", skipFilter)
+                .add("filter", filter)
                 .build();
     }
 
@@ -30,7 +31,7 @@ public record ComboSettings(OperationMode operationMode, IContext[] context, boo
                 loader.get("operationMode", OperationMode::create),
                 contexts,
                 loader.get("orderSensitive", Boolean.class),
-                loader.get("skipFilter", Boolean.class)
+                loader.get("filter", FilterMode.class)
         );
     }
 }

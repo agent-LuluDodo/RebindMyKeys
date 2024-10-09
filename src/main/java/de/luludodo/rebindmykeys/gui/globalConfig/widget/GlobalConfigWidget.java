@@ -4,6 +4,7 @@ import de.luludodo.rebindmykeys.config.GlobalConfig;
 import de.luludodo.rebindmykeys.gui.globalConfig.screen.GlobalConfigPopup;
 import de.luludodo.rebindmykeys.gui.widget.ConfigWidget;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
 public class GlobalConfigWidget extends ConfigWidget {
@@ -73,6 +74,15 @@ public class GlobalConfigWidget extends ConfigWidget {
                         Double::valueOf,
                         newValue -> newValue > 0,
                         newValue -> GlobalConfig.getCurrent().setHorizontalScrollSpeedModifier(newValue)
+                )
+        );
+        addEntry(
+                new OnOffButtonEntry(
+                        Text.translatable("rebindmykeys.gui.global.showConfirmPopups"),
+                        ScreenTexts.YES,
+                        ScreenTexts.NO,
+                        GlobalConfig.getCurrent().getShowConfirmPopups(),
+                        (button, newValue) -> GlobalConfig.getCurrent().setShowConfirmPopups(newValue)
                 )
         );
     }

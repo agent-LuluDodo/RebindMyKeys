@@ -13,12 +13,9 @@ public class KeyBindingActions {
     private static final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
     public static void leftClick() {
-        RebindMyKeys.DEBUG.info("leftClick()");
         if (KeyBindings.LEFT_CLICK.get("rebindmykeys.key").isPressed()) {
-            RebindMyKeys.DEBUG.info("pressed");
             CLIENT.currentScreen.mouseClicked(Mouse.getX(), Mouse.getY(), Mouse.LEFT.getButton());
         } else {
-            RebindMyKeys.DEBUG.info("released");
             CLIENT.currentScreen.mouseReleased(Mouse.getX(), Mouse.getY(), Mouse.LEFT.getButton());
         }
     }
@@ -32,7 +29,6 @@ public class KeyBindingActions {
     }
 
     public static void closeMenu() {
-        RebindMyKeys.DEBUG.info("closeMenu()");
         if (CLIENT.currentScreen.shouldCloseOnEsc())
             CLIENT.currentScreen.close();
     }

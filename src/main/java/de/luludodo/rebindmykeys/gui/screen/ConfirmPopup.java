@@ -1,5 +1,6 @@
 package de.luludodo.rebindmykeys.gui.screen;
 
+import de.luludodo.rebindmykeys.config.GlobalConfig;
 import de.luludodo.rebindmykeys.gui.widget.ResizableButtonWidget;
 import de.luludodo.rebindmykeys.util.TextUtil;
 import de.luludodo.rebindmykeys.util.interfaces.Action;
@@ -44,16 +45,22 @@ public class ConfirmPopup extends PopupScreen {
         this(parent, title, message, onYes, onNo, false);
     }
 
-    public static ConfirmPopup create(@NotNull MinecraftClient client, @NotNull Screen parent, Text title, Text message, @NotNull Action onYes, @NotNull Action onNo, boolean showCancel) {
-        ConfirmPopup popup = new ConfirmPopup(parent, title, message, onYes, onNo, showCancel);
-        client.setScreen(popup);
-        return popup;
+    public static void create(@NotNull MinecraftClient client, @NotNull Screen parent, Text title, Text message, @NotNull Action onYes, @NotNull Action onNo, boolean showCancel) {
+        if (GlobalConfig.getCurrent().getShowConfirmPopups()) {
+            ConfirmPopup popup = new ConfirmPopup(parent, title, message, onYes, onNo, showCancel);
+            client.setScreen(popup);
+        } else {
+            onYes.run();
+        }
     }
 
-    public static ConfirmPopup create(@NotNull MinecraftClient client, @NotNull Screen parent, Text title, Text message, @NotNull Action onYes, @NotNull Action onNo) {
-        ConfirmPopup popup = new ConfirmPopup(parent, title, message, onYes, onNo);
-        client.setScreen(popup);
-        return popup;
+    public static void create(@NotNull MinecraftClient client, @NotNull Screen parent, Text title, Text message, @NotNull Action onYes, @NotNull Action onNo) {
+        if (GlobalConfig.getCurrent().getShowConfirmPopups()) {
+            ConfirmPopup popup = new ConfirmPopup(parent, title, message, onYes, onNo);
+            client.setScreen(popup);
+        } else {
+            onYes.run();
+        }
     }
 
     @Override

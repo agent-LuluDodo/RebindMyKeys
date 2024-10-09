@@ -29,6 +29,7 @@ public abstract class VariableElementListWidget<E extends VariableElementListWid
     private final int heightDifference;
     private int topMargin = 2;
     private int bottomMargin = 2;
+    private double scrollMultiplier = 15;
     public VariableElementListWidget(MinecraftClient client, Screen parent, int width, int height, int x, int y, int rowWidth) {
         super(client, width, height, y, -1);
         setX(x);
@@ -64,6 +65,9 @@ public abstract class VariableElementListWidget<E extends VariableElementListWid
     public void setBottomMargin(int margin) {
         bottomMargin = margin;
     }
+    public void setScrollMultiplier(double multiplier) {
+        scrollMultiplier = multiplier;
+    }
 
     @Override
     @Contract(pure = true)
@@ -85,6 +89,10 @@ public abstract class VariableElementListWidget<E extends VariableElementListWid
     @Contract(pure = true)
     public int getBottomMargin() {
         return bottomMargin;
+    }
+    @Contract(pure = true)
+    public double getScrollMultiplier() {
+        return scrollMultiplier;
     }
 
     public int getMaxScroll() {
@@ -125,12 +133,12 @@ public abstract class VariableElementListWidget<E extends VariableElementListWid
     @Override
     @Nullable
     @Contract(pure = true)
-    protected E getEntryAtPosition(double x, double y) { // <- Incorrectly flagged as error
+    protected E getEntryAtPosition(double x, double y) {
         int halfRowWidth = getRowWidth() / 2;
-        int center = getX() + getWidth() / 2;
+        int center = getX() + getWidth() / 2 - (getScrollbarMargin() + getScrollbarWidth()) / 2;
         int left = center - halfRowWidth;
         int right = center + halfRowWidth;
-        if (x >= getScrollbarPositionX() || x < left || x > right) return null;
+        if (x <= left || x > right) return null;
 
         int absoluteY = MathHelper.floor(y - (double) getY() - headerHeight + (int) getScrollAmount());
         if (absoluteY < 0) return null;
@@ -141,7 +149,7 @@ public abstract class VariableElementListWidget<E extends VariableElementListWid
             E entry = getEntry(index);
             height += entry.getHeight();
             height += getRowMargin();
-            if (height > absoluteY) return entry;
+            if (height >= absoluteY) return entry;
         }
         return null;
     }
@@ -203,8 +211,8 @@ public abstract class VariableElementListWidget<E extends VariableElementListWid
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-        setScrollAmount(getScrollAmount() - verticalAmount * getTotalHeight() / (getEntryCount() * 2d));
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontal, double vertical) {
+        setScrollAmount(getScrollAmount() - vertical * scrollMultiplier);
         return true;
     }
 

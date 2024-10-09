@@ -1,5 +1,6 @@
 package de.luludodo.rebindmykeys.gui.profile.widget;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.gui.binding.screen.KeyBindingScreen;
 import de.luludodo.rebindmykeys.gui.profile.screen.ProfileConfigPopup;
@@ -87,6 +88,8 @@ public class ProfileConfigWidget extends ConfigWidget {
     }
 
     public class ProfileEntry extends Entry {
+        private static final Identifier LOCK = Identifier.of("rebindmykeys", "textures/gui/lock.png");
+
         private TextFieldWidget name;
         private final IconButtonWidget select = IconButtonWidget.builder(
                 Identifier.of("rebindmykeys", "textures/gui/star.png"),
@@ -207,9 +210,14 @@ public class ProfileConfigWidget extends ConfigWidget {
                 select.render(context, mouseX, mouseY, delta);
             }
             name.active = !deleted && editable;
-            name.setWidth(width - 68);
-            name.setPosition(x + 22, y + height / 2 - getTextRenderer().fontHeight / 2);
+            name.setWidth(width - 68 - (editable ? 0 : 16));
+            name.setPosition(x + 22 + (editable ? 0 : 16), y + height / 2 - getTextRenderer().fontHeight / 2);
             name.render(context, mouseX, mouseY, delta);
+            if (!editable) {
+                RenderSystem.enableBlend();
+                RenderSystem.enableDepthTest();
+                context.drawTexture(LOCK, x + 22, y + height / 2 - 8, 0, 0, 16, 16, 16, 16);
+            }
             if (deleted) {
                 restore.setPosition(x + width - 20, y);
                 restore.render(context, mouseX, mouseY, delta);

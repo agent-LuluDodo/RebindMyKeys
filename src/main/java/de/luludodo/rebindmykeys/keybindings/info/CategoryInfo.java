@@ -1,21 +1,15 @@
 package de.luludodo.rebindmykeys.keybindings.info;
 
-import de.luludodo.rebindmykeys.util.MapUtil;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public final class CategoryInfo {
     private static String category = "";
-    private static Map<String, List<String>> categoryToIds = new HashMap<>();
+    private static final Map<String, List<String>> categoryToIds = new HashMap<>();
     private static final Map<String, String> idToCategory = new HashMap<>();
     private static final Map<String, Double> categoryOrder = new HashMap<>();
     private static double currentOrder = 0;
-    private static boolean sorted = true;
-
-    private static final Comparator<String> SORT_CATEGORIES = Comparator.comparingDouble(categoryOrder::get);
-    private static final Comparator<String> SORT_BINDINGS = Comparator.comparing(s -> Text.translatable(s).getString(), String::compareToIgnoreCase);
 
     public static void setCategory(String category) {
         CategoryInfo.category = category;
@@ -26,7 +20,6 @@ public final class CategoryInfo {
      */
     public static void setIndex(double index) {
         categoryOrder.put(category, index);
-        sorted = false;
     }
 
     public static @Nullable Double getIndex(String category) {
@@ -42,7 +35,6 @@ public final class CategoryInfo {
         }
         categoryToIds.get(category).add(id);
         idToCategory.put(id, category);
-        sorted = false;
     }
 
     public static String getCategory(String id) {
@@ -50,11 +42,10 @@ public final class CategoryInfo {
     }
 
     public static Map<String, List<String>> getCategories() {
-        if (!sorted) {
-            sorted = true;
-            categoryToIds = MapUtil.sortByKey(categoryToIds, SORT_CATEGORIES);
-            categoryToIds.values().forEach(ids -> ids.sort(SORT_BINDINGS));
-        }
         return Collections.unmodifiableMap(categoryToIds);
+    }
+
+    public static Map<String, Double> getOrder() {
+        return categoryOrder;
     }
 }

@@ -71,15 +71,11 @@ public class KeyCombo implements JsonSavable {
     }
 
     public void onKeyDown(InputUtil.Key key) {
-        if (Objects.equals(getId(), "rebindmykeys.key.leftClick"))
-            RebindMyKeys.DEBUG.info("rebindmykeys.key.leftClick KeyCombo onKeyDown()");
         if (settings.orderSensitive()) {
             int left = keys.size();
             boolean allPressed = true;
             for (Key k : keys) {
                 if (--left == 0) {
-                    if (Objects.equals(getId(), "rebindmykeys.key.leftClick"))
-                        RebindMyKeys.DEBUG.info("rebindmykeys.key.leftClick allPressed {} | key {} | k {}", allPressed, key, k.save().toString());
                     if (allPressed) k.onKeyDown(key);
                 } else {
                     if (!k.isPressed()) allPressed = false;
@@ -124,6 +120,9 @@ public class KeyCombo implements JsonSavable {
     private Set<UUID> incompatibleUUIDs;
     public void calcIncompatibleUUIDs(Set<KeyCombo> keyCombos) {
         incompatibleUUIDs = new HashSet<>();
+        if (!settings.filter().others())
+            return;
+
         Set<String> incompatibleIds = new HashSet<>();
         for (Key key : keys) {
             if (key instanceof KeyReference kr) {
@@ -154,7 +153,7 @@ public class KeyCombo implements JsonSavable {
 
     private boolean filtered = false;
     public void filter(Set<UUID> invalidUUIDs) {
-        if (settings.skipFilter()) {
+        if (!settings.filter().self()) {
             filtered = false;
             //if (TARGET_IDS.contains(id))
             //    RebindMyKeys.DEBUG.info("filtered='{}' skipFilter='{}' id='{}' uuid='{}' incompatibleUUIDs='{}'", false, true, id, uuid, CollectionUtil.toString(incompatibleUUIDs));

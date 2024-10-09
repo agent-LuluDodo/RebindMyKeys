@@ -5,6 +5,7 @@ import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMod
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationModeEditor;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationModeRegistry;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.ComboSettings;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.FilterMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.IContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -19,7 +20,7 @@ public class ComboSettingsEditor {
     private int currentOperationMode;
     private IContext[] context; // TODO: make this editable
     private boolean orderSensitive;
-    private boolean skipFilter;
+    private FilterMode filter;
     private boolean hasChanges = false;
     public ComboSettingsEditor(KeyCombo combo) {
         this.combo = combo;
@@ -29,7 +30,7 @@ public class ComboSettingsEditor {
     public void reload() {
         context = combo.getSettings().context();
         orderSensitive = combo.getSettings().orderSensitive();
-        skipFilter = combo.getSettings().skipFilter();
+        filter = combo.getSettings().filter();
 
         OperationMode currentMode = combo.getSettings().operationMode();
         Identifier currentId = currentMode.getId();
@@ -88,12 +89,12 @@ public class ComboSettingsEditor {
         return orderSensitive;
     }
 
-    public void setSkipFilter(boolean skipFilter) {
+    public void setFilter(FilterMode filter) {
         hasChanges = true;
-        this.skipFilter = skipFilter;
+        this.filter = filter;
     }
-    public boolean getSkipFilter() {
-        return skipFilter;
+    public FilterMode getFilter() {
+        return filter;
     }
 
     public void apply() {
@@ -101,7 +102,7 @@ public class ComboSettingsEditor {
                 operationModeEditors.get(currentOperationMode).mode(),
                 context,
                 orderSensitive,
-                skipFilter
+                filter
         ));
         operationModeEditors.get(currentOperationMode).onChangesApplied();
         hasChanges = false;

@@ -3,8 +3,10 @@ package de.luludodo.rebindmykeys.gui.binding.widget;
 import de.luludodo.rebindmykeys.gui.binding.screen.KeyCombinationPopup;
 import de.luludodo.rebindmykeys.gui.binding.screen.SettingsPopup;
 import de.luludodo.rebindmykeys.gui.widget.ConfigWidget;
+import de.luludodo.rebindmykeys.gui.widget.ResizableCyclingButtonWidget;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.ComboSettingsEditor;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.Context;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.FilterMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.IContext;
 import de.luludodo.rebindmykeys.util.ArrayUtil;
 import net.minecraft.client.MinecraftClient;
@@ -47,14 +49,14 @@ public class SettingsWidget extends ConfigWidget {
         }
     }
 
-    public static class SkipFilterEntry extends OnOffButtonEntry {
+    public static class SkipFilterEntry extends CyclingButtonEntry<FilterMode> {
         public SkipFilterEntry(ComboSettingsEditor editor) {
             super(
-                    Text.translatable("rebindmykeys.gui.settings.skipFilter"),
-                    Text.translatable("rebindmykeys.gui.settings.skipFilter.on"),
-                    Text.translatable("rebindmykeys.gui.settings.skipFilter.off"),
-                    editor.getSkipFilter(),
-                    (button, value) -> editor.setSkipFilter(value)
+                    Text.translatable("rebindmykeys.gui.settings.filter"),
+                    FilterMode::getTranslation,
+                    editor.getFilter(),
+                    (button, value) -> editor.setFilter(value),
+                    FilterMode.values()
             );
         }
     }
@@ -63,7 +65,7 @@ public class SettingsWidget extends ConfigWidget {
         public ContextEntry(IContext[] context) {
             super(
                     Text.translatable("rebindmykeys.gui.settings.context"),
-                    CyclingButtonWidget.builder(
+                    ResizableCyclingButtonWidget.luluBuilder(
                                     (Function<IContext[], Text>) array -> ArrayUtil.toText(
                                             array, value -> Text.translatable(value.getId()), "", " + ", ""
                                     )
@@ -76,10 +78,11 @@ public class SettingsWidget extends ConfigWidget {
                             )
                             .omitKeyText()
                             .build(
-                                    0,
-                                    0,
-                                    0,
-                                    0,
+                                    null,
+                                    w -> 0,
+                                    h -> 0,
+                                    w -> 0,
+                                    h -> 0,
                                     Text.empty()
                             )
             );

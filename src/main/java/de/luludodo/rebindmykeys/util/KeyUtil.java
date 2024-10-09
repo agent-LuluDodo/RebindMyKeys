@@ -15,16 +15,13 @@ import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMod
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActionMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.ComboSettings;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.Context;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.FilterMode;
 import de.luludodo.rebindmykeys.util.interfaces.Action;
 import de.luludodo.rebindmykeys.util.interfaces.IKeyBinding;
 import de.luludodo.rebindmykeys.util.enums.Mouse;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
@@ -41,7 +38,7 @@ public class KeyUtil {
         private Supplier<OperationMode> defaultOperationMode;
         private Context[] defaultContext;
         private boolean defaultOrderSensitive;
-        private boolean defaultSkipFilter;
+        private FilterMode defaultFilter;
         private int defaultPressCount;
         private Function3<String, List<Key>, ComboSettings, ? extends KeyCombo> defaultConstructor;
         // Combo
@@ -49,7 +46,7 @@ public class KeyUtil {
         private Supplier<OperationMode> operationMode = ActionMode::new;
         private Context[] context = new Context[]{Context.PLAYING};
         private boolean orderSensitive = true;
-        private boolean skipFilter = false;
+        private FilterMode filter = FilterMode.ALL;
         private int pressCount = 1;
         private Function3<String, List<Key>, ComboSettings, ? extends KeyCombo> constructor = KeyCombo::new;
         private Builder(String id) {
@@ -62,7 +59,7 @@ public class KeyUtil {
             defaultOperationMode = operationMode;
             defaultContext = context;
             defaultOrderSensitive = orderSensitive;
-            defaultSkipFilter = skipFilter;
+            defaultFilter = filter;
             defaultPressCount = pressCount;
             defaultConstructor = constructor;
             return this;
@@ -87,8 +84,8 @@ public class KeyUtil {
         }
 
         @Contract("_ -> this")
-        public Builder skipFilter(boolean skipFilter) {
-            this.skipFilter = skipFilter;
+        public Builder filter(FilterMode filter) {
+            this.filter = filter;
             return this;
         }
 
@@ -168,13 +165,13 @@ public class KeyUtil {
         public Builder nextCombo() {
             OperationMode mode = operationMode.get();
             mode.setPressCount(pressCount);
-            combos.add(constructor.apply(id, keys, new ComboSettings(mode, context, orderSensitive, skipFilter)));
+            combos.add(constructor.apply(id, keys, new ComboSettings(mode, context, orderSensitive, filter)));
             keys = new ArrayList<>();
             if (defaultsSet) {
                 operationMode = defaultOperationMode;
                 context = defaultContext;
                 orderSensitive = defaultOrderSensitive;
-                skipFilter = defaultSkipFilter;
+                filter = defaultFilter;
                 pressCount = defaultPressCount;
                 constructor = defaultConstructor;
             }
@@ -190,7 +187,7 @@ public class KeyUtil {
             OperationMode defaultMode = defaultOperationMode.get();
             defaultMode.setPressCount(defaultPressCount);
             KeyBindingInfo.addId(id);
-            InitialKeyBindings.add(new KeyBinding(id, combos, new ComboSettings(defaultMode, defaultContext, defaultOrderSensitive, defaultSkipFilter)));
+            InitialKeyBindings.add(new KeyBinding(id, combos, new ComboSettings(defaultMode, defaultContext, defaultOrderSensitive, defaultFilter)));
             boolean isAction = defaultMode instanceof ActionMode;
             if (onAction != null) {
                 if (!isAction) // I already know I'm gonna put the wrong one on some KeyBindings so this is going to save me a lot of debugging
@@ -257,11 +254,13 @@ public class KeyUtil {
 
     private static boolean recording = false;
     private static Consumer<List<Key>> whenRecordingDone;
+    private static Consumer<List<Key>> onRecordingKey;
     private static List<Key> recordedKeys;
     private static List<InputUtil.Key> recordedInputUtilKeys;
-    public static void startRecording(Consumer<List<Key>> whenDone) {
+    public static void startRecording(Consumer<List<Key>> whenDone, Consumer<List<Key>> onKey) {
         recording = true;
         whenRecordingDone = whenDone;
+        onRecordingKey = onKey;
         recordedKeys = new ArrayList<>();
         recordedInputUtilKeys = new ArrayList<>();
     }
@@ -275,10 +274,12 @@ public class KeyUtil {
         for (Modifier modifier : Modifier.values()) {
             if (ArrayUtil.contains(modifier.getKeys(), key)) {
                 recordedKeys.add(new ModifierKey(modifier));
+                onRecordingKey.accept(recordedKeys);
                 return;
             }
         }
         recordedKeys.add(new BasicKey(key));
+        onRecordingKey.accept(recordedKeys);
     }
 
     public static boolean isInRecording(InputUtil.Key key) {
@@ -289,6 +290,7 @@ public class KeyUtil {
         recording = false;
         whenRecordingDone.accept(recordedKeys);
         whenRecordingDone = null;
+        onRecordingKey = null;
         recordedKeys = null;
         recordedInputUtilKeys = null;
     }
