@@ -3,16 +3,16 @@ package de.luludodo.rebindmykeys.gui.binding.screen;
 import de.luludodo.rebindmykeys.config.KeyBindingConfig;
 import de.luludodo.rebindmykeys.gui.binding.widget.SettingsWidget;
 import de.luludodo.rebindmykeys.gui.screen.ConfigPopup;
-import de.luludodo.rebindmykeys.gui.widget.ConfigWidget;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.ComboSettingsEditor;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.KeyCombo;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.ComboSettings;
+import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 
-public class SettingsPopup extends ConfigPopup {
+public class SettingsPopup extends ConfigPopup<SettingsPopup, SettingsWidget> {
     private final KeyCombo combo;
     private final ComboSettings defaultSettings;
     private final ComboSettingsEditor editor;
@@ -24,7 +24,7 @@ public class SettingsPopup extends ConfigPopup {
         editor = new ComboSettingsEditor(combo);
     }
 
-    public ConfigWidget getConfigWidget(MinecraftClient client) {
+    public SettingsWidget getConfigWidget(MinecraftClient client) {
         return new SettingsWidget(client, this, editor);
     }
 
@@ -36,6 +36,8 @@ public class SettingsPopup extends ConfigPopup {
     @Override
     public void save() {
         editor.apply();
+        KeyBindingUtil.calcIncompatibleUUIDs();
+        ((KeyBindingScreen) getParent()).reloadEntries();
         KeyBindingConfig.getCurrent().save();
     }
 
@@ -43,6 +45,10 @@ public class SettingsPopup extends ConfigPopup {
     public void reset() {
         combo.setSettings(defaultSettings);
         editor.reload();
+    }
+
+    public KeyCombo getCombo() {
+        return combo;
     }
 
     @Override

@@ -1,7 +1,9 @@
 package de.luludodo.rebindmykeys;
 
+import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.basic.BasicKey;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.modifier.Modifier;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationModeRegistry;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.modifier.ModifierKey;
+import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.reference.KeyReference;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.hold.HoldMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActionMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActivateOn;
@@ -9,6 +11,7 @@ import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.toggle.Toggl
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.Context;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.FilterMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.IContextRegistry;
+import de.luludodo.rebindmykeys.keybindings.registry.LuluRegistries;
 import de.luludodo.rebindmykeys.profiles.ProfileManager;
 import de.luludodo.rebindmykeys.util.KeyBindingActions;
 import de.luludodo.rebindmykeys.util.KeyBindingUtil;
@@ -46,9 +49,13 @@ public class RebindMyKeys implements ClientModInitializer {
             );
         }
 
-        OperationModeRegistry.register(ActionMode::new);
-        OperationModeRegistry.register(HoldMode::new);
-        OperationModeRegistry.register(ToggleMode::new);
+        LuluRegistries.OPERATION_MODE.register(ActionMode::new);
+        LuluRegistries.OPERATION_MODE.register(HoldMode::new);
+        LuluRegistries.OPERATION_MODE.register(ToggleMode::new);
+
+        LuluRegistries.KEY.register(BasicKey::new);
+        LuluRegistries.KEY.register(ModifierKey::new);
+        LuluRegistries.KEY.register(KeyReference::new);
 
         IContextRegistry.register(Context.values());
 

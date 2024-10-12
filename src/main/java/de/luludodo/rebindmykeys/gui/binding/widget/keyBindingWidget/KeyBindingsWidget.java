@@ -14,10 +14,7 @@ import de.luludodo.rebindmykeys.keybindings.info.CategoryInfo;
 import de.luludodo.rebindmykeys.keybindings.info.ModInfo;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.KeyCombo;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
-import de.luludodo.rebindmykeys.util.CollectionUtil;
-import de.luludodo.rebindmykeys.util.KeyUtil;
-import de.luludodo.rebindmykeys.util.MapUtil;
-import de.luludodo.rebindmykeys.util.RenderUtil;
+import de.luludodo.rebindmykeys.util.*;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -285,6 +282,10 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
                 Identifier.of("rebindmykeys", "textures/gui/add.png"),
                 this::onAddButtonPressed
         ).size(20, 20).build();
+        private final IconButtonWidget resetButton = IconButtonWidget.builder(
+                Identifier.of("rebindmykeys", "textures/gui/reset.png"),
+                this::onResetButtonPressed
+        ).size(20, 20).build();
         public BindingEntry(KeyBinding binding) {
             this.binding = binding;
             update();
@@ -339,6 +340,10 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             addButton.setPosition(x + width - 185, y);
             addButton.render(context, mouseX, mouseY, delta);
 
+            // Reset Button
+            resetButton.setPosition(x + width - 20, y);
+            resetButton.render(context, mouseX, mouseY, delta);
+
             KeyBindingsWidget.this.isOdd = !KeyBindingsWidget.this.isOdd;
 
             //context.fill(x, y, x + width, y + height, 0x770000FF); // Debug for bounds
@@ -351,19 +356,42 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             addChild(entry);
         }
 
+        private void onResetButtonPressed(ButtonWidget resetButton) {
+            client.setScreen(
+                    new ConfirmPopup(
+                            getParent(),
+                            Text.translatable("rebindmykeys.gui.keyBindings.confirmReset.title"),
+                            Text.translatable("rebindmykeys.gui.keyBindings.confirmReset.message"),
+                            this::doReset,
+                            () -> {}
+                    )
+            );
+            RebindMyKeys.DEBUG.info("Reset button pressed");
+        }
+
+        private void doReset() {
+            binding.reset();
+            update();
+            KeyBindingConfig.getCurrent().save();
+        }
+
         @Override
         public List<Selectable> selectableChildren() {
-            return filtered ? List.of() : CollectionUtil.add(
+            return filtered ? List.of() : CollectionUtil.mergeAndUnwrapAs(
+                    Selectable.class,
+                    addButton,
                     super.selectableChildren(),
-                    addButton
+                    resetButton
             );
         }
 
         @Override
         public List<Element> children() {
-            return filtered ? List.of() : CollectionUtil.add(
+            return filtered ? List.of() : CollectionUtil.mergeAndUnwrapAs(
+                    Element.class,
+                    addButton,
                     super.children(),
-                    addButton
+                    resetButton
             );
         }
 
@@ -386,10 +414,6 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
         private final IconButtonWidget settingsButton = IconButtonWidget.builder(
                 Identifier.of("rebindmykeys", "textures/gui/settings.png"),
                 this::onSettingsButtonPressed
-        ).size(20, 20).build();
-        private final IconButtonWidget resetButton = IconButtonWidget.builder(
-                Identifier.of("rebindmykeys", "textures/gui/reset.png"),
-                this::onResetButtonPressed
         ).size(20, 20).build();
         private final BindingEntry parent;
         private final KeyCombo combo;
@@ -454,8 +478,6 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             removeButton.render(context, mouseX, mouseY, delta);
             settingsButton.setPosition(x + width - 40, y);
             settingsButton.render(context, mouseX, mouseY, delta);
-            resetButton.setPosition(x + width - 20, y);
-            resetButton.render(context, mouseX, mouseY, delta);
         }
 
         public void startRecording() {
@@ -468,6 +490,7 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             KeyUtil.startRecording(keys -> {
                 recording = false;
                 combo.setKeys(keys);
+                KeyBindingUtil.calcIncompatibleUUIDs();
                 keyButton.setMessage(getKeyButtonMessage());
                 KeyBindingConfig.getCurrent().save();
             }, keys -> {
@@ -488,33 +511,14 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             RebindMyKeys.DEBUG.info("Settings button pressed");
         }
 
-        private void onResetButtonPressed(ButtonWidget resetButton) {
-            client.setScreen(
-                    new ConfirmPopup(
-                            getParent(),
-                            Text.translatable("rebindmykeys.gui.keyBindings.confirmReset.title"),
-                            Text.translatable("rebindmykeys.gui.keyBindings.confirmReset.message"),
-                            this::doReset,
-                            KeyBindingsWidget.this::resetAll
-                    )
-            );
-            RebindMyKeys.DEBUG.info("Reset button pressed");
-        }
-
-        private void doReset() {
-            combo.setSettings(parent.binding.getDefaultSettings());
-            parent.update();
-            KeyBindingConfig.getCurrent().save();
-        }
-
         @Override
         public List<? extends Selectable> selectableChildren() {
-            return filtered ? List.of() : List.of(keyButton, removeButton, settingsButton, resetButton);
+            return filtered ? List.of() : List.of(keyButton, removeButton, settingsButton);
         }
 
         @Override
         public List<? extends Element> children() {
-            return filtered ? List.of() : List.of(keyButton, removeButton, settingsButton, resetButton);
+            return filtered ? List.of() : List.of(keyButton, removeButton, settingsButton);
         }
 
         @Override

@@ -1,6 +1,7 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes;
 
 import de.luludodo.rebindmykeys.gui.widget.ConfigWidget;
+import de.luludodo.rebindmykeys.keybindings.registry.LuluRegistries;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public abstract class OperationModeEditor<O extends OperationMode> {
 
     @SuppressWarnings("unchecked")
     private O create(Identifier id) {
-        return (O) OperationModeRegistry.constructOptional(id).orElseThrow();
+        return (O) LuluRegistries.OPERATION_MODE.constructOptional(id).orElseThrow();
     }
 
     private List<ConfigWidget.Entry> entries;

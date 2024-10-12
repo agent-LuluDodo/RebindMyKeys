@@ -3,11 +3,12 @@ package de.luludodo.rebindmykeys.gui.globalConfig.widget;
 import de.luludodo.rebindmykeys.config.GlobalConfig;
 import de.luludodo.rebindmykeys.gui.globalConfig.screen.GlobalConfigPopup;
 import de.luludodo.rebindmykeys.gui.widget.ConfigWidget;
+import de.luludodo.rebindmykeys.gui.widget.VariableElementListWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
-public class GlobalConfigWidget extends ConfigWidget {
+public class GlobalConfigWidget extends ConfigWidget<GlobalConfigWidget, GlobalConfigPopup> {
 
     public GlobalConfigWidget(MinecraftClient client, GlobalConfigPopup parent) {
         super(client, parent);

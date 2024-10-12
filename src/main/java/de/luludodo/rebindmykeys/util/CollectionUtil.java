@@ -3,9 +3,11 @@ package de.luludodo.rebindmykeys.util;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -144,6 +146,46 @@ public class CollectionUtil {
     }
 
     /**
+     * Checks if the {@code condition} is valid for all elements in the {@code collection}.
+     * @param collection The collection to be checked.
+     * @param condition The condition.
+     * @return {@code true} if all conditions returned true otherwise {@code false}.
+     * @param <T> The {@link Class} of the elements of the {@code collection}.
+     */
+    @Contract(pure = true)
+    public static <T> boolean all(Collection<?> collection, Class<T> targetCl, Function<T, Boolean> condition) {
+        boolean valid = true;
+        for (Object element : collection) {
+            if (targetCl.isInstance(element) && !condition.apply(targetCl.cast(element))) valid = false;
+        }
+        return valid;
+    }
+
+    /**
+     * Checks if the {@code condition} is valid for at least one element in the {@code collection}.
+     * @param collection The collection to be checked.
+     * @param condition The condition.
+     * @return {@code true} if at least one condition returned true otherwise {@code false}.
+     * @param <T> The {@link Class} of the elements of the {@code collection}.
+     */
+    @Contract(pure = true)
+    public static <T> boolean any(Collection<?> collection, Class<T> targetCl, Function<T, Boolean> condition) {
+        return !all(collection, targetCl, element -> !condition.apply(element)); // Checks if not all conditions are invalid -> means at least one was valid
+    }
+
+    /**
+     * Checks if the {@code condition} is valid for no element in the {@code collection}.
+     * @param collection The collection to be checked.
+     * @param condition The condition.
+     * @return {@code true} if no condition returned true otherwise {@code false}.
+     * @param <T> The {@link Class} of the elements of the {@code collection}.
+     */
+    @Contract(pure = true)
+    public static <T> boolean no(Collection<?> collection, Class<T> targetCl, Function<T, Boolean> condition) {
+        return all(collection, targetCl, element -> !condition.apply(element)); // Checks if all conditions are invalid -> means none were valid
+    }
+
+    /**
      *
      * @param collection
      * @param value
@@ -189,6 +231,62 @@ public class CollectionUtil {
     public static <C extends Collection<? super E>, E> C add(C collection, E... entries) {
         collection.addAll(Arrays.asList(entries));
         return collection;
+    }
+
+    @SafeVarargs
+    public static <E, E1 extends E, E2 extends E> List<E> merge(Collection<E1> collection1, E2... collection2) {
+        List<E> merged = new ArrayList<>();
+        merged.addAll(collection1);
+        merged.addAll(Arrays.asList(collection2));
+        return merged;
+    }
+
+    /**
+     * @throws ClassCastException if an object from objects cannot be cast to the targetCl (and isn't a collection or array)
+     */
+    public static <E> List<E> mergeAndUnwrapAs(Class<E> targetCl, Object... objects) {
+        if (targetCl.isArray() || Collection.class.isAssignableFrom(targetCl))
+            throw new IllegalArgumentException("Unsupported target class: " + targetCl);
+
+        List<E> merged = new ArrayList<>();
+        for (Object object : objects) {
+            merged.addAll(unwrapToList(targetCl, object));
+        }
+        return merged;
+    }
+
+    private static <E> List<E> unwrapToList(Class<E> targetCl, Object o) {
+        List<E> unwrapped = new ArrayList<>();
+        if (o instanceof Collection<?> collection) {
+            for (Object element : collection) {
+                unwrapped.addAll(unwrapToList(targetCl, element));
+            }
+        } else if (o.getClass().isArray()) {
+            for (Object element : (Object[]) o) {
+                unwrapped.addAll(unwrapToList(targetCl, element));
+            }
+        } else if (targetCl.isInstance(o)) {
+            unwrapped.add(targetCl.cast(o));
+        } else {
+            throw new ClassCastException("Cannot cast " + o.getClass().getName() + " to " + targetCl.getName());
+        }
+        return unwrapped;
+    }
+
+    public static <E, E1 extends E, E2 extends E> List<E> merge(Collection<E1> collection1, Collection<E2> collection2) {
+        List<E> merged = new ArrayList<>();
+        merged.addAll(collection1);
+        merged.addAll(collection2);
+        return merged;
+    }
+
+    public static <T> void forEach(Collection<?> collection, Class<T> targetCl, Consumer<T> consumer) {
+        for (Object entry : collection) {
+            if (targetCl.isInstance(entry)) {
+                consumer.accept(targetCl.cast(entry));
+            }
+        }
+        collection.iterator();
     }
 
     @SafeVarargs

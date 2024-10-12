@@ -1,27 +1,35 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo.keys.modifier;
 
 import com.google.gson.JsonElement;
+import de.luludodo.rebindmykeys.gui.keyCombo.widget.KeyComboWidget;
+import de.luludodo.rebindmykeys.gui.widget.ResizableButtonWidget;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.reference.KeyReference;
 import de.luludodo.rebindmykeys.util.JsonUtil;
-import de.luludodo.rebindmykeys.util.interfaces.Action;
+import de.luludodo.rebindmykeys.util.KeyUtil;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class ModifierKey implements Key {
-    private final Modifier modifier;
-    private final List<InputUtil.Key> pressedKeys;
+    public static final Identifier ID = Identifier.of("rebindmykeys", "modifier");
+
+    private Modifier modifier = Modifier.CONTROL;
+    private List<InputUtil.Key> pressedKeys;
     public ModifierKey(Modifier modifier) {
         this.modifier = modifier;
         pressedKeys = new ArrayList<>(modifier.getKeys().length);
     }
 
-    public ModifierKey(JsonElement json) {
+    public ModifierKey() {
+        pressedKeys = new ArrayList<>(modifier.getKeys().length);
+    }
+
+    @Override
+    public void load(JsonElement json) {
         JsonUtil.ObjectLoader loader = JsonUtil.object(json);
         this.modifier = loader.get("modifier", Modifier.class);
         pressedKeys = new ArrayList<>(modifier.getKeys().length);
@@ -79,5 +87,27 @@ public class ModifierKey implements Key {
     @Override
     public int hashCode() {
         return Objects.hashCode(modifier);
+    }
+
+    @Override
+    public Identifier getId() {
+        return ID;
+    }
+
+    @Override
+    public String getTranslation() {
+        return "rebindmykeys.key.modifier";
+    }
+
+    @Override
+    public List<KeyComboWidget.KeyEntry.Button> getButtons() {
+        return List.of(ResizableButtonWidget.builder(null, getText(), button -> {
+            button.setMessage(Text.translatable("rebindmykeys.gui.keyBindings.recording"));
+            KeyUtil.startRecordingModifierKey(modifier -> {
+                this.modifier = modifier;
+                pressedKeys = new ArrayList<>(modifier.getKeys().length);
+                button.setMessage(getText());
+            });
+        }).build());
     }
 }

@@ -387,7 +387,7 @@ public abstract class PopupScreen extends ResizableScreen {
 
     @Override
     public void close() {
-        if (parent instanceof PopupScreen popupParent)
+        if (getParent() instanceof PopupScreen popupParent)
             popupParent.topPopup = true;
 
         client.currentScreen = getParent(); // screen has already been initialized

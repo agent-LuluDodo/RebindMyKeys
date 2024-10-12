@@ -3,10 +3,10 @@ package de.luludodo.rebindmykeys.keybindings.keyCombo;
 import de.luludodo.rebindmykeys.gui.widget.ConfigWidget;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationModeEditor;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationModeRegistry;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.ComboSettings;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.FilterMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.IContext;
+import de.luludodo.rebindmykeys.keybindings.registry.LuluRegistries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -45,7 +45,7 @@ public class ComboSettingsEditor {
                 editor.setCurrentAndCast(currentMode, true);
                 currentOperationMode = operationModeEditors.size();
             } else {
-                OperationMode mode = OperationModeRegistry.constructOptional(id).orElseThrow();
+                OperationMode mode = LuluRegistries.OPERATION_MODE.constructOptional(id).orElseThrow();
                 editor = mode.getEditor();
                 editor.setCurrentAndCast(mode, false);
             }

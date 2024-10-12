@@ -1,5 +1,6 @@
 package de.luludodo.rebindmykeys.gui.widget;
 
+import de.luludodo.rebindmykeys.gui.keyCombo.widget.KeyComboWidget;
 import de.luludodo.rebindmykeys.gui.screen.ResizableScreen;
 import de.luludodo.rebindmykeys.gui.widget.resizable.HeightCalculator;
 import de.luludodo.rebindmykeys.gui.widget.resizable.WidthCalculator;
@@ -7,6 +8,7 @@ import de.luludodo.rebindmykeys.gui.widget.resizable.XCalculator;
 import de.luludodo.rebindmykeys.gui.widget.resizable.YCalculator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -14,12 +16,13 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
-public class ResizableButtonWidget extends ButtonWidget implements Resizable {
+public class ResizableButtonWidget extends ButtonWidget implements Resizable, KeyComboWidget.KeyEntry.Button {
     private final Screen parent;
     private final XCalculator x;
     private final YCalculator y;
     private final WidthCalculator width;
     private final HeightCalculator height;
+    private boolean hasChanges = false;
     protected ResizableButtonWidget(@Nullable ResizableScreen parent, XCalculator x, YCalculator y, WidthCalculator width, HeightCalculator height, Text message, PressAction onPress, NarrationSupplier narrationSupplier) {
         super(
                 x.calc(parent == null ? -1 : parent.getDefaultResizeWidth()),
@@ -46,6 +49,31 @@ public class ResizableButtonWidget extends ButtonWidget implements Resizable {
         setY(y.calc(totalHeight));
         setWidth(width.calc(totalWidth));
         setHeight(height.calc(totalHeight));
+    }
+
+    @Override
+    public void render(DrawContext context, int mouseX, int mouseY, int x, int y, int width, int height, float delta) {
+        setX(x);
+        setY(y);
+        setWidth(width);
+        setHeight(height);
+        render(context, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public void onPress() {
+        hasChanges = true;
+        super.onPress();
+    }
+
+    @Override
+    public boolean hasChanges() {
+        return hasChanges;
+    }
+
+    @Override
+    public void onSave() {
+        hasChanges = false;
     }
 
     @Environment(value= EnvType.CLIENT)

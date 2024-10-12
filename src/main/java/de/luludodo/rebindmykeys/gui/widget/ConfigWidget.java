@@ -19,8 +19,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.*;
 
-public abstract class ConfigWidget extends VariableElementListWidget<ConfigWidget.Entry> {
-    public ConfigWidget(MinecraftClient client, ConfigPopup parent) {
+public abstract class ConfigWidget<S extends ConfigWidget<S, C>, C extends ConfigPopup<C, S>> extends VariableElementListWidget<ConfigWidget.Entry> {
+    public ConfigWidget(MinecraftClient client, C parent) {
         super(client, parent, parent.getWidth() - 30, parent.getHeight() - parent.getReservedSpace(), 15, parent.getTopSpace());
         setRowMargin(0);
         resizeRowWidth();
@@ -59,8 +59,9 @@ public abstract class ConfigWidget extends VariableElementListWidget<ConfigWidge
     public abstract void loadEntries();
 
     @Override
-    public ConfigPopup getParent() {
-        return (ConfigPopup) super.getParent();
+    @SuppressWarnings("unchecked")
+    public C getParent() {
+        return (C) super.getParent();
     }
 
     @Override

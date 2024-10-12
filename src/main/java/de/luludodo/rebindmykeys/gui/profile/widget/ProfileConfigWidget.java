@@ -25,7 +25,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-public class ProfileConfigWidget extends ConfigWidget {
+public class ProfileConfigWidget extends ConfigWidget<ProfileConfigWidget, ProfileConfigPopup> {
     private static final Comparator<Entry> COMPARATOR = (e1, e2) -> ((ProfileEntry)e1).profile.getName().compareToIgnoreCase(((ProfileEntry)e2).profile.getName());
     private Profile currentProfile = ProfileManager.getCurrentProfile();
     private boolean hasChanges = false;
@@ -65,8 +65,11 @@ public class ProfileConfigWidget extends ConfigWidget {
         hasChanges = false;
         children().forEach(entry -> ((ProfileEntry) entry).save());
         for (Profile delete : toDelete) {
-            if (!(delete instanceof DuplicatedProfile))
+            if (delete instanceof DuplicatedProfile) {
+                delete.delete();
+            } else {
                 ProfileManager.delete(delete.getUUID());
+            }
         }
         toDelete.clear();
         ProfileManager.setCurrentProfile(currentProfile);
@@ -194,12 +197,12 @@ public class ProfileConfigWidget extends ConfigWidget {
 
         @Override
         public List<? extends Selectable> selectableChildren() {
-            return deleted? List.of(delete, restore) : List.of(select, name, duplicate, delete);
+            return deleted ? List.of(delete, restore) : List.of(select, name, duplicate, delete);
         }
 
         @Override
         public List<? extends Element> children() {
-            return deleted? List.of(delete, restore) : List.of(select, name, duplicate, delete);
+            return deleted ? List.of(delete, restore) : List.of(select, name, duplicate, delete);
         }
 
         @Override

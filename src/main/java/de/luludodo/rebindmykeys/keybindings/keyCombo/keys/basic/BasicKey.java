@@ -1,30 +1,34 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo.keys.basic;
 
 import com.google.gson.JsonElement;
-import de.luludodo.rebindmykeys.RebindMyKeys;
+import de.luludodo.rebindmykeys.gui.keyCombo.widget.KeyComboWidget;
+import de.luludodo.rebindmykeys.gui.widget.ResizableButtonWidget;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.reference.KeyReference;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.KeyUtil;
-import de.luludodo.rebindmykeys.util.interfaces.Action;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
+import net.minecraft.util.Identifier;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 public class BasicKey implements Key {
+    public static final Identifier ID = Identifier.of("rebindmykeys", "basic");
+
     //private final UUID uuid = UUID.randomUUID(); If you ever need to differentiate Key use this
-    private final InputUtil.Key key;
+    private InputUtil.Key key = InputUtil.UNKNOWN_KEY;
     private boolean pressed = false;
     public BasicKey(InputUtil.Key key) {
         this.key = key;
     }
-    public BasicKey(JsonElement json) {
+    public BasicKey() {}
+
+    @Override
+    public void load(JsonElement json) {
         JsonUtil.ObjectLoader loader = JsonUtil.object(json);
         this.key = loader.get("type", InputUtil.Type.class).createFromCode(loader.get("code", Integer.class));
+        pressed = false;
     }
 
     @Override
@@ -75,5 +79,27 @@ public class BasicKey implements Key {
     @Override
     public int hashCode() {
         return Objects.hashCode(key);
+    }
+
+    @Override
+    public Identifier getId() {
+        return ID;
+    }
+
+    @Override
+    public String getTranslation() {
+        return "rebindmykeys.key.basic";
+    }
+
+    @Override
+    public List<KeyComboWidget.KeyEntry.Button> getButtons() {
+        return List.of(ResizableButtonWidget.builder(null, getText(), button -> {
+            button.setMessage(Text.translatable("rebindmykeys.gui.keyBindings.recording"));
+            KeyUtil.startRecordingBasicKey(key -> {
+                this.key = key;
+                pressed = false;
+                button.setMessage(getText());
+            });
+        }).build());
     }
 }

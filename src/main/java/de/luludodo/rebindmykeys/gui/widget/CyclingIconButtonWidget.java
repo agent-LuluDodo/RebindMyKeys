@@ -2,6 +2,7 @@ package de.luludodo.rebindmykeys.gui.widget;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
+import de.luludodo.rebindmykeys.gui.keyCombo.widget.KeyComboWidget;
 import de.luludodo.rebindmykeys.gui.screen.ResizableScreen;
 import de.luludodo.rebindmykeys.gui.widget.resizable.HeightCalculator;
 import de.luludodo.rebindmykeys.gui.widget.resizable.WidthCalculator;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
-public class CyclingIconButtonWidget<T> extends ResizableCyclingButtonWidget<T> implements Resizable {
+public class CyclingIconButtonWidget<T> extends ResizableCyclingButtonWidget<T> {
     private static final List<Boolean> BOOLEAN_VALUES = ImmutableList.of(Boolean.TRUE, Boolean.FALSE);
 
     private final Function<T, Identifier> valueToIcon;

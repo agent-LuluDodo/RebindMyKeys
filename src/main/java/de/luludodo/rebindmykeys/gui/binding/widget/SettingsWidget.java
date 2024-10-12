@@ -1,7 +1,7 @@
 package de.luludodo.rebindmykeys.gui.binding.widget;
 
-import de.luludodo.rebindmykeys.gui.binding.screen.KeyCombinationPopup;
 import de.luludodo.rebindmykeys.gui.binding.screen.SettingsPopup;
+import de.luludodo.rebindmykeys.gui.keyCombo.screen.KeyComboPopup;
 import de.luludodo.rebindmykeys.gui.widget.ConfigWidget;
 import de.luludodo.rebindmykeys.gui.widget.ResizableCyclingButtonWidget;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.ComboSettingsEditor;
@@ -11,12 +11,11 @@ import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.IContext;
 import de.luludodo.rebindmykeys.util.ArrayUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.text.Text;
 
 import java.util.function.Function;
 
-public class SettingsWidget extends ConfigWidget {
+public class SettingsWidget extends ConfigWidget<SettingsWidget, SettingsPopup> {
     private final ComboSettingsEditor editor;
     public SettingsWidget(MinecraftClient client, SettingsPopup parent, ComboSettingsEditor editor) {
         super(client, parent);
@@ -34,7 +33,7 @@ public class SettingsWidget extends ConfigWidget {
 
         addEntry(new ContextEntry(editor.getContext()));
         addEntry(new SkipFilterEntry(editor));
-        addEntry(new KeyCombinationEntry(client, (SettingsPopup) getParent()));
+        addEntry(new KeyCombinationEntry(client, getParent()));
     }
 
     public static class OrderSensitiveEntry extends OnOffButtonEntry {
@@ -112,7 +111,7 @@ public class SettingsWidget extends ConfigWidget {
                     Text.translatable("rebindmykeys.gui.settings.keyCombination"),
                     ButtonWidget.builder(
                             Text.translatable("rebindmykeys.gui.settings.edit"),
-                            button -> client.setScreen(new KeyCombinationPopup(parent))
+                            button -> client.setScreen(new KeyComboPopup(parent, parent.getCombo()))
                     ).build()
             );
         }

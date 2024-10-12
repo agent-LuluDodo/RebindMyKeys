@@ -10,7 +10,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
-public class ProfileConfigPopup extends ConfigPopup {
+public class ProfileConfigPopup extends ConfigPopup<ProfileConfigPopup, ProfileConfigWidget> {
     public ProfileConfigPopup(@Nullable Screen parent) {
         super(parent, Text.translatable("rebindmykeys.gui.profile.title"));
     }
@@ -44,13 +44,13 @@ public class ProfileConfigPopup extends ConfigPopup {
     }
 
     @Override
-    public ConfigWidget getConfigWidget(MinecraftClient client) {
+    public ProfileConfigWidget getConfigWidget(MinecraftClient client) {
         return new ProfileConfigWidget(client, this);
     }
 
     @Override
     public void save() {
-        ((ProfileConfigWidget) getConfigs()).save();
+        getConfigs().save();
     }
 
     @Override
@@ -65,6 +65,6 @@ public class ProfileConfigPopup extends ConfigPopup {
 
     @Override
     public boolean hasChanges() {
-        return ((ProfileConfigWidget) getConfigs()).hasChanges();
+        return getConfigs().hasChanges();
     }
 }

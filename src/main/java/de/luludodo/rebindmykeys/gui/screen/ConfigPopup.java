@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public abstract class ConfigPopup extends PopupScreen {
+public abstract class ConfigPopup<S extends ConfigPopup<S, C>, C extends ConfigWidget<C, S>> extends PopupScreen {
     public ConfigPopup(@Nullable Screen parent, Text title) {
         super(parent, title);
         setWidth(width -> 250);
@@ -54,9 +54,9 @@ public abstract class ConfigPopup extends PopupScreen {
         return getTopSpace() + getBottomSpace();
     }
 
-    public abstract ConfigWidget getConfigWidget(MinecraftClient client);
+    public abstract C getConfigWidget(MinecraftClient client);
 
-    private ConfigWidget configs;
+    private C configs;
     @Override
     public void init() {
         initTop();
@@ -66,7 +66,7 @@ public abstract class ConfigPopup extends PopupScreen {
         configs.init(); // can't resize the other elements if they haven't been created & registered, so wait for that and then call init
     }
 
-    public ConfigWidget getConfigs() {
+    public C getConfigs() {
         return configs;
     }
 
@@ -119,12 +119,8 @@ public abstract class ConfigPopup extends PopupScreen {
     }
 
     public void resize() {
-        if (getParent() != null) {
-            resize(client, getParent().width, getParent().height);
-        } else {
-            Window window = MinecraftClient.getInstance().getWindow();
-            resize(client, window.getScaledWidth(), window.getScaledHeight());
-        }
+        Window window = MinecraftClient.getInstance().getWindow();
+        resize(client, window.getScaledWidth(), window.getScaledHeight());
     }
 
     @Override

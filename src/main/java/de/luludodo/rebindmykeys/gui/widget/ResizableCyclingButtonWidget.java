@@ -1,6 +1,7 @@
 package de.luludodo.rebindmykeys.gui.widget;
 
 import com.google.common.collect.ImmutableList;
+import de.luludodo.rebindmykeys.gui.keyCombo.widget.KeyComboWidget;
 import de.luludodo.rebindmykeys.gui.screen.ResizableScreen;
 import de.luludodo.rebindmykeys.gui.widget.resizable.HeightCalculator;
 import de.luludodo.rebindmykeys.gui.widget.resizable.WidthCalculator;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
-public class ResizableCyclingButtonWidget<T> extends CyclingButtonWidget<T> implements Resizable {
+public class ResizableCyclingButtonWidget<T> extends CyclingButtonWidget<T> implements Resizable, KeyComboWidget.KeyEntry.Button {
     private static final Function<Integer, Double> SIZE_TO_WIDTH_PERCENT = count -> {
         if (count == 1) {
             return 0.33d;
@@ -47,6 +48,8 @@ public class ResizableCyclingButtonWidget<T> extends CyclingButtonWidget<T> impl
     private final YCalculator y;
     private final WidthCalculator width;
     private final HeightCalculator height;
+
+    private T originalValue;
     ResizableCyclingButtonWidget(@Nullable ResizableScreen parent, XCalculator x, YCalculator y, WidthCalculator width, HeightCalculator height, Text message, Text optionText, int index, T value, Values<T> values, Function<T, Text> valueToText, Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory, UpdateCallback<T> callback, SimpleOption.TooltipFactory<T> tooltipFactory, boolean optionTextOmitted) {
         super(
                 x.calc(parent == null ? -1 : parent.getDefaultResizeWidth()),
@@ -62,6 +65,8 @@ public class ResizableCyclingButtonWidget<T> extends CyclingButtonWidget<T> impl
         this.y = y;
         this.width = width;
         this.height = height;
+
+        this.originalValue = value;
     }
 
     @Contract(pure = true)
@@ -75,6 +80,25 @@ public class ResizableCyclingButtonWidget<T> extends CyclingButtonWidget<T> impl
         setY(y.calc(totalHeight));
         setWidth(width.calc(totalWidth));
         setHeight(height.calc(totalHeight));
+    }
+
+    @Override
+    public void render(DrawContext context, int mouseX, int mouseY, int x, int y, int width, int height, float delta) {
+        setX(x);
+        setY(y);
+        setWidth(width);
+        setHeight(height);
+        render(context, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public boolean hasChanges() {
+        return originalValue != getValue();
+    }
+
+    @Override
+    public void onSave() {
+        originalValue = getValue();
     }
 
     @Override

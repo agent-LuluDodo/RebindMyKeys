@@ -5,6 +5,7 @@ import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.reference.KeyReference;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.ComboSettings;
+import de.luludodo.rebindmykeys.keybindings.registry.LuluRegistries;
 import de.luludodo.rebindmykeys.util.CollectionUtil;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
@@ -195,7 +196,7 @@ public class KeyCombo implements JsonSavable {
     public JsonElement save() {
         JsonUtil.ArrayBuilder keysBuilder = JsonUtil.array(keys.size());
         for (Key key : keys) {
-            keysBuilder.add(Key.save(key));
+            keysBuilder.add(LuluRegistries.KEY.save(key));
         }
 
         return JsonUtil.object()
@@ -208,7 +209,7 @@ public class KeyCombo implements JsonSavable {
         JsonUtil.ObjectLoader loader = JsonUtil.object(json);
         return new KeyCombo(
                 id,
-                loader.array("keys").toList(Key::load),
+                loader.array("keys").toList(LuluRegistries.KEY::load),
                 loader.get("settings", ComboSettings::load)
         );
     }

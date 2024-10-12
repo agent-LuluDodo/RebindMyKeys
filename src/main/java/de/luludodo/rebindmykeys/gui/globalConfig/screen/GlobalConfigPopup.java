@@ -4,20 +4,19 @@ import de.luludodo.rebindmykeys.config.GlobalConfig;
 import de.luludodo.rebindmykeys.gui.binding.screen.KeyBindingScreen;
 import de.luludodo.rebindmykeys.gui.globalConfig.widget.GlobalConfigWidget;
 import de.luludodo.rebindmykeys.gui.screen.ConfigPopup;
-import de.luludodo.rebindmykeys.gui.widget.ConfigWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
-public class GlobalConfigPopup extends ConfigPopup {
+public class GlobalConfigPopup extends ConfigPopup<GlobalConfigPopup, GlobalConfigWidget> {
     public GlobalConfigPopup(@Nullable Screen parent) {
         super(parent, Text.translatable("rebindmykeys.gui.global.title"));
         setRenderTitle(true);
     }
 
     @Override
-    public ConfigWidget getConfigWidget(MinecraftClient client) {
+    public GlobalConfigWidget getConfigWidget(MinecraftClient client) {
         return new GlobalConfigWidget(client, this);
     }
 

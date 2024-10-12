@@ -1,6 +1,7 @@
 package de.luludodo.rebindmykeys.util;
 
 import de.luludodo.rebindmykeys.RebindMyKeys;
+import de.luludodo.rebindmykeys.gui.toasts.LuluToast;
 import de.luludodo.rebindmykeys.keybindings.KeyBinding;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.KeyCombo;
 import de.luludodo.rebindmykeys.util.interfaces.Action;
@@ -22,8 +23,8 @@ public class KeyBindingUtil {
             return;
         try {
             onActions.get(id).run();
-        } catch (RuntimeException e) { // We don't want Minecraft to crash if a KeyBinding bugged out or something TODO: add toast for error
-            RebindMyKeys.LOG.error("KeyBinding " + id + " failed action", e);
+        } catch (RuntimeException e) { // We don't want Minecraft to crash if a KeyBinding bugged out or something
+            LuluToast.showAndLogError(RebindMyKeys.LOG, "KeyBinding " + id + " failed action", e);
         }
     }
 
@@ -38,7 +39,7 @@ public class KeyBindingUtil {
         try {
             onToggles.get(id).accept(newState);
         } catch (RuntimeException e) { // TODO: add toast for error
-            RebindMyKeys.LOG.error("KeyBinding " + id + " failed toggle to " + newState, e);
+            LuluToast.showAndLogError(RebindMyKeys.LOG, "KeyBinding " + id + " failed toggle to " + newState, e);
         }
     }
 

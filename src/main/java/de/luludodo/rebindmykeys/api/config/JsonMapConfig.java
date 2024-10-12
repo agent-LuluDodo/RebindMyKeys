@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import de.luludodo.rebindmykeys.api.config.serializer.MapSerializer;
+import de.luludodo.rebindmykeys.gui.toasts.LuluToast;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -17,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 
 /**
  * A json-based config. The config is standalone except for the {@link MapSerializer}. Logs use the name {@code Lulu/JsonMapConfig}.
@@ -165,7 +165,7 @@ public abstract class JsonMapConfig<K,V> {
                 LOG.info("Restored old settings from {}.json to {}.json!", oldFilename, getFilename());
                 break;
             } catch (IOException e) {
-                LOG.error("Cannot restore old settings for {}.json from {}.json!", getFilename(), oldFilename);
+                LuluToast.showAndLogError(LOG, "Cannot restore old settings for " + getFilename() + ".json from " + oldFilename + ".json!", null);
             }
         }
     }
@@ -210,16 +210,16 @@ public abstract class JsonMapConfig<K,V> {
             LOG.info("Loaded {}.json!", getFilename());
             successfull = true;
         } catch (EmptyFileException e) {
-            LOG.error("Couldn't read config {}.json, because the file is empty!", getFilename());
+            LuluToast.showAndLogError(LOG, "Couldn't read config " + getFilename() + ".json, because the file is empty!", null);
             content = new HashMap<>(getDefaults());
         } catch (InvalidJsonException e) {
-            LOG.error("Couldn't parse config " + getFilename() + ".json!", e);
+            LuluToast.showAndLogError(LOG, "Couldn't parse config " + getFilename() + ".json!", e);
             content = new HashMap<>(getDefaults());
         } catch (NoSuchFileException | FileNotFoundException e) {
             LOG.warn("Couldn't find config {}.json!", getFilename()); // Warning since it could be the first time launching
             content = new HashMap<>(getDefaults());
         } catch (IOException e) {
-            LOG.error("Couldn't read config " + getFilename() + ".json!", e);
+            LuluToast.showAndLogError(LOG, "Couldn't read config " + getFilename() + ".json!", e);
             content = new HashMap<>(getDefaults());
         }
         LOG.info("Content: {} entries", content.size());
@@ -237,7 +237,7 @@ public abstract class JsonMapConfig<K,V> {
                 getFile().createNewFile();
             }
         } catch (IOException e) {
-            LOG.error("Couldn't create config " + getFilename() + ".json!", e);
+            LuluToast.showAndLogError(LOG, "Couldn't create config " + getFilename() + ".json!", e);
             return false;
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(getFile(), false))) {
@@ -245,7 +245,7 @@ public abstract class JsonMapConfig<K,V> {
             LOG.info("Saved config {}.json!", getFilename());
             return true;
         } catch (IOException e) {
-            LOG.error("Couldn't save config " + getFilename() + ".json!", e);
+            LuluToast.showAndLogError(LOG, "Couldn't save config " + getFilename() + ".json!", e);
             return false;
         }
     }
@@ -260,7 +260,7 @@ public abstract class JsonMapConfig<K,V> {
         }
 
         if (!getFile().delete()) {
-            LOG.warn("Failed to delete config {}.json!", getFilename());
+            LuluToast.showAndLogWarn(LOG, "Failed to delete config " + getFilename() + ".json!", null);
             return false;
         }
         LOG.info("Deleted config {}.json!", getFilename());
@@ -276,7 +276,7 @@ public abstract class JsonMapConfig<K,V> {
                     break;
                 }
             } catch (IOException e) {
-                LOG.error("Couldn't read directory data while deleting config " + getFilename() + ".json!", e);
+                LuluToast.showAndLogError(LOG, "Couldn't read directory data while deleting config " + getFilename() + ".json!", e);
                 return false;
             }
         }

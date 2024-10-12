@@ -22,6 +22,7 @@ import de.luludodo.rebindmykeys.util.enums.Mouse;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
@@ -253,11 +254,11 @@ public class KeyUtil {
     }
 
     private static boolean recording = false;
-    private static Consumer<List<Key>> whenRecordingDone;
-    private static Consumer<List<Key>> onRecordingKey;
+    private static @Nullable Consumer<List<Key>> whenRecordingDone;
+    private static @Nullable Consumer<List<Key>> onRecordingKey;
     private static List<Key> recordedKeys;
     private static List<InputUtil.Key> recordedInputUtilKeys;
-    public static void startRecording(Consumer<List<Key>> whenDone, Consumer<List<Key>> onKey) {
+    public static void startRecording(@Nullable Consumer<List<Key>> whenDone, @Nullable Consumer<List<Key>> onKey) {
         recording = true;
         whenRecordingDone = whenDone;
         onRecordingKey = onKey;
@@ -265,33 +266,90 @@ public class KeyUtil {
         recordedInputUtilKeys = new ArrayList<>();
     }
 
+    private static boolean recordingBasicKey = false;
+    private static @Nullable Consumer<InputUtil.Key> whenRecordingBasicKeyDone;
+    public static void startRecordingBasicKey(@Nullable Consumer<InputUtil.Key> whenDone) {
+        recordingBasicKey = true;
+        whenRecordingBasicKeyDone = whenDone;
+    }
+
+    private static boolean recordingModifierKey = false;
+    private static @Nullable Consumer<Modifier> whenRecordingModifierKeyDone;
+    public static void startRecordingModifierKey(@Nullable Consumer<Modifier> whenDone) {
+        recordingModifierKey = true;
+        whenRecordingModifierKeyDone = whenDone;
+    }
+
     public static boolean isRecording() {
-        return recording;
+        return recording || recordingBasicKey || recordingModifierKey;
     }
 
     public static void addRecordedKey(InputUtil.Key key) {
+        if (recording) {
+            addRecordedNormalKey(key);
+        }
+
+        if (recordingBasicKey) {
+            addRecordedBasicKey(key);
+        }
+
+        if (recordingModifierKey) {
+            addRecordedModifierKey(key);
+        }
+    }
+
+    private static void addRecordedNormalKey(InputUtil.Key key) {
         recordedInputUtilKeys.add(key);
         for (Modifier modifier : Modifier.values()) {
             if (ArrayUtil.contains(modifier.getKeys(), key)) {
                 recordedKeys.add(new ModifierKey(modifier));
-                onRecordingKey.accept(recordedKeys);
+
+                if (onRecordingKey != null)
+                    onRecordingKey.accept(recordedKeys);
                 return;
             }
         }
         recordedKeys.add(new BasicKey(key));
-        onRecordingKey.accept(recordedKeys);
+
+        if (onRecordingKey != null)
+            onRecordingKey.accept(recordedKeys);
+    }
+
+    private static void addRecordedBasicKey(InputUtil.Key key) {
+        if (whenRecordingBasicKeyDone != null)
+            whenRecordingBasicKeyDone.accept(key);
+
+        recordingBasicKey = false;
+        whenRecordingBasicKeyDone = null;
+    }
+
+    private static void addRecordedModifierKey(InputUtil.Key key) {
+        for (Modifier modifier : Modifier.values()) {
+            if (ArrayUtil.contains(modifier.getKeys(), key)) {
+                if (whenRecordingModifierKeyDone != null)
+                    whenRecordingModifierKeyDone.accept(modifier);
+
+                recordingModifierKey = false;
+                whenRecordingModifierKeyDone = null;
+                return;
+            }
+        }
     }
 
     public static boolean isInRecording(InputUtil.Key key) {
-        return recordedInputUtilKeys.contains(key);
+        return recording && recordedInputUtilKeys.contains(key);
     }
 
     public static void stopRecording() {
-        recording = false;
-        whenRecordingDone.accept(recordedKeys);
-        whenRecordingDone = null;
-        onRecordingKey = null;
-        recordedKeys = null;
-        recordedInputUtilKeys = null;
+        if (recording) {
+            recording = false;
+            if (whenRecordingDone != null) {
+                whenRecordingDone.accept(recordedKeys);
+                whenRecordingDone = null;
+            }
+            onRecordingKey = null;
+            recordedKeys = null;
+            recordedInputUtilKeys = null;
+        }
     }
 }

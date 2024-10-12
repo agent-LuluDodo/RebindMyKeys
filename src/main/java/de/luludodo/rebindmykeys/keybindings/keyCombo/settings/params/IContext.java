@@ -1,15 +1,7 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import de.luludodo.rebindmykeys.RebindMyKeys;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.KeyTypes;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.basic.BasicKey;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.modifier.ModifierKey;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.reference.KeyReference;
-import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
 
 import java.util.HashSet;
