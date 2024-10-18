@@ -37,13 +37,18 @@ public enum OnKeyAction {
     ACTION_DUMP_TEXTURES,
     ACTION_RELOAD_RESOURCES,
     ACTION_OPEN_GAMEMODE_SWITCHER,
-    UPDATE_SCREEN_KEYS;
+    UPDATE_SCREEN_KEYS,
+    UPDATE_VANILLA_KEY;
 
     OnKeyAction() {}
 
     public void trigger() {
         currentAction = this;
         MinecraftClient.getInstance().keyboard.onKey(-1, -1, -1, -1, -1);
+    }
+
+    public Consumer<Boolean> toggleTrigger() {
+        return newValue -> trigger();
     }
 
     public Action action() {

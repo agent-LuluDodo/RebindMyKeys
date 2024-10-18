@@ -2,8 +2,8 @@ package de.luludodo.rebindmykeys.config.serializer;
 
 import com.google.gson.*;
 import de.luludodo.rebindmykeys.api.config.serializer.MapSerializer;
-import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.SortAfter;
-import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.SortOrder;
+import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.sort.SortAfter;
+import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.sort.SortOrder;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 
 import java.lang.reflect.Type;

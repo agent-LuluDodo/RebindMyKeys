@@ -1,5 +1,6 @@
 package de.luludodo.rebindmykeys.mixin;
 
+import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.profiles.ProfileManager;
 import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import de.luludodo.rebindmykeys.util.KeyUtil;
@@ -34,12 +35,15 @@ public class MouseMixin {
         if (KeyUtil.isRecording()) {
             if (action == GLFW.GLFW_PRESS) {
                 KeyUtil.addRecordedKey(key);
+
+                ci.cancel();
+                return;
             } else if (KeyUtil.isInRecording(key)) {
                 KeyUtil.stopRecording();
-            }
 
-            ci.cancel();
-            return;
+                ci.cancel();
+                return;
+            }
         }
 
         KeyBindingUtil.onKey(key, action == GLFW.GLFW_PRESS);

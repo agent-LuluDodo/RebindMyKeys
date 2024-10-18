@@ -1,9 +1,9 @@
 package de.luludodo.rebindmykeys.gui.binding.screen;
 
 import de.luludodo.rebindmykeys.config.GlobalConfig;
-import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.SearchTarget;
-import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.SortAfter;
-import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.SortOrder;
+import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.sort.SearchTarget;
+import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.sort.SortAfter;
+import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.sort.SortOrder;
 import de.luludodo.rebindmykeys.gui.globalConfig.screen.GlobalConfigPopup;
 import de.luludodo.rebindmykeys.gui.profile.screen.ProfileConfigPopup;
 import de.luludodo.rebindmykeys.gui.screen.ResizableScreen;

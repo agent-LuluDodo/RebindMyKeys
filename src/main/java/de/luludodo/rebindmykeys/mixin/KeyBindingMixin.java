@@ -1,5 +1,6 @@
 package de.luludodo.rebindmykeys.mixin;
 
+import de.luludodo.rebindmykeys.modSupport.VanillaKeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.spongepowered.asm.mixin.Debug;
@@ -19,16 +20,22 @@ public class KeyBindingMixin {
 
     @Inject(method = "onKeyPressed", at = @At("HEAD"), cancellable = true)
     private static void rebindmykeys$onKeyPressed(InputUtil.Key key, CallbackInfo ci) {
+        if (VanillaKeyBindingHelper.isTriggered())
+            return;
+
         // simulate a short keypress (method adds one to timesPressed in vanilla and leaves pressed alone)
         /*
-        KeyUtil.getAll().forEach(binding -> binding.onKeyDown(key));
-        KeyUtil.getAll().forEach(binding -> binding.onKeyUp(key));
+        KeyUtil.getAll().forEach(vanilla -> vanilla.onKeyDown(key));
+        KeyUtil.getAll().forEach(vanilla -> vanilla.onKeyUp(key));
         */
         ci.cancel();
     }
 
     @Inject(method = "setKeyPressed", at = @At("HEAD"), cancellable = true)
     private static void rebindmykeys$setKeyPressed(InputUtil.Key key, boolean pressed, CallbackInfo ci) {
+        if (VanillaKeyBindingHelper.isTriggered())
+            return;
+
         getAll().forEach(binding -> {
             if (pressed) {
                 binding.onKeyDown(key);
@@ -41,7 +48,7 @@ public class KeyBindingMixin {
 
     @Inject(method = "unpressAll", at = @At("HEAD"), cancellable = true)
     private static void rebindmykeys$unpressAll(CallbackInfo ci) { // why did they call this "unpress" instead of release?
-        //KeyUtil.getAll().forEach(de.luludodo.rebindmykeys.keybindings.KeyBinding::release); Minecraft calls this when pausing and unpausing and sometimes after my mod does stuff so this breaks things
+        //KeyUtil.getAll().forEach(de.luludodo.rebindmykeys.keybindings.KeyBinding::release); Minecraft calls this when pausing and resuming and sometimes after my mod does stuff so this breaks things
         ci.cancel();
     }
 
@@ -53,6 +60,9 @@ public class KeyBindingMixin {
 
     @Inject(method = "updatePressedStates", at = @At("HEAD"), cancellable = true)
     private static void rebindmykeys$updatePressedStates(CallbackInfo ci) {
+        if (VanillaKeyBindingHelper.isTriggered())
+            return;
+
         // Idk what purpose this had in Vanilla, but it's breaking movement keys with my mod
         ci.cancel();
     }

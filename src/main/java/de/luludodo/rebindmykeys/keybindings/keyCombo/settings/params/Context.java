@@ -29,17 +29,16 @@ public enum Context implements IContext {
         return Context.isCurrent(this);
     }
 
-    private static final MinecraftClient CLIENT = MinecraftClient.getInstance();
     public static boolean isCurrent(Context context) {
         return switch (context) {
             case EVERYWHERE -> true;
-            case IN_GAME -> CLIENT.world != null;
-            case IN_SCREEN -> CLIENT.currentScreen != null;
+            case IN_GAME -> MinecraftClient.getInstance().world != null;
+            case IN_SCREEN -> MinecraftClient.getInstance().currentScreen != null;
             case PLAYING -> isCurrent(IN_GAME) && !isCurrent(IN_SCREEN);
             case IN_GUI -> isCurrent(IN_GAME) && isCurrent(IN_SCREEN);
-            case IN_INVENTORY -> CLIENT.currentScreen instanceof InventoryScreen;
+            case IN_INVENTORY -> MinecraftClient.getInstance().currentScreen instanceof InventoryScreen;
             case IN_MENU -> !isCurrent(IN_GAME) && isCurrent(IN_SCREEN);
-            case IN_MULTIPLAYER_SCREEN -> CLIENT.currentScreen instanceof MultiplayerScreen;
+            case IN_MULTIPLAYER_SCREEN -> MinecraftClient.getInstance().currentScreen instanceof MultiplayerScreen;
         };
     }
 

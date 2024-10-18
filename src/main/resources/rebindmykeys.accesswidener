@@ -6,3 +6,7 @@ accessible field net/minecraft/client/gui/screen/option/GameOptionsScreen parent
 accessible field net/minecraft/client/gui/screen/Screen drawables Ljava/util/List;
 extendable method net/minecraft/client/gui/screen/Screen init (Lnet/minecraft/client/MinecraftClient;II)V
 accessible method net/minecraft/client/gui/widget/CyclingButtonWidget <init> (IIIILnet/minecraft/text/Text;Lnet/minecraft/text/Text;ILjava/lang/Object;Lnet/minecraft/client/gui/widget/CyclingButtonWidget$Values;Ljava/util/function/Function;Ljava/util/function/Function;Lnet/minecraft/client/gui/widget/CyclingButtonWidget$UpdateCallback;Lnet/minecraft/client/option/SimpleOption$TooltipFactory;Z)V
+accessible field net/minecraft/client/gui/hud/DebugHud showDebugHud Z
+accessible field net/minecraft/client/option/KeyBinding CATEGORY_ORDER_MAP Ljava/util/Map;
+extendable class net/minecraft/client/util/InputUtil$Key
+accessible method net/minecraft/client/util/InputUtil$Key <init> (Ljava/lang/String;Lnet/minecraft/client/util/InputUtil$Type;I)V

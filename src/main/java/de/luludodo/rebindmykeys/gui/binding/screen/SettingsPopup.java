@@ -14,13 +14,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class SettingsPopup extends ConfigPopup<SettingsPopup, SettingsWidget> {
     private final KeyCombo combo;
-    private final ComboSettings defaultSettings;
     private final ComboSettingsEditor editor;
     public SettingsPopup(@NotNull KeyBindingScreen parent, KeyCombo combo, ComboSettings defaultSettings) {
         super(parent, Text.translatable("rebindmykeys.gui.settings.title"));
         setRenderTitle(true);
         this.combo = combo;
-        this.defaultSettings = defaultSettings;
         editor = new ComboSettingsEditor(combo);
     }
 
@@ -43,8 +41,9 @@ public class SettingsPopup extends ConfigPopup<SettingsPopup, SettingsWidget> {
 
     @Override
     public void reset() {
-        combo.setSettings(defaultSettings);
         editor.reload();
+        editor.setNoChanges();
+        getConfigs().reload();
     }
 
     public KeyCombo getCombo() {

@@ -2,8 +2,8 @@ package de.luludodo.rebindmykeys.config;
 
 import de.luludodo.rebindmykeys.api.config.JsonMapConfig;
 import de.luludodo.rebindmykeys.config.serializer.GlobalConfigSerializer;
-import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.SortAfter;
-import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.SortOrder;
+import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.sort.SortAfter;
+import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.sort.SortOrder;
 import de.luludodo.rebindmykeys.profiles.ProfileManager;
 
 import java.util.HashMap;

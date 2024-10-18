@@ -1,4 +1,4 @@
-package de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget;
+package de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.sort;
 
 import net.minecraft.text.Text;
 

@@ -21,7 +21,7 @@ public class KeyBindingActions {
     }
 
     public static void rightClick() {
-        if (KeyBindings.LEFT_CLICK.get("rebindmykeys.key").isPressed()) {
+        if (KeyBindings.RIGHT_CLICK.get("rebindmykeys.key").isPressed()) {
             CLIENT.currentScreen.mouseClicked(Mouse.getX(), Mouse.getY(), Mouse.RIGHT.getButton());
         } else {
             CLIENT.currentScreen.mouseReleased(Mouse.getX(), Mouse.getY(), Mouse.RIGHT.getButton());
@@ -46,14 +46,6 @@ public class KeyBindingActions {
         client.currentScreen.mouseClicked(Mouse.getX(), Mouse.getY(), Mouse.RIGHT.getButton());
     }
     */
-
-    private static boolean debugMenuState = false;
-    public static void debugMenu(boolean newState) { // TODO: Implement debug key combos
-        if (debugMenuState != newState) {
-            debugMenuState = newState;
-            CLIENT.inGameHud.getDebugHud().toggleDebugHud();
-        }
-    }
 
     public static void debugCrash(boolean newState) {
         if (newState) {

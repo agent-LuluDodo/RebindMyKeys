@@ -72,7 +72,7 @@ public class ResizableButtonWidget extends ButtonWidget implements Resizable, Ke
     }
 
     @Override
-    public void onSave() {
+    public void setNoChanges() {
         hasChanges = false;
     }
 

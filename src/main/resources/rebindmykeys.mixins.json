@@ -7,6 +7,9 @@
   ],
   "client": [
     "DrawContextMixin",
+    "InputUtilMixin",
+    "InputUtilTypeMixin",
+    "KeyBindingHelperMixin",
     "KeyBindingMixin",
     "KeyboardMixin",
     "MinecraftClientMixin",

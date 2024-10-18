@@ -1,7 +1,5 @@
 package de.luludodo.rebindmykeys.keybindings.info;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.*;
 
 public final class CategoryInfo {
@@ -22,11 +20,15 @@ public final class CategoryInfo {
         categoryOrder.put(category, index);
     }
 
-    public static @Nullable Double getIndex(String category) {
+    public static Double getIndex(String category) {
         return categoryOrder.get(category);
     }
 
     public static void addId(String id) {
+        add(id, category);
+    }
+
+    public static void add(String id, String category) {
         if (!categoryToIds.containsKey(category)) {
             categoryToIds.put(category, new ArrayList<>());
             if (!categoryOrder.containsKey(category))

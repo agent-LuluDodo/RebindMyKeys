@@ -109,7 +109,6 @@ public class ArrayUtil {
         for (T t : array) {
             if (first) {
                 first = false;
-                builder.append(start);
             } else {
                 builder.append(delimiter);
             }

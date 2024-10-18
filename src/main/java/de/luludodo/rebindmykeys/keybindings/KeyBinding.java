@@ -13,7 +13,6 @@ import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import de.luludodo.rebindmykeys.util.interfaces.JsonLoadable;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
-import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.util.InputUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +41,7 @@ public class KeyBinding implements JsonSavable, JsonLoadable {
      * @see InitialKeyBindings#get(String)
      * @see KeyBindingConfig#get(String)
      */
-    public static @Nullable KeyBinding get(String id) {
+    public static KeyBinding get(String id) {
         KeyBinding binding;
         if (checkInitialActive()) {
             binding = InitialKeyBindings.get(id);
@@ -76,8 +75,8 @@ public class KeyBinding implements JsonSavable, JsonLoadable {
     private final boolean isAction;
     public KeyBinding(String id, List<KeyCombo> keyCombos, ComboSettings defaultSettings) {
         this.id = id;
-        defaultKeyCombos = keyCombos;
-        this.keyCombos = keyCombos;
+        defaultKeyCombos = CollectionUtil.copy(keyCombos, ArrayList::new, KeyCombo::copy);
+        this.keyCombos = CollectionUtil.copy(keyCombos, ArrayList::new, KeyCombo::copy);
         this.defaultSettings = defaultSettings;
         isAction = defaultSettings.operationMode() instanceof ActionMode;
     }
@@ -104,7 +103,15 @@ public class KeyBinding implements JsonSavable, JsonLoadable {
     }
 
     public void reset() {
-        keyCombos = defaultKeyCombos;
+        keyCombos = CollectionUtil.copy(defaultKeyCombos, ArrayList::new, KeyCombo::copy);
+    }
+
+    public void isDefault() {
+
+    }
+
+    protected void setKeyCombos(List<KeyCombo> keyCombos) {
+        this.keyCombos = keyCombos;
     }
 
     public void addKeyCombo(KeyCombo keyCombo) {
@@ -181,7 +188,11 @@ public class KeyBinding implements JsonSavable, JsonLoadable {
         return CollectionUtil.any(keyCombos, KeyCombo::checkContext);
     }
 
-    public KeyBinding copy() {
+    public interface KeyBindingCopyConstructor<T> {
+        T create(String id, List<KeyCombo> defaultKeyCombos, ComboSettings defaultSettings);
+    }
+
+    protected <T extends KeyBinding> T copy(KeyBindingCopyConstructor<T> constructor) {
         List<KeyCombo> defaultKeyCombosCopy = new ArrayList<>(defaultKeyCombos.size());
         for (KeyCombo combo : defaultKeyCombos) {
             defaultKeyCombosCopy.add(combo.copy());
@@ -190,8 +201,12 @@ public class KeyBinding implements JsonSavable, JsonLoadable {
         for (KeyCombo combo : keyCombos) {
             keyCombosCopy.add(combo.copy());
         }
-        KeyBinding copy = new KeyBinding(id, defaultKeyCombosCopy, defaultSettings);
-        copy.keyCombos = keyCombosCopy;
+        T copy = constructor.create(id, defaultKeyCombosCopy, defaultSettings);
+        copy.setKeyCombos(keyCombos);
         return copy;
+    }
+
+    public KeyBinding copy() {
+        return copy(KeyBinding::new);
     }
 }

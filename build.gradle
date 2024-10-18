@@ -7,6 +7,17 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
     maven {
         name = "Terraformers"
         url = "https://maven.terraformersmc.com/"
@@ -32,6 +43,9 @@ dependencies {
 
     // Mod Menu
     modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+
+    // Xaeros Minimap (for testing)
+    modRuntimeOnly "maven.modrinth:xaeros-minimap:${project.xaeros_minimap_version}"
 }
 
 processResources {

@@ -6,6 +6,8 @@ import de.luludodo.rebindmykeys.util.interfaces.JsonLoadable;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
 import net.minecraft.util.Identifier;
 
+import java.util.NoSuchElementException;
+
 public class JsonRegistry<V extends LuluRegistry.Indexable & JsonLoadable & JsonSavable> extends LuluRegistry<V> {
     public static <V extends LuluRegistry.Indexable & JsonLoadable & JsonSavable> JsonRegistry<V> createJsonFor(Class<V> cl) {
         return createJson();
@@ -20,7 +22,7 @@ public class JsonRegistry<V extends LuluRegistry.Indexable & JsonLoadable & Json
     public V load(JsonElement json) {
         JsonUtil.ObjectLoader loader = JsonUtil.object(json);
         JsonElement settings = loader.get("settings", JsonElement.class);
-        V mode = constructOptional(loader.get("type", Identifier.class)).orElseThrow();
+        V mode = constructOptional(loader.get("type", Identifier.class)).orElseThrow(() -> new NoSuchElementException("No type '" + loader.get("type", Identifier.class).toString() + "' present"));
         mode.load(settings);
         return mode;
     }

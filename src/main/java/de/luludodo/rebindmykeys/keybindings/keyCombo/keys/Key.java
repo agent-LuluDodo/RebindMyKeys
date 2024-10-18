@@ -13,6 +13,7 @@ public interface Key extends JsonSavable, JsonLoadable, LuluRegistry.Indexable {
     void onKeyDown(InputUtil.Key key);
     void onKeyUp(InputUtil.Key key);
     void release();
+    void press();
     boolean isPressed();
     Text getText();
     String getTranslation();

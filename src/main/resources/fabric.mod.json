@@ -17,8 +17,11 @@
     "client": [
       "de.luludodo.rebindmykeys.RebindMyKeys"
     ],
+    "preLaunch": [
+      "de.luludodo.rebindmykeys.RebindMyKeysPreLaunch"
+    ],
     "modmenu": [
-      "de.luludodo.rebindmykeys.ModMenuIntegration"
+      "de.luludodo.rebindmykeys.modSupport.ModMenuIntegration"
     ]
   },
   "mixins": [

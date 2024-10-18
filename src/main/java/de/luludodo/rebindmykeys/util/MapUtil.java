@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -19,7 +18,7 @@ public class MapUtil {
      * @param <K> The class of the keys of the map
      * @param <V> The class of the values of the map
      */
-    public static <K, V> void removeAll(@NotNull Map<K, V> map, BiFunction<K, V, Boolean> shouldRemove) {
+    public static <K, V> void removeIf(@NotNull Map<K, V> map, BiFunction<K, V, Boolean> shouldRemove) {
         Set<K> keySet = new HashSet<>(map.keySet());
         for (K key : keySet) {
             if (shouldRemove.apply(key, map.get(key))) {
@@ -35,7 +34,7 @@ public class MapUtil {
      * @param <K> The class of the keys of the map
      * @param <V> The class of the values of the map
      */
-    public static <K, V> void removeAll(@NotNull Map<K, V> map, Function<K, Boolean> shouldRemove) {
+    public static <K, V> void removeIf(@NotNull Map<K, V> map, Function<K, Boolean> shouldRemove) {
         Set<K> keySet = new HashSet<>(map.keySet());
         for (K key : keySet) {
             if (shouldRemove.apply(key)) {

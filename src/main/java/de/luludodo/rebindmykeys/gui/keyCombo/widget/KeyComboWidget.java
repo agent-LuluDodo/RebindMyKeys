@@ -52,8 +52,12 @@ public class KeyComboWidget extends ConfigWidget<KeyComboWidget, KeyComboPopup> 
 
         combo.setKeys(keys);
 
+        setNoChanges();
+    }
+
+    public void setNoChanges() {
         hasChanges = false;
-        CollectionUtil.forEach(children(), KeyEntry.class, KeyEntry::onSave);
+        CollectionUtil.forEach(children(), KeyEntry.class, KeyEntry::setNoChanges);
     }
 
     private boolean hasChanges = false;
@@ -74,7 +78,7 @@ public class KeyComboWidget extends ConfigWidget<KeyComboWidget, KeyComboPopup> 
         public interface Button extends Selectable, Element {
             void render(DrawContext context, int mouseX, int mouseY, int x, int y, int width, int height, float delta);
             boolean hasChanges();
-            void onSave();
+            void setNoChanges();
         }
         private boolean hasChanges = false;
         private Key key;
@@ -176,9 +180,9 @@ public class KeyComboWidget extends ConfigWidget<KeyComboWidget, KeyComboPopup> 
             return hasChanges || CollectionUtil.any(buttons, Button::hasChanges);
         }
 
-        public void onSave() {
+        public void setNoChanges() {
             hasChanges = false;
-            buttons.forEach(Button::onSave);
+            buttons.forEach(Button::setNoChanges);
         }
 
         @Override protected Selectable getSelectable() { return null; }

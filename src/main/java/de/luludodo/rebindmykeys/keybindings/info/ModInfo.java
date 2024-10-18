@@ -1,5 +1,6 @@
 package de.luludodo.rebindmykeys.keybindings.info;
 
+import de.luludodo.rebindmykeys.util.FabricUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 
@@ -11,7 +12,7 @@ public final class ModInfo {
     private static final Map<String, ModContainer> idToMod = new HashMap<>();
 
     private static ModContainer toModContainer(String modId) {
-        return modId == null? null : FabricLoader.getInstance().getModContainer(modId).orElseThrow(() -> new IllegalArgumentException("No mod with id '" + modId + "' found"));
+        return modId.equals("minecraft") ? FabricUtil.VANILLA : FabricLoader.getInstance().getModContainer(modId).orElse(FabricUtil.UNKNOWN);
     }
 
     public static void setMod(String mod) {
@@ -19,6 +20,10 @@ public final class ModInfo {
     }
 
     public static void addId(String id) {
+        add(id, mod);
+    }
+
+    public static void add(String id, ModContainer mod) {
         if (!modToIds.containsKey(mod)) {
             modToIds.put(mod, new ArrayList<>());
         }
@@ -35,6 +40,6 @@ public final class ModInfo {
     }
 
     public static String getModName(ModContainer mod) {
-        return mod == null ? "Minecraft" : mod.getMetadata().getName();
+        return mod.getMetadata().getName();
     }
 }

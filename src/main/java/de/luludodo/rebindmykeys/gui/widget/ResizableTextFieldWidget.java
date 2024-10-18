@@ -90,7 +90,7 @@ public class ResizableTextFieldWidget extends TextFieldWidget implements Resizab
     }
 
     @Override
-    public void onSave() {
+    public void setNoChanges() {
         originalText = getText();
     }
 }

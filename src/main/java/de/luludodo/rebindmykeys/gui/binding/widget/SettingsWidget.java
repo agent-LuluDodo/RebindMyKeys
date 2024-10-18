@@ -26,7 +26,6 @@ public class SettingsWidget extends ConfigWidget<SettingsWidget, SettingsPopup> 
     public void loadEntries() {
         addEntry(new OrderSensitiveEntry(editor));
         addEntry(new OperationModeEntry(this, editor));
-
         for (Entry entry : editor.getOperationModeEntries()) {
             addEntry(entry);
         }

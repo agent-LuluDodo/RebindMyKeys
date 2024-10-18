@@ -97,7 +97,7 @@ public class ResizableCyclingButtonWidget<T> extends CyclingButtonWidget<T> impl
     }
 
     @Override
-    public void onSave() {
+    public void setNoChanges() {
         originalValue = getValue();
     }
 
@@ -216,7 +216,7 @@ public class ResizableCyclingButtonWidget<T> extends CyclingButtonWidget<T> impl
                 T object = this.value != null ? this.value : list.get(this.initialIndex);
                 Text text = this.valueToText.apply(object);
                 Text text2 = this.optionTextOmitted ? text : ScreenTexts.composeGenericOptionText(optionText, text);
-                return new ResizableCyclingButtonWidget<T>(parent, x, y, width, height, (Text)text2, optionText, this.initialIndex, object, this.values, this.valueToText, this.narrationMessageFactory, callback, this.tooltipFactory, this.optionTextOmitted);
+                return new ResizableCyclingButtonWidget<T>(parent, x, y, width, height, text2, optionText, this.initialIndex, object, this.values, this.valueToText, this.narrationMessageFactory, callback, this.tooltipFactory, this.optionTextOmitted);
             }
         }
     }

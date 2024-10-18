@@ -1,5 +1,6 @@
 package de.luludodo.rebindmykeys.keybindings.info;
 
+import net.fabricmc.loader.api.ModContainer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -80,5 +81,10 @@ public class KeyBindingInfo {
     public static void addId(String id) {
         CategoryInfo.addId(id);
         ModInfo.addId(id);
+    }
+
+    public static void add(String id, String category, ModContainer mod) {
+        CategoryInfo.add(id, category);
+        ModInfo.add(id, mod);
     }
 }

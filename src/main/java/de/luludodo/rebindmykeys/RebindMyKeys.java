@@ -1,22 +1,16 @@
 package de.luludodo.rebindmykeys;
 
-import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.basic.BasicKey;
+import de.luludodo.rebindmykeys.keybindings.info.VanillaKeyBindingInfo;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.modifier.Modifier;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.modifier.ModifierKey;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.reference.KeyReference;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.hold.HoldMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActionMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action.ActivateOn;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.toggle.ToggleMode;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.Context;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.FilterMode;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.params.IContextRegistry;
-import de.luludodo.rebindmykeys.keybindings.registry.LuluRegistries;
+import de.luludodo.rebindmykeys.modSupport.VanillaKeyBindingHelper;
 import de.luludodo.rebindmykeys.profiles.ProfileManager;
-import de.luludodo.rebindmykeys.util.KeyBindingActions;
-import de.luludodo.rebindmykeys.util.KeyBindingUtil;
-import de.luludodo.rebindmykeys.util.KeyUtil;
-import de.luludodo.rebindmykeys.util.TimerUtil;
+import de.luludodo.rebindmykeys.util.*;
 import de.luludodo.rebindmykeys.util.enums.Key;
 import de.luludodo.rebindmykeys.util.enums.KeyBindings;
 import de.luludodo.rebindmykeys.util.enums.Mouse;
@@ -26,9 +20,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBinding;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWErrorCallbackI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,26 +40,26 @@ public class RebindMyKeys implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) { // ONLY FOR DEBUGGING (getting the stack trace of a gl error)
-            ClientTickEvents.START_CLIENT_TICK.register(client ->
-                    GLFW.glfwSetErrorCallback((errorCode, description) ->
-                        RebindMyKeys.LOG.error("GLFW ERROR " + errorCode + ": " + description, new Throwable("StackTrace"))
-                    )
-            );
+            GLFWErrorCallbackI myCallback = (errorCode, description) -> RebindMyKeys.LOG.error("GLFW ERROR {}: {}", errorCode, description, new Throwable("StackTrace"));
+            ClientTickEvents.START_CLIENT_TICK.register(client -> {
+                GLFWErrorCallback errorCallback = GLFW.glfwSetErrorCallback(myCallback);
+                if (errorCallback != null && errorCallback.address() != myCallback.address()) {
+                    errorCallback.free();
+                }
+            });
         }
 
-        LuluRegistries.OPERATION_MODE.register(ActionMode::new);
-        LuluRegistries.OPERATION_MODE.register(HoldMode::new);
-        LuluRegistries.OPERATION_MODE.register(ToggleMode::new);
+        FabricUtil.init();
 
-        LuluRegistries.KEY.register(BasicKey::new);
-        LuluRegistries.KEY.register(ModifierKey::new);
-        LuluRegistries.KEY.register(KeyReference::new);
-
-        IContextRegistry.register(Context.values());
-
-        setMod(null, "key", "key.categories");
+        setMod("minecraft", "key", "key.categories");
 
         setCategory("movement");
+
+        KeyBinding vanillaTest = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "rebindmykeys.key.vanillaTest",
+                GLFW.GLFW_KEY_I,
+                "rebindmykeys.key.categories.vanillaTest"
+        ));
 
         KeyUtil.create(KeyBindings.JUMP) // TODO: separate start flying and fly up and swim up
                 .operationMode(HoldMode::new) // You don't stop jumping util you release jump
@@ -349,10 +347,11 @@ public class RebindMyKeys implements ClientModInitializer {
         setCategory("#key.categories.misc");
 
         KeyUtil.create(KeyBindings.DEBUG_MENU)
-                .operationMode(ToggleMode::new)
+                .operationMode(() -> new ToggleMode(false, false)) // toggle on release
+                .filter(FilterMode.OTHERS)
                 .context(Context.PLAYING)
                 .keysm(Key.F3)
-                .onToggle(KeyBindingActions::debugMenu)
+                .onToggle(OnKeyAction.TOGGLE_DEBUG_HUD.toggleTrigger())
                 .register();
         KeyUtil.create(KeyBindings.NARRATOR) // Has like four modes -> cant be a toggle
                 .context(Context.EVERYWHERE)
@@ -650,9 +649,20 @@ public class RebindMyKeys implements ClientModInitializer {
 
         ClientLifecycleEvents.CLIENT_STARTED.register(this::onClientStarted);
         ClientLifecycleEvents.CLIENT_STOPPING.register(this::onClientStopping);
+        ClientTickEvents.START_CLIENT_TICK.register(client -> {
+            while (vanillaTest.wasPressed()) {
+                RebindMyKeys.DEBUG.info("Vanilla test pressed!");
+            }
+            if (vanillaTest.isPressed()) {
+                RebindMyKeys.DEBUG.info("Vanilla test toggled!");
+            }
+        });
     }
 
     public void onClientStarted(MinecraftClient client) {
+        VanillaKeyBindingHelper.init();
+        VanillaKeyBindingInfo.printCountInfo();
+
         ProfileManager.init();
 
         KeyUtil.validate();

@@ -256,6 +256,9 @@ public class CollectionUtil {
     }
 
     private static <E> List<E> unwrapToList(Class<E> targetCl, Object o) {
+        if (o == null)
+            return List.of();
+
         List<E> unwrapped = new ArrayList<>();
         if (o instanceof Collection<?> collection) {
             for (Object element : collection) {
@@ -287,6 +290,14 @@ public class CollectionUtil {
             }
         }
         collection.iterator();
+    }
+
+    public static <E, C extends Collection<E>> C copy(Collection<E> original, Supplier<C> newCollection, Function<E, E> copy) {
+        C collection = newCollection.get();
+        for (E element : original) {
+            collection.add(copy.apply(element));
+        }
+        return collection;
     }
 
     @SafeVarargs

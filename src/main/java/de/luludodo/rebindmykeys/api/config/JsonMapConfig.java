@@ -3,6 +3,7 @@ package de.luludodo.rebindmykeys.api.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.api.config.serializer.MapSerializer;
 import de.luludodo.rebindmykeys.gui.toasts.LuluToast;
 import net.fabricmc.loader.api.FabricLoader;
@@ -301,6 +302,8 @@ public abstract class JsonMapConfig<K,V> {
         if (editMode)
             throw new IllegalStateException("Cannot activate edit mode because it is already activated!");
 
+        RebindMyKeys.DEBUG.info("activateEditMode | {}", getFilename());
+
         editedContent = new HashMap<>(content);
         editMode = true;
         editModeChanges = false;
@@ -346,6 +349,8 @@ public abstract class JsonMapConfig<K,V> {
     public void deactivateEditMode() {
         if (!editMode)
             throw new IllegalStateException("Cannot deactivate edit mode because it is already deactivated!");
+
+        RebindMyKeys.DEBUG.info("deactivateEditMode | {}", getFilename());
 
         editMode = false;
         editedContent = null;

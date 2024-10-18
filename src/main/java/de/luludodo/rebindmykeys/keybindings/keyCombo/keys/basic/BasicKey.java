@@ -47,6 +47,11 @@ public class BasicKey implements Key {
     }
 
     @Override
+    public void press() {
+        pressed = true;
+    }
+
+    @Override
     public boolean isPressed() {
         return pressed;
     }

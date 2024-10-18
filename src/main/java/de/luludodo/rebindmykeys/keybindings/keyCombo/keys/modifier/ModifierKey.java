@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import de.luludodo.rebindmykeys.gui.keyCombo.widget.KeyComboWidget;
 import de.luludodo.rebindmykeys.gui.widget.ResizableButtonWidget;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
+import de.luludodo.rebindmykeys.util.ArrayUtil;
+import de.luludodo.rebindmykeys.util.CollectionUtil;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.KeyUtil;
 import net.minecraft.client.util.InputUtil;
@@ -18,6 +20,7 @@ public class ModifierKey implements Key {
     public static final Identifier ID = Identifier.of("rebindmykeys", "modifier");
 
     private Modifier modifier = Modifier.CONTROL;
+    private boolean forcePressed = false;
     private List<InputUtil.Key> pressedKeys;
     public ModifierKey(Modifier modifier) {
         this.modifier = modifier;
@@ -37,16 +40,15 @@ public class ModifierKey implements Key {
 
     @Override
     public void onKeyDown(InputUtil.Key key) {
-        for (InputUtil.Key modifierKey : modifier.getKeys()) {
-            if (modifierKey.equals(key)) {
-                pressedKeys.add(key);
-                return;
-            }
-        }
+        if (ArrayUtil.contains(modifier.getKeys(), key))
+            pressedKeys.add(key);
     }
 
     @Override
     public void onKeyUp(InputUtil.Key key) {
+        if (ArrayUtil.contains(modifier.getKeys(),key))
+            forcePressed = false;
+
         pressedKeys.remove(key);
     }
 
@@ -56,8 +58,13 @@ public class ModifierKey implements Key {
     }
 
     @Override
+    public void press() {
+        forcePressed = true;
+    }
+
+    @Override
     public boolean isPressed() {
-        return !pressedKeys.isEmpty();
+        return forcePressed || !pressedKeys.isEmpty();
     }
 
     @Override

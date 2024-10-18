@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import de.luludodo.rebindmykeys.RebindMyKeys;
+import de.luludodo.rebindmykeys.modSupport.VanillaKeyBindingHelper;
 import de.luludodo.rebindmykeys.profiles.ProfileManager;
 import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import de.luludodo.rebindmykeys.util.KeyUtil;
@@ -31,44 +32,58 @@ import java.util.Stack;
 public class KeyboardMixin {
     @Shadow @Final private MinecraftClient client;
 
+    @Shadow private boolean switchF3State;
     @Unique private final Stack<OnKeyAction> rebindmykeys$action = new Stack<>(); // needed for recursive calls
     @Unique private static boolean rebindmykeys$debugCrashActive = false;
     @Unique private static boolean rebindmykeys$debugCrashJavaActive = false;
     @Unique private final Stack<Boolean> rebindmykeys$isDebugCombo = new Stack<>();
+    @Unique private static boolean rebindmykeys$skipNextDebugToggle = false;
 
     @Inject(method = "onKey", at = @At("HEAD"), cancellable = true)
     public void rebindmykeys$onKey(long window, int keycode, int scancode, int action, int modifiers, CallbackInfo ci) {
         if (OnKeyAction.hasCurrentAction()) {
             rebindmykeys$action.push(OnKeyAction.consumeCurrentAction());
+
             if (rebindmykeys$action.peek() == null)
                 throw new IllegalStateException("Couldn't consume current action!");
-            switch (rebindmykeys$action.peek()) {
-                case START_DEBUG_CRASH -> rebindmykeys$debugCrashActive = true;
-                case STOP_DEBUG_CRASH -> rebindmykeys$debugCrashActive = false;
-            }
-            switch (rebindmykeys$action.peek()) {
-                case START_DEBUG_CRASH_JAVA -> rebindmykeys$debugCrashJavaActive = true;
-                case STOP_DEBUG_CRASH_JAVA -> rebindmykeys$debugCrashJavaActive = false;
-            }
+            
             rebindmykeys$isDebugCombo.push(switch (rebindmykeys$action.peek()) {
                 case ACTION_PAUSE_WITHOUT_MENU, ACTION_RELOAD_CHUNKS, TOGGLE_HITBOXES, ACTION_COPY_LOCATION,
                      ACTION_CLEAR_CHAT, TOGGLE_CHUNK_BORDERS, TOGGLE_ADVANCED_TOOLTIPS, ACTION_COPY_SERVER_DATA,
                      ACTION_COPY_CLIENT_DATA, TOGGLE_DEBUG_PROFILER, TOGGLE_SPECTATOR,
                      TOGGLE_PAUSE_ON_LOST_FOCUS, ACTION_PRINT_HELP, ACTION_DUMP_TEXTURES, ACTION_RELOAD_RESOURCES,
-                     ACTION_OPEN_GAMEMODE_SWITCHER -> true; // F3 combos
+                     ACTION_OPEN_GAMEMODE_SWITCHER, TOGGLE_PROFILER_CHART, TOGGLE_FRAME_TIME_CHARTS, TOGGLE_NETWORK_CHARTS -> true; // F3 combos
                 default -> false;
             });
+
+            switch (rebindmykeys$action.peek()) {
+                // Debug Crash
+                case START_DEBUG_CRASH -> rebindmykeys$debugCrashActive = true;
+                case STOP_DEBUG_CRASH -> rebindmykeys$debugCrashActive = false;
+
+                // Debug Java Crash
+                case START_DEBUG_CRASH_JAVA -> rebindmykeys$debugCrashJavaActive = true;
+                case STOP_DEBUG_CRASH_JAVA -> rebindmykeys$debugCrashJavaActive = false;
+            }
+
+            // Debug Combos
+            if (rebindmykeys$isDebugCombo.peek())
+                rebindmykeys$skipNextDebugToggle = true;
+
             return;
         } else if (KeyUtil.isRecording()) {
             InputUtil.Key key = InputUtil.fromKeyCode(keycode, scancode);
             if (action == GLFW.GLFW_PRESS) {
                 KeyUtil.addRecordedKey(key);
-            } else if (action == GLFW.GLFW_RELEASE && KeyUtil.isInRecording(key)) {
-                KeyUtil.stopRecording();
-            }
 
-            ci.cancel();
-            return;
+                ci.cancel();
+                return;
+            } else if (KeyUtil.isInRecording(key)) {
+                KeyUtil.stopRecording();
+
+                ci.cancel();
+                return;
+            }
         }
 
         rebindmykeys$action.push(OnKeyAction.UPDATE_SCREEN_KEYS);
@@ -338,7 +353,17 @@ public class KeyboardMixin {
             )
     ) // 412: if (action == 0) {
     private void rebindmykeys$debugHud$1(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci, @Local(argsOnly = true, ordinal = 2) LocalIntRef actionRef) {
-        actionRef.set(rebindmykeys$action.peek() == OnKeyAction.TOGGLE_DEBUG_HUD? 0 : 1);
+        if (rebindmykeys$action.peek() == OnKeyAction.TOGGLE_DEBUG_HUD) {
+            if (rebindmykeys$skipNextDebugToggle) {
+                rebindmykeys$skipNextDebugToggle = false;
+                actionRef.set(1);
+            } else {
+                switchF3State = false;
+                actionRef.set(0);
+            }
+        } else {
+            actionRef.set(1);
+        }
     }
 
     @Redirect(
@@ -400,8 +425,7 @@ public class KeyboardMixin {
     private void rebindmykeys$postProcessor_pause_pauseWithoutMenu_debugCombo_hideHud_charts(long window, int keycode, int scancode, int action, int modifiers, CallbackInfo ci, @Local(ordinal = 2) LocalBooleanRef bl4, @Local(ordinal = 1) LocalBooleanRef bl3) {
         bl3.set(false);
         bl4.set(switch (rebindmykeys$action.peek()) {
-            case TOGGLE_POST_PROCESSOR, ACTION_PAUSE, TOGGLE_HUD, TOGGLE_PROFILER_CHART,
-                 TOGGLE_FRAME_TIME_CHARTS, TOGGLE_NETWORK_CHARTS -> true;
+            case TOGGLE_POST_PROCESSOR, ACTION_PAUSE, TOGGLE_HUD -> true;
             default -> rebindmykeys$isDebugCombo.peek();
         });
     }
@@ -460,7 +484,7 @@ public class KeyboardMixin {
                     ordinal = 0
             ),
             index = 0
-    ) // 432: this.client.handleProfilerKeyPress(key - GLFW.GLFW_KEY_0);
+    ) // 432: this.switchF3State |= (bl52 |= bl && this.processF3(key));
     private int rebindmykeys$debugCombo(int key) {
         return switch (rebindmykeys$action.peek()) {
             case ACTION_RELOAD_CHUNKS -> GLFW.GLFW_KEY_A;
@@ -477,7 +501,10 @@ public class KeyboardMixin {
             case ACTION_RELOAD_RESOURCES -> GLFW.GLFW_KEY_T;
             case TOGGLE_DEBUG_PROFILER -> GLFW.GLFW_KEY_L;
             case ACTION_COPY_LOCATION -> GLFW.GLFW_KEY_C;
-            case TOGGLE_PROFILER_CHART -> GLFW.GLFW_KEY_1;
+            case TOGGLE_PROFILER_CHART -> {
+                RebindMyKeys.DEBUG.info("TOGGLE_PROFILER_CHART 2");
+                yield GLFW.GLFW_KEY_1;
+            }
             case TOGGLE_FRAME_TIME_CHARTS -> GLFW.GLFW_KEY_2;
             case TOGGLE_NETWORK_CHARTS -> GLFW.GLFW_KEY_3;
             default -> -1;

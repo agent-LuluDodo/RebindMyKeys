@@ -4,16 +4,25 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.config.GlobalConfig;
 import de.luludodo.rebindmykeys.config.KeyBindingConfig;
+import de.luludodo.rebindmykeys.gui.binding.screen.CompatibilityPopup;
 import de.luludodo.rebindmykeys.gui.binding.screen.KeyBindingScreen;
 import de.luludodo.rebindmykeys.gui.binding.screen.SettingsPopup;
+import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.sort.SearchTarget;
+import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.sort.SortAfter;
+import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.sort.SortHelper;
+import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.sort.SortOrder;
 import de.luludodo.rebindmykeys.gui.screen.ConfirmPopup;
 import de.luludodo.rebindmykeys.gui.widget.IconButtonWidget;
+import de.luludodo.rebindmykeys.gui.widget.ResizableButtonWidget;
 import de.luludodo.rebindmykeys.gui.widget.VariableElementListWidget;
 import de.luludodo.rebindmykeys.keybindings.KeyBinding;
 import de.luludodo.rebindmykeys.keybindings.info.CategoryInfo;
 import de.luludodo.rebindmykeys.keybindings.info.ModInfo;
+import de.luludodo.rebindmykeys.keybindings.info.VanillaKeyBinding;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.KeyCombo;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
+import de.luludodo.rebindmykeys.modSupport.VanillaKeyBindingWrapper;
+import de.luludodo.rebindmykeys.modSupport.operationMode.OriginalMode;
 import de.luludodo.rebindmykeys.util.*;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.MinecraftClient;
@@ -21,16 +30,15 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CyclingButtonWidget;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidget.Entry> {
@@ -90,28 +98,31 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
 
     private void loadEntries() {
         switch (sortAfter) {
-            case CATEGORY -> SortHelper.getSortedCategories(sortOrder).forEach((category, bindings) -> {
-                if ("rebindmykeys.key.categories.essentials".equals(category) && GlobalConfig.getCurrent().getHideEssentialKeys())
+            case CATEGORY -> SortHelper.getCategories(sortOrder).forEach((category, bindings) -> {
+                if ("rebindmykeys.key.categories.essentials".equals(category))
                     return;
 
                 CategoryEntry entry = new CategoryEntry(category);
-                bindings.forEach(binding -> entry.addChild(new BindingEntry(KeyBinding.get(binding))));
+                for (SortHelper.KeyBindingOption option : bindings) {
+                    entry.addChild(convert(option));
+                }
                 addEntry(entry);
             });
-            case MOD -> SortHelper.getSortedMods(sortOrder).forEach((mod, bindings) -> {
+            case MOD -> SortHelper.getMods(sortOrder).forEach((mod, bindings) -> {
                 ModEntry entry = new ModEntry(mod);
-                bindings.forEach(binding -> {
-                    if (GlobalConfig.getCurrent().getHideEssentialKeys() && "rebindmykeys.key.categories.essentials".equals(CategoryInfo.getCategory(binding)))
-                        return;
-
-                    entry.addChild(new BindingEntry(KeyBinding.get(binding)));
-                });
+                for (SortHelper.KeyBindingOption option : bindings) {
+                    entry.addChild(convert(option));
+                }
                 addEntry(entry);
             });
-            case NAME -> SortHelper.getSortedNames(sortOrder).forEach(binding ->
-                addEntry(new BindingEntry(KeyBinding.get(binding)))
-            );
+            case NAME -> SortHelper.getNames(sortOrder).forEach(binding -> {
+                addEntry(convert(binding));
+            });
         }
+    }
+
+    private Entry convert(SortHelper.KeyBindingOption option) {
+        return option.convert(BindingEntry::new, VanillaBindingEntry::new);
     }
 
     public void setSortAfter(SortAfter sortAfter) {
@@ -278,6 +289,10 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
 
     public class BindingEntry extends ParentEntry {
         private final KeyBinding binding;
+        private final ButtonWidget compatibilityButton = ButtonWidget.builder(
+                Text.literal("C"),
+                this::onCompatibilityButtonPressed
+        ).size(20, 20).build();
         private final IconButtonWidget addButton = IconButtonWidget.builder(
                 Identifier.of("rebindmykeys", "textures/gui/add.png"),
                 this::onAddButtonPressed
@@ -286,9 +301,11 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
                 Identifier.of("rebindmykeys", "textures/gui/reset.png"),
                 this::onResetButtonPressed
         ).size(20, 20).build();
+        private final boolean vanilla;
         public BindingEntry(KeyBinding binding) {
             this.binding = binding;
             update();
+            this.vanilla = binding instanceof VanillaKeyBindingWrapper;
         }
 
         @Override
@@ -330,8 +347,13 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
                 context.fill(0, y - getRowMargin() / 2, KeyBindingsWidget.this.width, y + height + getRowMargin() / 2, 0x22FFFFFF);
             }
 
+            if (vanilla) {
+                compatibilityButton.setPosition(x + width - 205, y);
+                compatibilityButton.render(context, mouseX, mouseY, delta);
+            }
+
             // Id
-            drawScrollableText(context, textRenderer, Text.translatable(binding.getId()), x + 20, y + 5, x + width - 185, y + 15, 0xFFFFFFFF);
+            drawScrollableText(context, textRenderer, Text.translatable(binding.getId()), x + 20, y + 5, x + width - (vanilla ? 205 : 185), y + 15, 0xFFFFFFFF);
 
             // Combos
             super.render(context, index, y, x, width, height, mouseX, mouseY, hovered, delta);
@@ -347,6 +369,10 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             KeyBindingsWidget.this.isOdd = !KeyBindingsWidget.this.isOdd;
 
             //context.fill(x, y, x + width, y + height, 0x770000FF); // Debug for bounds
+        }
+
+        private void onCompatibilityButtonPressed(ButtonWidget compatibilityButton) {
+            client.setScreen(new CompatibilityPopup((KeyBindingScreen) getParent(), (VanillaKeyBindingWrapper) binding));
         }
 
         private void onAddButtonPressed(ButtonWidget addButton) {
@@ -379,6 +405,7 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
         public List<Selectable> selectableChildren() {
             return filtered ? List.of() : CollectionUtil.mergeAndUnwrapAs(
                     Selectable.class,
+                    vanilla ? compatibilityButton : null,
                     addButton,
                     super.selectableChildren(),
                     resetButton
@@ -389,6 +416,7 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
         public List<Element> children() {
             return filtered ? List.of() : CollectionUtil.mergeAndUnwrapAs(
                     Element.class,
+                    vanilla ? compatibilityButton : null,
                     addButton,
                     super.children(),
                     resetButton
@@ -402,7 +430,7 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
 
         @Override
         public int getMinWidth() {
-            return filtered ? 0 : 22 + textRenderer.getWidth(Text.translatable(binding.getId())) + 187;
+            return filtered ? 0 : 22 + textRenderer.getWidth(Text.translatable(binding.getId())) + (vanilla ? 205 : 187);
         }
     }
     public class ComboEntry extends Entry {
@@ -532,6 +560,131 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
         }
     }
 
+    public class VanillaBindingEntry extends Entry {
+        private final ButtonWidget keyButton;
+        private final IconButtonWidget removeButton = IconButtonWidget.builder(
+                Identifier.of("rebindmykeys", "textures/gui/remove.png"),
+                this::onRemoveButtonPressed
+        ).size(20, 20).build();
+        private final IconButtonWidget resetButton = IconButtonWidget.builder(
+                Identifier.of("rebindmykeys", "textures/gui/reset.png"),
+                this::onResetButtonPressed
+        ).size(20, 20).build();
+        private final VanillaKeyBinding binding;
+        private final Text name;
+
+        private boolean filtered = false;
+        public VanillaBindingEntry(VanillaKeyBinding binding) {
+            this.binding = binding;
+            this.name = Text.translatable(binding.getId());
+            keyButton = ButtonWidget.builder(
+                    binding.vanilla().getBoundKeyLocalizedText(),
+                    this::onKeyButtonPressed
+            ).size(100, 20).build();
+        }
+
+        private void onResetButtonPressed(ButtonWidget button) {
+            MinecraftClient.getInstance().options.setKeyCode(binding.vanilla(), binding.vanilla().getDefaultKey());
+            keyButton.setMessage(binding.vanilla().getBoundKeyLocalizedText());
+        }
+
+        private void onKeyButtonPressed(ButtonWidget button) {
+            keyButton.setMessage(Text.translatable("rebindmykeys.gui.keyBindings.recording"));
+            KeyUtil.startRecordingBasicKey(key -> {
+                MinecraftClient.getInstance().options.setKeyCode(binding.vanilla(), key.getCategory().createFromCode(key.getCode()));
+                keyButton.setMessage(binding.vanilla().getBoundKeyLocalizedText());
+            });
+        }
+
+        private void onRemoveButtonPressed(ButtonWidget removeButton) {
+            MinecraftClient.getInstance().options.setKeyCode(binding.vanilla(), InputUtil.UNKNOWN_KEY);
+            keyButton.setMessage(binding.vanilla().getBoundKeyLocalizedText());
+        }
+
+        @Override
+        public void applySearchQuery(String query, SearchTarget target) {
+            switch (target) {
+                case NAME -> {
+                    filtered = !applyQueryFormatting(name.getString()).contains(query);
+                }
+                case MOD -> {
+                    filtered = !applyQueryFormatting(ModInfo.getModName(binding.mod())).contains(query);
+                }
+                case KEY -> {
+                    filtered = !applyQueryFormatting(keyButton.getMessage().getString()).contains(query);
+                }
+                case CATEGORY -> {
+                    filtered = !applyQueryFormatting(Text.translatable(binding.vanilla().getCategory()).getString()).contains(query);
+                }
+            }
+        }
+
+        @Override
+        protected boolean isFiltered() {
+            return filtered;
+        }
+
+        @Override
+        public int getHeight() {
+            return filtered ? 0 : 20;
+        }
+
+        @Override
+        public int getMinWidth() {
+            return filtered ? 0 : 22 + textRenderer.getWidth(name) + 187;
+        }
+
+        @Override
+        public List<Selectable> selectableChildren() {
+            return List.of(
+                    keyButton,
+                    removeButton,
+                    resetButton
+            );
+        }
+
+        @Override
+        public List<Element> children() {
+            return List.of(
+                    keyButton,
+                    removeButton,
+                    resetButton
+            );
+        }
+
+        @Override
+        public void render(DrawContext context, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovered, float delta) {
+            if (filtered)
+                return;
+
+            KeyBindingsWidget.this.renderedSomething = true;
+
+            // Stripes
+            if (KeyBindingsWidget.this.isOdd) {
+                context.fill(0, y - getRowMargin() / 2, KeyBindingsWidget.this.width, y + height + getRowMargin() / 2, 0x22FFFFFF);
+            }
+
+            // Id
+            drawScrollableText(context, textRenderer, name, x + 20, y + 5, x + width - 185, y + 15, 0xFFFFFFFF);
+
+            // Key Button
+            keyButton.setPosition(x + width - 165, y);
+            keyButton.render(context, mouseX, mouseY, delta);
+
+            // Remove Button
+            removeButton.setPosition(x + width - 60, y);
+            removeButton.render(context, mouseX, mouseY, delta);
+
+            // Reset Button
+            resetButton.setPosition(x + width - 20, y);
+            resetButton.render(context, mouseX, mouseY, delta);
+
+            KeyBindingsWidget.this.isOdd = !KeyBindingsWidget.this.isOdd;
+
+            //context.fill(x, y, x + width, y + height, 0x770000FF); // Debug for bounds
+        }
+    }
+
     public abstract class BindingParentEntry extends ParentEntry {
         public final static Identifier EXPAND = Identifier.of("rebindmykeys", "textures/gui/expand.png");
         public final static Identifier COLLAPSE = Identifier.of("rebindmykeys", "textures/gui/collapse.png");
@@ -640,10 +793,10 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
 
     public class ModEntry extends BindingParentEntry {
         private final String name;
-        private final ModIcon icon;
-        public ModEntry(@Nullable ModContainer mod) {
+        private final FabricUtil.ModIcon icon;
+        public ModEntry(ModContainer mod) {
             this.name = ModInfo.getModName(mod);
-            this.icon = new ModIcon(mod, 16, 128);
+            this.icon = FabricUtil.getIcon(mod, 16, 128);
         }
 
         @Override
@@ -654,7 +807,6 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             // Icon
             if (icon.available()) {
                 int iconX = x + width / 2 - textRenderer.getWidth(name) / 2 - 12;
-                //context.fill(iconX + 1, y + 1, iconX + 19, y + 19, 0xFF000000);
                 RenderUtil.setShaderColor(context, color);
                 icon.renderLowRes(context, iconX + 2, y + 2, 0);
                 context.setShaderColor(1f, 1f, 1f, 1f);

@@ -65,6 +65,9 @@ public class KeyReference implements Key {
     public void release() {}
 
     @Override
+    public void press() {}
+
+    @Override
     public JsonElement save() {
         return JsonUtil.object()
                 .add("target", reference)

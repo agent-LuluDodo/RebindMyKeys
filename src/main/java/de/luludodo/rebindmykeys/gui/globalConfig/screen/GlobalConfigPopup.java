@@ -16,6 +16,12 @@ public class GlobalConfigPopup extends ConfigPopup<GlobalConfigPopup, GlobalConf
     }
 
     @Override
+    public void init() {
+        super.init();
+        GlobalConfig.getCurrent().setEditModeChanges(false);
+    }
+
+    @Override
     public GlobalConfigWidget getConfigWidget(MinecraftClient client) {
         return new GlobalConfigWidget(client, this);
     }

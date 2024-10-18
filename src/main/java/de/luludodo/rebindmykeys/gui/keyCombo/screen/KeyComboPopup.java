@@ -41,6 +41,7 @@ public class KeyComboPopup extends ConfigPopup<KeyComboPopup, KeyComboWidget> {
     @Override
     public void reset() {
         getConfigs().reload();
+        getConfigs().setNoChanges();
     }
 
     @Override
