@@ -9,6 +9,7 @@ import net.minecraft.text.Text;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public interface Key extends JsonSavable, JsonLoadable, LuluRegistry.Indexable {
     void onKeyDown(InputUtil.Key key);
     void onKeyUp(InputUtil.Key key);

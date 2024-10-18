@@ -6,6 +6,7 @@ import net.minecraft.util.Language;
 
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class TextUtil {
     private static class NewLineVisitor implements StringVisitable.StyledVisitor<String> {
         private final Stack<StringVisitable> lines = new Stack<>();

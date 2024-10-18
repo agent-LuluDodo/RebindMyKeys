@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public final class InitialKeyBindings {
     private InitialKeyBindings() {
         throw new UnsupportedOperationException();

@@ -4,15 +4,14 @@ import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.pressCount.P
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import net.minecraft.util.Identifier;
 
+@SuppressWarnings("unused")
 public class HoldMode extends PressCountOperationMode {
     public static final Identifier ID = new Identifier("rebindmykeys", "hold");
 
     private boolean inverted = false;
     private boolean pressed = false;
     private boolean wasTriggered = false;
-    public HoldMode() {
-        this(false);
-    }
+    public HoldMode() {}
     public HoldMode(boolean inverted) {
         this.inverted = inverted;
     }

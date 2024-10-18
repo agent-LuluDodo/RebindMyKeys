@@ -8,6 +8,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.NoSuchElementException;
 
+@SuppressWarnings("unused")
 public class JsonRegistry<V extends LuluRegistry.Indexable & JsonLoadable & JsonSavable> extends LuluRegistry<V> {
     public static <V extends LuluRegistry.Indexable & JsonLoadable & JsonSavable> JsonRegistry<V> createJsonFor(Class<V> cl) {
         return createJson();

@@ -6,6 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public enum OnKeyAction {
     START_DEBUG_CRASH,
     START_DEBUG_CRASH_JAVA,

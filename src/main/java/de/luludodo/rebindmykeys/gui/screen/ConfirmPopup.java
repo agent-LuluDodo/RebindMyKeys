@@ -17,6 +17,7 @@ import java.util.List;
 /**
  * Ask the user a YES or NO question.
  */
+@SuppressWarnings("unused")
 public class ConfirmPopup extends PopupScreen {
     private final List<OrderedText> wrappedMessage;
     private final int wrappedMessageHeight;

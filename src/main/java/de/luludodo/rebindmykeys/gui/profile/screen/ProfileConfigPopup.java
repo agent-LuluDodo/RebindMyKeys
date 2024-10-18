@@ -2,7 +2,6 @@ package de.luludodo.rebindmykeys.gui.profile.screen;
 
 import de.luludodo.rebindmykeys.gui.profile.widget.ProfileConfigWidget;
 import de.luludodo.rebindmykeys.gui.screen.ConfigPopup;
-import de.luludodo.rebindmykeys.gui.widget.ConfigWidget;
 import de.luludodo.rebindmykeys.gui.widget.ResizableButtonWidget;
 import de.luludodo.rebindmykeys.profiles.ProfileManager;
 import net.minecraft.client.MinecraftClient;

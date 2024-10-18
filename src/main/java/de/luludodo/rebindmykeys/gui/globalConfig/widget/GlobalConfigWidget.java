@@ -3,7 +3,6 @@ package de.luludodo.rebindmykeys.gui.globalConfig.widget;
 import de.luludodo.rebindmykeys.config.GlobalConfig;
 import de.luludodo.rebindmykeys.gui.globalConfig.screen.GlobalConfigPopup;
 import de.luludodo.rebindmykeys.gui.widget.ConfigWidget;
-import de.luludodo.rebindmykeys.gui.widget.VariableElementListWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -22,9 +21,7 @@ public class GlobalConfigWidget extends ConfigWidget<GlobalConfigWidget, GlobalC
                         Text.translatable("rebindmykeys.gui.global.hideEssentialKeys.on"),
                         Text.translatable("rebindmykeys.gui.global.hideEssentialKeys.off"),
                         GlobalConfig.getCurrent().getHideEssentialKeys(),
-                        (button, newValue) -> {
-                            GlobalConfig.getCurrent().setHideEssentialKeys(newValue);
-                        }
+                        (button, newValue) -> GlobalConfig.getCurrent().setHideEssentialKeys(newValue)
                 )
         );
         addEntry(

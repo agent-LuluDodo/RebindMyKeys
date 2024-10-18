@@ -3,13 +3,10 @@ package de.luludodo.rebindmykeys.modSupport;
 import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.util.FabricUtil;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class VanillaKeyBindingHelper {

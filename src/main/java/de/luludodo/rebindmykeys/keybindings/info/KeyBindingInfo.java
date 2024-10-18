@@ -4,6 +4,7 @@ import net.fabricmc.loader.api.ModContainer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 public class KeyBindingInfo {
     private static String currentKeyPrefix = "";
     private static String currentCategoryPrefix = "";

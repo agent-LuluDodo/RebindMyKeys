@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+@SuppressWarnings("SameReturnValue")
 @Mixin(Screen.class)
 public class ScreenMixin {
     @Redirect(

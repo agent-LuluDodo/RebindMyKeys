@@ -15,8 +15,7 @@ import net.minecraft.client.util.Window;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Consumer;
-
+@SuppressWarnings("unused")
 public abstract class ConfigPopup<S extends ConfigPopup<S, C>, C extends ConfigWidget<C, S>> extends PopupScreen {
     public ConfigPopup(@Nullable Screen parent, Text title) {
         super(parent, title);
@@ -70,6 +69,7 @@ public abstract class ConfigPopup<S extends ConfigPopup<S, C>, C extends ConfigW
         return configs;
     }
 
+    @SuppressWarnings("EmptyMethod")
     public void initTop() {}
     public void initBottom() {
         addResizableChild(getApplyButton(
@@ -144,6 +144,7 @@ public abstract class ConfigPopup<S extends ConfigPopup<S, C>, C extends ConfigW
 
     public void askToSaveChanges(Action action) {
         if (hasChanges()) {
+            assert client != null;
             ConfirmPopup.create(
                     client,
                     this,

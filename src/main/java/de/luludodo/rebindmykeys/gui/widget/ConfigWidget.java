@@ -81,6 +81,7 @@ public abstract class ConfigWidget<S extends ConfigWidget<S, C>, C extends Confi
         super.addEntryToTop(entry);
     }
 
+    @SuppressWarnings("unused")
     public static abstract class Entry extends VariableElementListWidget.Entry<Entry> {
         private final Text title;
         public Entry(Text title) {
@@ -118,6 +119,7 @@ public abstract class ConfigWidget<S extends ConfigWidget<S, C>, C extends Confi
             renderWidget(x + width - 90, y, 90, 20, context, mouseX, mouseY, delta);
         }
 
+        @SuppressWarnings("SameParameterValue")
         protected abstract void renderWidget(int x, int y, int width, int height, DrawContext context, int mouseX, int mouseY, float delta);
 
         @Override
@@ -155,6 +157,7 @@ public abstract class ConfigWidget<S extends ConfigWidget<S, C>, C extends Confi
         }
     }
 
+    @SuppressWarnings("unused")
     public static class CyclingButtonEntry<T> extends ButtonEntry {
         @SafeVarargs
         public CyclingButtonEntry(Text title, Function<T, Text> valueToText, T initially, CyclingButtonWidget.UpdateCallback<T> callback, T... values) {
@@ -207,6 +210,7 @@ public abstract class ConfigWidget<S extends ConfigWidget<S, C>, C extends Confi
         }
     }
 
+    @SuppressWarnings("unused")
     public static class TextEntry extends Entry {
         private TextFieldWidget textField = null;
         private final @Nullable Function<String, Text> suffix;
@@ -286,6 +290,7 @@ public abstract class ConfigWidget<S extends ConfigWidget<S, C>, C extends Confi
         }
     }
 
+    @SuppressWarnings("unused")
     public static class NumberEntry<N extends Number> extends TextEntry {
         @FunctionalInterface
         public interface Parser<N extends Number> {

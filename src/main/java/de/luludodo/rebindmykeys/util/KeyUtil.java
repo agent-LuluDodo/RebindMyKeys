@@ -29,8 +29,10 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public class KeyUtil {
     private static final MinecraftClient CLIENT = MinecraftClient.getInstance();
+    @SuppressWarnings("unused")
     public static class Builder {
         // Binding
         private final String id;
@@ -205,12 +207,13 @@ public class KeyUtil {
 
     public static void validate() {
         boolean oneOrMoreInvalid = false;
+        //noinspection RedundantIfStatement
         if (CollectionUtil.any(KeyBinding.getAll(), binding -> {
             try {
                 binding.updatePressed();
                 return false;
             } catch (RuntimeException e) {
-                RebindMyKeys.LOG.error("KeyBinding '" + binding.getId() + "' from mod '" + ModInfo.getMod(binding.getId()) + "' is invalid (failed: updatePressed())", e);
+                RebindMyKeys.LOG.error("KeyBinding '{}' from mod '{}' is invalid (failed: updatePressed())", binding.getId(), ModInfo.getMod(binding.getId()), e);
                 return true;
             }
         })) {
@@ -221,7 +224,7 @@ public class KeyUtil {
                 binding.updateActive();
                 return false;
             } catch (RuntimeException e) {
-                RebindMyKeys.LOG.error("KeyBinding '" + binding.getId() + "' from mod '" + ModInfo.getMod(binding.getId()) + "' is invalid (failed: updateActive())", e);
+                RebindMyKeys.LOG.error("KeyBinding '{}' from mod '{}' is invalid (failed: updateActive())", binding.getId(), ModInfo.getMod(binding.getId()), e);
                 return true;
             }
         })) {

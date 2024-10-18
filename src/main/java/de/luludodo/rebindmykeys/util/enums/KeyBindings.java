@@ -2,6 +2,7 @@ package de.luludodo.rebindmykeys.util.enums;
 
 import de.luludodo.rebindmykeys.util.interfaces.IKeyBinding;
 
+@SuppressWarnings("unused")
 public enum KeyBindings implements IKeyBinding {
     LEFT_CLICK("leftClick"),
     RIGHT_CLICK("rightClick"),

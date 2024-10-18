@@ -5,7 +5,6 @@ import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import de.luludodo.rebindmykeys.RebindMyKeys;
-import de.luludodo.rebindmykeys.modSupport.VanillaKeyBindingHelper;
 import de.luludodo.rebindmykeys.profiles.ProfileManager;
 import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import de.luludodo.rebindmykeys.util.KeyUtil;
@@ -27,12 +26,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Stack;
 
+@SuppressWarnings("SameReturnValue")
 @Debug(export = true)
 @Mixin(Keyboard.class)
 public class KeyboardMixin {
     @Shadow @Final private MinecraftClient client;
 
-    @Shadow private boolean switchF3State;
+    @SuppressWarnings("unused") @Shadow private boolean switchF3State;
     @Unique private final Stack<OnKeyAction> rebindmykeys$action = new Stack<>(); // needed for recursive calls
     @Unique private static boolean rebindmykeys$debugCrashActive = false;
     @Unique private static boolean rebindmykeys$debugCrashJavaActive = false;
@@ -206,6 +206,7 @@ public class KeyboardMixin {
         };
     }
 
+    @SuppressWarnings("InvalidInjectorMethodSignature")
     @ModifyConstant(
             method = "onKey",
             slice = @Slice(
@@ -501,10 +502,7 @@ public class KeyboardMixin {
             case ACTION_RELOAD_RESOURCES -> GLFW.GLFW_KEY_T;
             case TOGGLE_DEBUG_PROFILER -> GLFW.GLFW_KEY_L;
             case ACTION_COPY_LOCATION -> GLFW.GLFW_KEY_C;
-            case TOGGLE_PROFILER_CHART -> {
-                RebindMyKeys.DEBUG.info("TOGGLE_PROFILER_CHART 2");
-                yield GLFW.GLFW_KEY_1;
-            }
+            case TOGGLE_PROFILER_CHART -> GLFW.GLFW_KEY_1;
             case TOGGLE_FRAME_TIME_CHARTS -> GLFW.GLFW_KEY_2;
             case TOGGLE_NETWORK_CHARTS -> GLFW.GLFW_KEY_3;
             default -> -1;

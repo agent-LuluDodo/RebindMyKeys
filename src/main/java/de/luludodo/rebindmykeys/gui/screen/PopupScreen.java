@@ -18,6 +18,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 public abstract class PopupScreen extends ResizableScreen {
     private final Screen parent;
     private boolean topPopup = true;
@@ -390,6 +391,7 @@ public abstract class PopupScreen extends ResizableScreen {
         if (getParent() instanceof PopupScreen popupParent)
             popupParent.topPopup = true;
 
+        assert client != null;
         client.currentScreen = getParent(); // screen has already been initialized
     }
 }

@@ -43,10 +43,6 @@ public final class CategoryInfo {
         return idToCategory.get(id);
     }
 
-    public static Map<String, List<String>> getCategories() {
-        return Collections.unmodifiableMap(categoryToIds);
-    }
-
     public static Map<String, Double> getOrder() {
         return categoryOrder;
     }

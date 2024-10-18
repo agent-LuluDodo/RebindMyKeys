@@ -9,7 +9,6 @@ import de.luludodo.rebindmykeys.gui.widget.resizable.YCalculator;
 import de.luludodo.rebindmykeys.util.RenderUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -19,6 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 public class IconButtonWidget extends ResizableButtonWidget {
     public static Builder builder(ResizableScreen parent, Identifier icon, PressAction onPress) {
         return new Builder(parent, icon, onPress);
@@ -83,6 +83,7 @@ public class IconButtonWidget extends ResizableButtonWidget {
         context.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
+    @SuppressWarnings("unused")
     @Environment(value= EnvType.CLIENT)
     public static class Builder {
         private final @Nullable ResizableScreen parent;

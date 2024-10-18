@@ -2,7 +2,6 @@ package de.luludodo.rebindmykeys.util;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 import java.util.*;
@@ -14,6 +13,7 @@ import static de.luludodo.rebindmykeys.util.ArrayUtil.arrayToString;
 /**
  * Various Utilities for dealing with {@link Object Objects}.
  */
+@SuppressWarnings({"JavadocDeclaration", "unused"})
 public class ObjectUtil {
     /**
      * Requires the {@link Object} {@code o} to be an instance of the {@link Class} {@code cl}.
@@ -36,6 +36,7 @@ public class ObjectUtil {
         }
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static class ONumber {
         /**
          * Compares two {@link Number Numbers} of the same {@link Class}.
@@ -179,6 +180,7 @@ public class ObjectUtil {
      * @see ObjectUtil#requireOneOf(Object, ClassCase1[])
      * @see ClassCase2
      */
+    @SuppressWarnings("unused")
     public static class ClassCase1<T> {
         private final Class<T> cl;
         private final Consumer<T> action;
@@ -206,6 +208,7 @@ public class ObjectUtil {
      * @see ObjectUtil#requireOneOf(Object, ClassCase2[])
      * @see ClassCase1
      */
+    @SuppressWarnings("unused")
     public static class ClassCase2<T, R> {
         private final Class<T> cl;
         private final Function<T, R> action;

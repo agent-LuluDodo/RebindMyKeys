@@ -5,7 +5,6 @@ import de.luludodo.rebindmykeys.config.ProfileConfig;
 import de.luludodo.rebindmykeys.util.InitialKeyBindings;
 import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.text.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +16,7 @@ import java.util.*;
 /**
  * Static class which manages instances of {@link Profile}.
  */
+@SuppressWarnings("unused")
 public final class ProfileManager {
     private ProfileManager() {}
 
@@ -128,7 +128,7 @@ public final class ProfileManager {
                             UUID uuid = UUID.fromString(entry.getFileName().toString());
                             profiles.put(uuid, new Profile(uuid, !registeredProfiles.containsKey(uuid)));
                         } catch (IllegalArgumentException e) {
-                            RebindMyKeys.LOG.error("Couldn't read profile '" + entry.getFileName().toString() + "' because its name isn't a valid UUID!", e);
+                            RebindMyKeys.LOG.error("Couldn't read profile '{}' because its name isn't a valid UUID!", entry.getFileName().toString(), e);
                         }
                     }
                 }

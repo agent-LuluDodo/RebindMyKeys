@@ -3,6 +3,7 @@ package de.luludodo.rebindmykeys.util.enums;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
+@SuppressWarnings("unused")
 public enum Key {
     A(GLFW.GLFW_KEY_A),
     B(GLFW.GLFW_KEY_B),

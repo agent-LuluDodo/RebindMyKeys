@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public class LuluRegistry<V extends LuluRegistry.Indexable> {
     public interface Indexable {
         Identifier getId();

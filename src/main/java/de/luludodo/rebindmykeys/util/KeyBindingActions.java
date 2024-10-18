@@ -1,6 +1,5 @@
 package de.luludodo.rebindmykeys.util;
 
-import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.mixin.MinecraftClientMixin;
 import de.luludodo.rebindmykeys.util.enums.KeyBindings;
 import de.luludodo.rebindmykeys.util.enums.Mouse;
@@ -9,26 +8,32 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.option.KeyBinding;
 
+@SuppressWarnings("unused")
 public class KeyBindingActions {
     private static final MinecraftClient CLIENT = MinecraftClient.getInstance();
 
     public static void leftClick() {
         if (KeyBindings.LEFT_CLICK.get("rebindmykeys.key").isPressed()) {
+            assert CLIENT.currentScreen != null;
             CLIENT.currentScreen.mouseClicked(Mouse.getX(), Mouse.getY(), Mouse.LEFT.getButton());
         } else {
+            assert CLIENT.currentScreen != null;
             CLIENT.currentScreen.mouseReleased(Mouse.getX(), Mouse.getY(), Mouse.LEFT.getButton());
         }
     }
 
     public static void rightClick() {
         if (KeyBindings.RIGHT_CLICK.get("rebindmykeys.key").isPressed()) {
+            assert CLIENT.currentScreen != null;
             CLIENT.currentScreen.mouseClicked(Mouse.getX(), Mouse.getY(), Mouse.RIGHT.getButton());
         } else {
+            assert CLIENT.currentScreen != null;
             CLIENT.currentScreen.mouseReleased(Mouse.getX(), Mouse.getY(), Mouse.RIGHT.getButton());
         }
     }
 
     public static void closeMenu() {
+        assert CLIENT.currentScreen != null;
         if (CLIENT.currentScreen.shouldCloseOnEsc())
             CLIENT.currentScreen.close();
     }
@@ -67,6 +72,7 @@ public class KeyBindingActions {
      * @see de.luludodo.rebindmykeys.mixin.MultiplayerScreenMixin#rebindmykeys$invalidateF5Refresh(int)
      */
     public static void refreshServerList() {
+        assert CLIENT.currentScreen != null;
         ((MultiplayerScreen) CLIENT.currentScreen).refresh(); // Context validates all this for us
     }
 
@@ -121,6 +127,7 @@ public class KeyBindingActions {
      * @see MinecraftClientMixin#rebindmykeys$isDropKeyPressed(KeyBinding)
      * @see MinecraftClientMixin#rebindmykeys$shouldDropStack()
      */
+    @SuppressWarnings("EmptyMethod")
     public static void drop(boolean newState) {}
 
     /**
@@ -128,6 +135,7 @@ public class KeyBindingActions {
      * @see MinecraftClientMixin#rebindmykeys$isDropKeyPressed(KeyBinding)
      * @see MinecraftClientMixin#rebindmykeys$shouldDropStack()
      */
+    @SuppressWarnings("EmptyMethod")
     public static void dropStack(boolean newState) {}
 
     public static void hotbar(int slot) {

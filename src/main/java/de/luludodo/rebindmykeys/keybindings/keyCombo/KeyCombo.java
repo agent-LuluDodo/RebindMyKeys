@@ -13,6 +13,7 @@ import net.minecraft.client.util.InputUtil;
 
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class KeyCombo implements JsonSavable {
     private ComboSettings settings;
     private List<Key> keys;

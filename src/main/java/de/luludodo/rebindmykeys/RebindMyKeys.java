@@ -55,6 +55,7 @@ public class RebindMyKeys implements ClientModInitializer {
 
         setCategory("movement");
 
+        //noinspection NoTranslation
         KeyBinding vanillaTest = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "rebindmykeys.key.vanillaTest",
                 GLFW.GLFW_KEY_I,
@@ -659,6 +660,7 @@ public class RebindMyKeys implements ClientModInitializer {
         });
     }
 
+    @SuppressWarnings("unused")
     public void onClientStarted(MinecraftClient client) {
         VanillaKeyBindingHelper.init();
         VanillaKeyBindingInfo.printCountInfo();
@@ -669,6 +671,7 @@ public class RebindMyKeys implements ClientModInitializer {
         KeyBindingUtil.calcIncompatibleUUIDs();
     }
 
+    @SuppressWarnings("unused")
     public void onClientStopping(MinecraftClient client) {
         ProfileManager.save();
     }

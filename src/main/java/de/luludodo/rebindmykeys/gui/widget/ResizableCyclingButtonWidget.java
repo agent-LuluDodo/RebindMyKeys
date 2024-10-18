@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
+@SuppressWarnings("unused")
 public class ResizableCyclingButtonWidget<T> extends CyclingButtonWidget<T> implements Resizable, KeyComboWidget.KeyEntry.Button {
     private static final Function<Integer, Double> SIZE_TO_WIDTH_PERCENT = count -> {
         if (count == 1) {
@@ -139,15 +140,14 @@ public class ResizableCyclingButtonWidget<T> extends CyclingButtonWidget<T> impl
         BOOLEAN_VALUES = ImmutableList.of(Boolean.TRUE, Boolean.FALSE);
     }
 
+    @SuppressWarnings("unused")
     @Environment(EnvType.CLIENT)
     public static class Builder<T> {
         private int initialIndex;
         @Nullable
         private T value;
         private final Function<T, Text> valueToText;
-        private SimpleOption.TooltipFactory<T> tooltipFactory = (value) -> {
-            return null;
-        };
+        private SimpleOption.TooltipFactory<T> tooltipFactory = (value) -> null;
         private Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory = CyclingButtonWidget::getGenericNarrationMessage;
         private Values<T> values = Values.of(ImmutableList.of());
         private boolean optionTextOmitted;
@@ -216,7 +216,7 @@ public class ResizableCyclingButtonWidget<T> extends CyclingButtonWidget<T> impl
                 T object = this.value != null ? this.value : list.get(this.initialIndex);
                 Text text = this.valueToText.apply(object);
                 Text text2 = this.optionTextOmitted ? text : ScreenTexts.composeGenericOptionText(optionText, text);
-                return new ResizableCyclingButtonWidget<T>(parent, x, y, width, height, text2, optionText, this.initialIndex, object, this.values, this.valueToText, this.narrationMessageFactory, callback, this.tooltipFactory, this.optionTextOmitted);
+                return new ResizableCyclingButtonWidget<>(parent, x, y, width, height, text2, optionText, this.initialIndex, object, this.values, this.valueToText, this.narrationMessageFactory, callback, this.tooltipFactory, this.optionTextOmitted);
             }
         }
     }

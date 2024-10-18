@@ -1,7 +1,6 @@
 package de.luludodo.rebindmykeys.gui.profile.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.gui.binding.screen.KeyBindingScreen;
 import de.luludodo.rebindmykeys.gui.profile.screen.ProfileConfigPopup;
 import de.luludodo.rebindmykeys.gui.widget.ConfigWidget;
@@ -162,10 +161,12 @@ public class ProfileConfigWidget extends ConfigWidget<ProfileConfigWidget, Profi
                 profile.rename(name.getText());
         }
 
+        @SuppressWarnings("unused")
         private void onSelectPressed(ButtonWidget button) {
             setCurrentProfile(profile);
         }
 
+        @SuppressWarnings("unused")
         private void onDuplicatePressed(ButtonWidget button) {
             profile.rename(name.getText());
             addEntry(children().indexOf(this) + 1, new ProfileEntry(new DuplicatedProfile(profile, UUID.randomUUID())));
@@ -173,6 +174,7 @@ public class ProfileConfigWidget extends ConfigWidget<ProfileConfigWidget, Profi
             getParent().resize();
         }
 
+        @SuppressWarnings("unused")
         private void onDeletePressed(ButtonWidget button) {
             if (deleted) {
                 removeEntry(this);
@@ -185,6 +187,7 @@ public class ProfileConfigWidget extends ConfigWidget<ProfileConfigWidget, Profi
             }
         }
 
+        @SuppressWarnings("unused")
         private void onRestorePressed(ButtonWidget button) {
             restore(profile);
             hasChanges = true;

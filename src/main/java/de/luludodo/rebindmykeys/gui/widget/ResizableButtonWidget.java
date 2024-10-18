@@ -16,6 +16,7 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 public class ResizableButtonWidget extends ButtonWidget implements Resizable, KeyComboWidget.KeyEntry.Button {
     private final Screen parent;
     private final XCalculator x;
@@ -76,6 +77,7 @@ public class ResizableButtonWidget extends ButtonWidget implements Resizable, Ke
         hasChanges = false;
     }
 
+    @SuppressWarnings("unused")
     @Environment(value= EnvType.CLIENT)
     public static class Builder {
         @Nullable private final ResizableScreen parent;

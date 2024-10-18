@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class ResizableTextFieldWidget extends TextFieldWidget implements Resizable, KeyComboWidget.KeyEntry.Button {
     private final Screen parent;
     private final XCalculator x;

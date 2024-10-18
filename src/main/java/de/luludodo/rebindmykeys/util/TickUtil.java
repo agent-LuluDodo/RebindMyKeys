@@ -10,10 +10,8 @@ import org.jetbrains.annotations.Range;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
+@SuppressWarnings("unused")
 public class TickUtil {
     static {
         ClientTickEvents.START_CLIENT_TICK.register(TickUtil::tick);

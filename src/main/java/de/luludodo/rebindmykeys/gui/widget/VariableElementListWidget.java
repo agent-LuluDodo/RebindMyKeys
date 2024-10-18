@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
  *     <li>Resizable</li>
  * </ul>
  */
+@SuppressWarnings("unused")
 public abstract class VariableElementListWidget<E extends VariableElementListWidget.Entry<E>> extends ElementListWidget<E> implements Resizable {
     private int rowWidth;
     private int scrollbarMargin = 14;
@@ -119,6 +120,7 @@ public abstract class VariableElementListWidget<E extends VariableElementListWid
         return getRowRight() + getScrollbarMargin();
     }
 
+    @SuppressWarnings("SameReturnValue")
     @Contract(pure = true)
     public int getScrollbarWidth() {
         return 6;

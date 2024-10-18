@@ -18,7 +18,7 @@ public class KeyBindingUtil {
         onActions.put(id, action);
     }
     private static void triggerAction(String id) {
-        RebindMyKeys.DEBUG.info("Triggering action: " + id);
+        RebindMyKeys.DEBUG.info("Triggering action: {}", id);
         if (!onActions.containsKey(id))
             return;
         try {
@@ -33,7 +33,7 @@ public class KeyBindingUtil {
         onToggles.put(id, action);
     }
     private static void triggerToggle(String id, boolean newState) {
-        RebindMyKeys.DEBUG.info("Triggering toggle: " + id + " | " + newState);
+        RebindMyKeys.DEBUG.info("Triggering toggle: {} | {}", id, newState);
         if (!onToggles.containsKey(id))
             return;
         try {

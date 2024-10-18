@@ -5,13 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -19,6 +17,7 @@ import java.util.function.Supplier;
  * These methods are designed to fail with <i>as little damage as possible</i>. For example, if a save fails during the writing
  * the file is reset to it's state before writing.
  */
+@SuppressWarnings("unused")
 public class FileUtil {
     /**
      * {@link Logger} for problems writing or reading files.
@@ -28,6 +27,7 @@ public class FileUtil {
     /**
      * Custom {@link RuntimeException} for Files which try to get parsed, but can't due to invalid contents.
      */
+    @SuppressWarnings("unused")
     public static class InvalidFileContentException extends RuntimeException {
         public InvalidFileContentException() {
             super();
@@ -57,6 +57,7 @@ public class FileUtil {
     /**
      * Interface for a {@link FileReader}, which is allowed to throw {@link IOException IOExceptions}.
      */
+    @SuppressWarnings("RedundantThrows")
     @FunctionalInterface
     public interface Reader {
         void read(FileReader reader) throws IOException;
@@ -75,7 +76,7 @@ public class FileUtil {
      * @return whether the file was written successfully. If writing succeeds, but the backup deletion fails it would still return {@code true}.
      */
     public static boolean save(Path path, Writer writer) {
-        LOG.info("Saving " + path.getFileName());
+        LOG.info("Saving {}", path.getFileName());
         Path backupPath = backupOf(path);
         if (path.toFile().exists()) {
             try {
@@ -212,7 +213,7 @@ public class FileUtil {
      * @see FileUtil#load(Path, Reader, Writer)
      */
     public static boolean load(Path path, Reader reader, Supplier<Boolean> noFileHandler) {
-        LOG.info("Loading " + path.getFileName());
+        LOG.info("Loading {}", path.getFileName());
         if (!path.toFile().exists()) {
             if (!noFileHandler.get())
                 return false;

@@ -5,7 +5,6 @@ import de.luludodo.rebindmykeys.gui.binding.widget.SettingsWidget;
 import de.luludodo.rebindmykeys.gui.screen.ConfigPopup;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.ComboSettingsEditor;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.KeyCombo;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.settings.ComboSettings;
 import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -15,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public class SettingsPopup extends ConfigPopup<SettingsPopup, SettingsWidget> {
     private final KeyCombo combo;
     private final ComboSettingsEditor editor;
-    public SettingsPopup(@NotNull KeyBindingScreen parent, KeyCombo combo, ComboSettings defaultSettings) {
+    public SettingsPopup(@NotNull KeyBindingScreen parent, KeyCombo combo) {
         super(parent, Text.translatable("rebindmykeys.gui.settings.title"));
         setRenderTitle(true);
         this.combo = combo;

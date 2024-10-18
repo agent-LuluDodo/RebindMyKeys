@@ -7,6 +7,7 @@ import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings("unused")
 public interface IContext extends JsonSavable {
     IContext[] getParents();
     boolean isCurrent();
@@ -30,9 +31,6 @@ public interface IContext extends JsonSavable {
     }
 
     static IContext load(JsonElement json) {
-        //RebindMyKeys.DEBUG.info("Loading context: " + json);
-        IContext context = IContextRegistry.get(json.getAsString());
-        //RebindMyKeys.DEBUG.info("Class: {} ID: {}", context.getClass().getSimpleName(), context.getId());
-        return context;
+        return IContextRegistry.get(json.getAsString());
     }
 }

@@ -3,7 +3,6 @@ package de.luludodo.rebindmykeys.util;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -14,7 +13,9 @@ import java.util.function.Supplier;
 /**
  * Various utilities for {@link Collection Collections}.
  */
+@SuppressWarnings("unused")
 public class CollectionUtil {
+    @SuppressWarnings("unused")
     public static class CList {
         /**
          * Moves an element from one index of a {@link List} to another. <br>
@@ -187,11 +188,6 @@ public class CollectionUtil {
 
     /**
      *
-     * @param collection
-     * @param value
-     * @return
-     * @param <T>
-     * @param <V>
      */
     @Contract(pure = true)
     public static <T, V extends Comparable<V>> V max(Collection<T> collection, Function<T, V> value) {
@@ -200,12 +196,6 @@ public class CollectionUtil {
 
     /**
      *
-     * @param collection
-     * @param value
-     * @param compare
-     * @return
-     * @param <T>
-     * @param <V>
      */
     @Contract(pure = true)
     public static <T, V> V max(Collection<T> collection, Function<T, V> value, Comparator<V> compare) {

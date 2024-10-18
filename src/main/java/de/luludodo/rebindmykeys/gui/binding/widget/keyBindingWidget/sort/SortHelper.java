@@ -12,6 +12,7 @@ import net.minecraft.text.Text;
 import java.util.*;
 import java.util.function.Function;
 
+@SuppressWarnings("RedundantTypeArguments")
 public class SortHelper {
     public static final Comparator<String> SORT_CATEGORY_ASCENDING = Comparator.comparingDouble(SortHelper::getCategoryOrder);
     public static final Comparator<String> SORT_CATEGORY_DESCENDING = Comparator.<String>comparingDouble(SortHelper::getCategoryOrder).reversed();

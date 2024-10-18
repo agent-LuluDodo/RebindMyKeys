@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public abstract class OperationModeEditor<O extends OperationMode> {
     private O mode;
     public void setCurrent(O mode, boolean copy) {

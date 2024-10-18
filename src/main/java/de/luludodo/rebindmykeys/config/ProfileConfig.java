@@ -11,6 +11,7 @@ import java.util.UUID;
 /**
  * Stores the currently active {@link Profile} for the {@link ProfileManager}
  */
+@SuppressWarnings("unused")
 public class ProfileConfig extends JsonMapConfig<String, Object> {
     public static final String CURRENT_PROFILE = "currentProfile";
 

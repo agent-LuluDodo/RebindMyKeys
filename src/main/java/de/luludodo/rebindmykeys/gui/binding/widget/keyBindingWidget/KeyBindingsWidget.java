@@ -13,7 +13,6 @@ import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.sort.SortHel
 import de.luludodo.rebindmykeys.gui.binding.widget.keyBindingWidget.sort.SortOrder;
 import de.luludodo.rebindmykeys.gui.screen.ConfirmPopup;
 import de.luludodo.rebindmykeys.gui.widget.IconButtonWidget;
-import de.luludodo.rebindmykeys.gui.widget.ResizableButtonWidget;
 import de.luludodo.rebindmykeys.gui.widget.VariableElementListWidget;
 import de.luludodo.rebindmykeys.keybindings.KeyBinding;
 import de.luludodo.rebindmykeys.keybindings.info.CategoryInfo;
@@ -22,7 +21,6 @@ import de.luludodo.rebindmykeys.keybindings.info.VanillaKeyBinding;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.KeyCombo;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
 import de.luludodo.rebindmykeys.modSupport.VanillaKeyBindingWrapper;
-import de.luludodo.rebindmykeys.modSupport.operationMode.OriginalMode;
 import de.luludodo.rebindmykeys.util.*;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.MinecraftClient;
@@ -30,7 +28,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -115,9 +112,7 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
                 }
                 addEntry(entry);
             });
-            case NAME -> SortHelper.getNames(sortOrder).forEach(binding -> {
-                addEntry(convert(binding));
-            });
+            case NAME -> SortHelper.getNames(sortOrder).forEach(binding -> addEntry(convert(binding)));
         }
     }
 
@@ -150,7 +145,7 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
     }
 
     public boolean areAllDefault() {
-        return false;
+        return false; // TODO: implement
     }
 
     private void calcWidth() {
@@ -371,10 +366,12 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             //context.fill(x, y, x + width, y + height, 0x770000FF); // Debug for bounds
         }
 
+        @SuppressWarnings("unused")
         private void onCompatibilityButtonPressed(ButtonWidget compatibilityButton) {
             client.setScreen(new CompatibilityPopup((KeyBindingScreen) getParent(), (VanillaKeyBindingWrapper) binding));
         }
 
+        @SuppressWarnings("unused")
         private void onAddButtonPressed(ButtonWidget addButton) {
             ComboEntry entry = new ComboEntry(this, new KeyCombo(binding.getId(), List.of(), binding.getDefaultSettings()));
             binding.addKeyCombo(entry.combo);
@@ -382,6 +379,7 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             addChild(entry);
         }
 
+        @SuppressWarnings("unused")
         private void onResetButtonPressed(ButtonWidget resetButton) {
             client.setScreen(
                     new ConfirmPopup(
@@ -521,12 +519,11 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
                 KeyBindingUtil.calcIncompatibleUUIDs();
                 keyButton.setMessage(getKeyButtonMessage());
                 KeyBindingConfig.getCurrent().save();
-            }, keys -> {
-                keyButton.setMessage(getKeyButtonMessage(keys));
-            });
+            }, keys -> keyButton.setMessage(getKeyButtonMessage(keys)));
             RebindMyKeys.DEBUG.info("Key button pressed");
         }
 
+        @SuppressWarnings("unused")
         private void onRemoveButtonPressed(ButtonWidget removeButton) {
             parent.binding.removeKeyCombo(combo);
             parent.removeChild(this);
@@ -534,8 +531,9 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             RebindMyKeys.DEBUG.info("Remove button pressed");
         }
 
+        @SuppressWarnings("unused")
         private void onSettingsButtonPressed(ButtonWidget settingsButton) {
-            client.setScreen(new SettingsPopup((KeyBindingScreen) getParent(), combo, parent.binding.getDefaultSettings()));
+            client.setScreen(new SettingsPopup((KeyBindingScreen) getParent(), combo));
             RebindMyKeys.DEBUG.info("Settings button pressed");
         }
 
@@ -583,11 +581,13 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             ).size(100, 20).build();
         }
 
+        @SuppressWarnings("unused")
         private void onResetButtonPressed(ButtonWidget button) {
             MinecraftClient.getInstance().options.setKeyCode(binding.vanilla(), binding.vanilla().getDefaultKey());
             keyButton.setMessage(binding.vanilla().getBoundKeyLocalizedText());
         }
 
+        @SuppressWarnings("unused")
         private void onKeyButtonPressed(ButtonWidget button) {
             keyButton.setMessage(Text.translatable("rebindmykeys.gui.keyBindings.recording"));
             KeyUtil.startRecordingBasicKey(key -> {
@@ -596,6 +596,7 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             });
         }
 
+        @SuppressWarnings("unused")
         private void onRemoveButtonPressed(ButtonWidget removeButton) {
             MinecraftClient.getInstance().options.setKeyCode(binding.vanilla(), InputUtil.UNKNOWN_KEY);
             keyButton.setMessage(binding.vanilla().getBoundKeyLocalizedText());
@@ -604,18 +605,10 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
         @Override
         public void applySearchQuery(String query, SearchTarget target) {
             switch (target) {
-                case NAME -> {
-                    filtered = !applyQueryFormatting(name.getString()).contains(query);
-                }
-                case MOD -> {
-                    filtered = !applyQueryFormatting(ModInfo.getModName(binding.mod())).contains(query);
-                }
-                case KEY -> {
-                    filtered = !applyQueryFormatting(keyButton.getMessage().getString()).contains(query);
-                }
-                case CATEGORY -> {
-                    filtered = !applyQueryFormatting(Text.translatable(binding.vanilla().getCategory()).getString()).contains(query);
-                }
+                case NAME -> filtered = !applyQueryFormatting(name.getString()).contains(query);
+                case MOD -> filtered = !applyQueryFormatting(ModInfo.getModName(binding.mod())).contains(query);
+                case KEY -> filtered = !applyQueryFormatting(keyButton.getMessage().getString()).contains(query);
+                case CATEGORY -> filtered = !applyQueryFormatting(Text.translatable(binding.vanilla().getCategory()).getString()).contains(query);
             }
         }
 
@@ -723,8 +716,10 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             super.render(context, index, y + 20, x, width, height - 20, mouseX, mouseY, hovered, delta);
         }
 
+        @SuppressWarnings("unused")
         public abstract void renderParent(DrawContext context, int index,  int y, int x, int width, int height, int mouseX, int mouseY, int color, float delta);
 
+        @SuppressWarnings("unused")
         private boolean collapseButtonHovered(double mouseX, double mouseY) {
             return mouseY >= y && mouseY < y + 20;
         }
@@ -759,6 +754,7 @@ public class KeyBindingsWidget extends VariableElementListWidget<KeyBindingsWidg
             return isFiltered() ? 0 : getParentHeight() + (collapsed ? 0 : super.getHeight());
         }
 
+        @SuppressWarnings("SameReturnValue")
         public abstract int getParentHeight();
 
         @Override

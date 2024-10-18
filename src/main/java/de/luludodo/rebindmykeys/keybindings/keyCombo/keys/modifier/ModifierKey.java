@@ -5,7 +5,6 @@ import de.luludodo.rebindmykeys.gui.keyCombo.widget.KeyComboWidget;
 import de.luludodo.rebindmykeys.gui.widget.ResizableButtonWidget;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.keys.Key;
 import de.luludodo.rebindmykeys.util.ArrayUtil;
-import de.luludodo.rebindmykeys.util.CollectionUtil;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import de.luludodo.rebindmykeys.util.KeyUtil;
 import net.minecraft.client.util.InputUtil;
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class ModifierKey implements Key {
     public static final Identifier ID = Identifier.of("rebindmykeys", "modifier");
 

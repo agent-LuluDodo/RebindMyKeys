@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class BasicKey implements Key {
     public static final Identifier ID = Identifier.of("rebindmykeys", "basic");
 

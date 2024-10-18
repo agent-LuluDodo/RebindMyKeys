@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class IContextRegistry {
     private static final HashMap<String, IContext> idToContext = new HashMap<>();
 

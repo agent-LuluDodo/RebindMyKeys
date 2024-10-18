@@ -117,7 +117,10 @@ public class KeyBindingScreen extends ResizableScreen {
                 IconButtonWidget.builder(
                         this,
                         Identifier.of("rebindmykeys", "textures/gui/settings.png"),
-                        button -> client.setScreen(new GlobalConfigPopup(this))
+                        button -> {
+                            assert client != null;
+                            client.setScreen(new GlobalConfigPopup(this));
+                        }
                 ).dimensions(
                         /* x: */ width -> width - 20,
                         /* y: */ height -> 0,
@@ -129,7 +132,10 @@ public class KeyBindingScreen extends ResizableScreen {
                 ResizableButtonWidget.builder(
                         this,
                         Text.translatable("rebindmykeys.gui.profiles"),
-                        button -> client.setScreen(new ProfileConfigPopup(this))
+                        button -> {
+                            assert client != null;
+                            client.setScreen(new ProfileConfigPopup(this));
+                        }
                 ).dimensions(
                         /* x: */ width -> 0,
                         /* y: */ height -> 0,
@@ -164,6 +170,7 @@ public class KeyBindingScreen extends ResizableScreen {
 
     @Override
     public void close() {
+        assert client != null;
         client.setScreen(parent);
     }
 

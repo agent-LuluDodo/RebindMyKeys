@@ -10,6 +10,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
+@SuppressWarnings("unused")
 public class RenderUtil {
     private static final boolean TEST = false;
 
@@ -334,6 +335,7 @@ public class RenderUtil {
      *
      * @see ClickableWidget#drawScrollableText(DrawContext, TextRenderer, Text, int, int, int, int, int, int)
      */
+    @SuppressWarnings("JavadocReference")
     public static void drawScrollableText(DrawContext context, TextRenderer textRenderer, Text text, int centerX, int startX, int endX, int y, int color) {
         if (startX > endX)
             throw new IllegalArgumentException("startX > endX");

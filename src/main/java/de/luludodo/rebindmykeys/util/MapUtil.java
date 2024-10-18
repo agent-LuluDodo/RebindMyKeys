@@ -10,6 +10,7 @@ import java.util.function.Function;
 /**
  * Some Utility functions for Maps
  */
+@SuppressWarnings("unused")
 public class MapUtil {
     /**
      * Iterates through the entire map and removes the current element if {@code shouldRemove} returns {@code true}.
@@ -46,9 +47,7 @@ public class MapUtil {
     @Contract(pure = true)
     public static <K, V> Map<K, V> sort(@NotNull Map<K, V> map, Comparator<Map.Entry<K, V>> compare) {
         LinkedHashMap<K, V> sortedMap = new LinkedHashMap<>();
-        map.entrySet().stream().sorted(compare).forEachOrdered(entry -> {
-            sortedMap.put(entry.getKey(), entry.getValue());
-        });
+        map.entrySet().stream().sorted(compare).forEachOrdered(entry -> sortedMap.put(entry.getKey(), entry.getValue()));
         return sortedMap;
     }
 

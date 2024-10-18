@@ -17,8 +17,8 @@ import java.util.List;
 
 public class LuluToast implements Toast {
     private final static TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-    private final static double FADE_TIME = 500;
     private final static long DURATION = 15000;
+    @SuppressWarnings("unused")
     public enum Type {
         ERROR("textures/gui/error_toast.png"),
         WARN("textures/gui/warn_toast.png"),

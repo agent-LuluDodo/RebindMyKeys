@@ -25,6 +25,7 @@ import java.util.function.BiConsumer;
  * @param <K> The key class
  * @param <V> The value class
  */
+@SuppressWarnings({"UnusedReturnValue", "unused"})
 public abstract class JsonMapConfig<K,V> {
     private static final Logger LOG = LoggerFactory.getLogger("Lulu/JsonMapConfig");
 
@@ -32,6 +33,7 @@ public abstract class JsonMapConfig<K,V> {
      * This exception is thrown if the config which is being read contains nothing.
      * This usually indicates a failure while previously saving the file.
      */
+    @SuppressWarnings("unused")
     public static class EmptyFileException extends InvalidJsonException {
         public EmptyFileException() {
             super();
@@ -155,6 +157,7 @@ public abstract class JsonMapConfig<K,V> {
         getDefaults().forEach(map::putIfAbsent);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void tryRestoreOldSettings() {
         if (getFile().exists()) return;
         for (String oldFilename : getOldFilenames()) {
@@ -204,12 +207,12 @@ public abstract class JsonMapConfig<K,V> {
      */
     public boolean reload() {
         tryRestoreOldSettings();
-        boolean successfull = false;
+        boolean successful = false;
         try {
             content = read(getFile());
             fillWithDefaults(content);
             LOG.info("Loaded {}.json!", getFilename());
-            successfull = true;
+            successful = true;
         } catch (EmptyFileException e) {
             LuluToast.showAndLogError(LOG, "Couldn't read config " + getFilename() + ".json, because the file is empty!", null);
             content = new HashMap<>(getDefaults());
@@ -225,12 +228,13 @@ public abstract class JsonMapConfig<K,V> {
         }
         LOG.info("Content: {} entries", content.size());
         loaded = true;
-        return successfull;
+        return successful;
     }
 
     /**
      * Saves the config to the file specified in the initializer. Logs errors in case of failure.
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public boolean save() {
         try {
             if (!getFile().exists()) {
@@ -254,6 +258,7 @@ public abstract class JsonMapConfig<K,V> {
     /**
      * Deletes the config and any empty parent directories up to the fabric config directory.
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public boolean delete() {
         if (!getFile().exists()) {
             LOG.info("Can't delete config {}.json because it doesn't exist!", getFilename());

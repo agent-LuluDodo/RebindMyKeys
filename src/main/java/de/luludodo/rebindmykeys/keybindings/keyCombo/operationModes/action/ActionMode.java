@@ -1,6 +1,5 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.action;
 
-import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.hold.HoldModeEditor;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.pressCount.PressCountOperationMode;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import net.minecraft.util.Identifier;

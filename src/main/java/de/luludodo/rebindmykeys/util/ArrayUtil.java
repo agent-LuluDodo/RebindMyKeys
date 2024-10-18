@@ -5,12 +5,12 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
 import java.util.function.Function;
 
 /**
  * Some utilities for working with arrays.
  */
+@SuppressWarnings("unused")
 public class ArrayUtil {
     /**
      * Checks if the {@code condition} is valid for all elements in the {@code array}.

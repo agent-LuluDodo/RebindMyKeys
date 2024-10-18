@@ -14,10 +14,10 @@ import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import de.luludodo.rebindmykeys.util.interfaces.JsonLoadable;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
 import net.minecraft.client.util.InputUtil;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class KeyBinding implements JsonSavable, JsonLoadable {
     private static boolean checkInitialActive() {
         boolean initialActive = InitialKeyBindings.isActive();
@@ -107,7 +107,7 @@ public class KeyBinding implements JsonSavable, JsonLoadable {
     }
 
     public void isDefault() {
-
+        // TODO: implement
     }
 
     protected void setKeyCombos(List<KeyCombo> keyCombos) {
@@ -202,7 +202,7 @@ public class KeyBinding implements JsonSavable, JsonLoadable {
             keyCombosCopy.add(combo.copy());
         }
         T copy = constructor.create(id, defaultKeyCombosCopy, defaultSettings);
-        copy.setKeyCombos(keyCombos);
+        copy.setKeyCombos(keyCombosCopy);
         return copy;
     }
 

@@ -1,6 +1,5 @@
 package de.luludodo.rebindmykeys.mixin;
 
-import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.profiles.ProfileManager;
 import de.luludodo.rebindmykeys.util.KeyBindingUtil;
 import de.luludodo.rebindmykeys.util.KeyUtil;

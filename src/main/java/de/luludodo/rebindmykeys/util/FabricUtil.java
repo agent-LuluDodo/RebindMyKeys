@@ -24,6 +24,7 @@ import java.util.*;
 
 
 public class FabricUtil {
+    @SuppressWarnings("ClassCanBeRecord")
     private static class ModMetadataImpl implements ModMetadata {
         private final String id;
         private final String name;
@@ -247,7 +248,7 @@ public class FabricUtil {
                     NativeImageBackedTexture texture = new NativeImageBackedTexture(nativeImage);
                     return MinecraftClient.getInstance().getTextureManager().registerDynamicTexture("rebindmykeys/icon_" + mod.getMetadata().getId() + "_" + size + "x" + size, texture);
                 } catch (IOException e) {
-                    RebindMyKeys.LOG.error("Error loading icon for mod '" + ModInfo.getModName(mod) + "' with size " + size, e);
+                    RebindMyKeys.LOG.error("Error loading icon for mod '{}' with size {}", ModInfo.getModName(mod), size, e);
                 }
             }
         }
@@ -266,7 +267,7 @@ public class FabricUtil {
         try {
             cl = Class.forName(stackTrace[stackTrace.length - 9].getClassName());
         } catch (ClassNotFoundException e) {
-            RebindMyKeys.LOG.error("Couldn't get Class for name '" + stackTrace[stackTrace.length - 9].getClassName() + "'", e);
+            RebindMyKeys.LOG.error("Couldn't get Class for name '{}'", stackTrace[stackTrace.length - 9].getClassName(), e);
             return UNKNOWN;
         } catch (IndexOutOfBoundsException e) {
             RebindMyKeys.LOG.error("Invalid StackTrace (called before mod loading?)");

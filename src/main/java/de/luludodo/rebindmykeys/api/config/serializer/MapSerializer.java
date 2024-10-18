@@ -5,6 +5,7 @@ import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 
+@SuppressWarnings("unused")
 public abstract class MapSerializer<K, V> implements JsonSerializer<HashMap<K, V>>, JsonDeserializer<HashMap<K, V>> {
     private int version;
     public void setVersion(int version) {

@@ -1,10 +1,8 @@
 package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.toggle;
 
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.pressCount.PressCountOperationMode;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.pressCount.PressCountOperationModeEditor;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.NotNull;
 
 public class ToggleMode extends PressCountOperationMode {
     public static final Identifier ID = new Identifier("rebindmykeys", "toggle");

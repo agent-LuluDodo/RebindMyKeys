@@ -53,7 +53,7 @@ public class KeyBindingConfigSerializer extends MapSerializer<String, KeyBinding
                 try {
                     bindingCopy.load(json.get(id));
                 } catch (RuntimeException e) {
-                    RebindMyKeys.LOG.error("Failed to load KeyBinding " + binding.getId(), e);
+                    RebindMyKeys.LOG.error("Failed to load KeyBinding {}", binding.getId(), e);
                     bindingCopy = binding.copy();
                 }
                 loadedIds.add(id);

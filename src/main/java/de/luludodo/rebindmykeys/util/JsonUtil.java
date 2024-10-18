@@ -1,7 +1,6 @@
 package de.luludodo.rebindmykeys.util;
 
 import com.google.gson.*;
-import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.util.interfaces.Action;
 import de.luludodo.rebindmykeys.util.interfaces.JsonLoadable;
 import de.luludodo.rebindmykeys.util.interfaces.JsonSavable;
@@ -18,6 +17,7 @@ import java.util.function.Supplier;
 /**
  * A lot of utility functions all about json handling, checking, writing, loading, saving, etc.
  */
+@SuppressWarnings({"UnusedReturnValue", "unused"})
 public class JsonUtil {
     /**
      * {@link Gson} instance used throughout {@link JsonUtil}.
@@ -27,6 +27,7 @@ public class JsonUtil {
     /**
      * Builder to easily create {@link JsonObject}'s.
      */
+    @SuppressWarnings("unused")
     public static class ObjectBuilder {
         private final JsonObject build = new JsonObject();
         private ObjectBuilder() {}
@@ -92,6 +93,7 @@ public class JsonUtil {
         }
     }
 
+    @SuppressWarnings("unused")
     public static class ArrayBuilder {
         private final JsonArray build;
         private ArrayBuilder() {
@@ -265,6 +267,7 @@ public class JsonUtil {
     /**
      * Loader to easily load {@link JsonObject}'s.
      */
+    @SuppressWarnings("unused")
     public static class ObjectLoader {
         private final JsonObject json;
         private ObjectLoader(JsonObject json) {
@@ -391,6 +394,7 @@ public class JsonUtil {
         }
     }
 
+    @SuppressWarnings("unused")
     public static class ArrayLoader {
         private final JsonArray json;
         private ArrayLoader(JsonArray json) {
@@ -703,6 +707,7 @@ public class JsonUtil {
     /**
      * Utility class for converting {@code Arrays} to {@link JsonArray JsonArrays}.
      */
+    @SuppressWarnings("unused")
     public static class JArray {
         /**
          * Converts an {@code Array} of {@link Object Objects} into a {@link JsonArray}.
@@ -991,6 +996,7 @@ public class JsonUtil {
     /**
      * Utility class for converting {@link Collection Collections} to {@link JsonArray JsonArrays}.
      */
+    @SuppressWarnings("unused")
     public static class JCollection {
         /**
          * Converts a {@link Collection} into a {@link JsonArray}.
@@ -1025,6 +1031,7 @@ public class JsonUtil {
     /**
      * Utility class for converting {@link Map Maps} to {@link JsonObject JsonObjects}.
      */
+    @SuppressWarnings("unused")
     public static class JMap {
         /**
          * Converts a {@link Map} into a {@link JsonObject}.
@@ -1083,6 +1090,7 @@ public class JsonUtil {
          * @return The {@link Map}{@code <}{@link String}{@code , }{@link JsonElement}{@code >}.
          * @throws JsonParseException If the {@link JsonElement} isn't an instance of {@link JsonObject} or {@link JsonNull}.
          */
+        @SuppressWarnings("ResultOfMethodCallIgnored")
         @Contract(value = "null -> fail", pure = true)
         public static Map<String, JsonElement> toStringMap(JsonElement json) {
             handle(() -> ObjectUtil.requireOneOf(json, JsonObject.class, JsonNull.class), json);

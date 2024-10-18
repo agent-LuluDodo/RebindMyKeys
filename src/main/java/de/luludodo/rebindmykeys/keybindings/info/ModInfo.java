@@ -35,10 +35,6 @@ public final class ModInfo {
         return idToMod.get(id);
     }
 
-    public static Map<ModContainer, List<String>> getMods() {
-        return Collections.unmodifiableMap(modToIds);
-    }
-
     public static String getModName(ModContainer mod) {
         return mod.getMetadata().getName();
     }

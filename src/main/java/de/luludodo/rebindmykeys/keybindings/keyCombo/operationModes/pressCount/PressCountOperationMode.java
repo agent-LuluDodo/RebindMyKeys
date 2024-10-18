@@ -2,7 +2,6 @@ package de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.pressCount;
 
 import com.google.gson.JsonElement;
 import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationMode;
-import de.luludodo.rebindmykeys.keybindings.keyCombo.operationModes.OperationModeEditor;
 import de.luludodo.rebindmykeys.profiles.ProfileManager;
 import de.luludodo.rebindmykeys.util.JsonUtil;
 

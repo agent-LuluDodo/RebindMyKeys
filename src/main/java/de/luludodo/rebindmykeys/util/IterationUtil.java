@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
+@SuppressWarnings("unused")
 public class IterationUtil {
     public static class ConditionalIterable<E> implements Iterable<E> {
         private final Iterable<E> iterable;

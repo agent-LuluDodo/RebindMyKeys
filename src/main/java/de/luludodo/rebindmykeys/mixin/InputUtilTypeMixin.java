@@ -1,6 +1,5 @@
 package de.luludodo.rebindmykeys.mixin;
 
-import de.luludodo.rebindmykeys.RebindMyKeys;
 import de.luludodo.rebindmykeys.modSupport.VanillaKeyBindingHelper;
 import net.minecraft.client.util.InputUtil;
 import org.spongepowered.asm.mixin.Mixin;

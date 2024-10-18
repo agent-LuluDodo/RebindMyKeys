@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import static de.luludodo.rebindmykeys.config.ProfileConfig.*;
 
+@SuppressWarnings("unused")
 public class ProfileConfigSerializer extends MapSerializer<String, Object> {
     @Override
     public JsonElement serializeContent(HashMap<String, Object> config, Type type, JsonSerializationContext jsonSerializationContext) {
